@@ -10,6 +10,7 @@
 
 namespace Pazhamei\Cli;
 
+use Pazhamei\Environment;
 use Pazhamei\Install\PageInstaller;
 use WP_CLI;
 
@@ -70,15 +71,15 @@ final class Commands {
 	 * Create the test users test_customer, test_kitchen and test_admin.
 	 *
 	 * Each gets a new random password, printed here only. Running it again
-	 * resets the passwords. Refuses to run on production.
+	 * resets the passwords. Runs only on local sites.
 	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp pz seed
 	 */
 	public function seed(): void {
-		if ( 'production' === wp_get_environment_type() ) {
-			WP_CLI::error( 'Test users must never be created on production.' );
+		if ( ! Environment::allows_dev_tools( wp_get_environment_type() ) ) {
+			WP_CLI::error( 'wp pz seed runs only on local sites (environment type "local"), never on staging or production.' );
 		}
 
 		$rows = array();

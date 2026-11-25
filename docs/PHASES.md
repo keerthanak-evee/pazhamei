@@ -27,6 +27,8 @@ Full detail for each phase: `docs/build-plan.md`.
 Decisions:
 - [x] Test users: `wp pz seed` makes three (customer, kitchen, pz_admin). The fourth role, administrator, is the owner's own `WpAdmin` account; no test administrator is seeded.
 - The `phase-0-done` tag stays on the "Phase 0: foundation" commit; later fixes come after it.
+- Developer tools (`wp pz seed`, `PZ_FAKE_NOW`) run only on `local`; on staging and production they refuse or are ignored.
+- WooCommerce store visibility stays "Coming soon" until Phase 10.
 
 Later:
 - [ ] Customers, meals and menus in `wp pz seed` (added in later phases, once the tables exist)

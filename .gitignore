@@ -27,4 +27,3 @@ vendor/
 *.zip
 .DS_Store
 Thumbs.db
-!/PHASE-0-PROMPT.md
