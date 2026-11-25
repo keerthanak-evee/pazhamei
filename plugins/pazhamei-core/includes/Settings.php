@@ -2,7 +2,7 @@
 /**
  * Settings: reads the single `pz_settings` option that holds all business settings.
  *
- * The admin portal's Settings page (Phase 7) will edit these values.
+ * The admin portal's Settings page (Phase 8) will edit these values.
  * Code should always read settings through Settings::get() so that missing
  * keys fall back to the defaults below.
  *

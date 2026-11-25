@@ -3,7 +3,10 @@
  * PageInstaller: creates the site's pages and Navigation menus.
  *
  * Run through `wp pz install-pages`. It is safe to run many times:
- * - A page that already exists (same path) is never changed.
+ * - A page that already exists (same path) is never edited, with two narrow exceptions
+ *   (see tidy_existing_page()): a missing author is set, and placeholder text that is
+ *   still exactly as an older installer wrote it is refreshed.
+ * - New pages are owned by the first administrator.
  * - A menu that already exists is never changed.
  * - Site settings (front page, WooCommerce My Account page) are set every run.
  *
@@ -63,6 +66,7 @@ final class PageInstaller {
 
 			if ( $existing ) {
 				$this->note( 'exists', "Page /{$path}/ (ID {$existing->ID})" );
+				$this->tidy_existing_page( $existing, $page, $path );
 				if ( 'publish' !== $existing->post_status ) {
 					$this->note( 'warning', "Page /{$path}/ is '{$existing->post_status}', not published. Publish it in the editor when ready." );
 				}
@@ -81,6 +85,7 @@ final class PageInstaller {
 				array(
 					'post_type'     => 'page',
 					'post_status'   => 'publish',
+					'post_author'   => self::first_admin_id(),
 					'post_title'    => $page['title'],
 					'post_name'     => $page['slug'],
 					'post_parent'   => $parent_id,
@@ -98,6 +103,78 @@ final class PageInstaller {
 
 			$this->note( 'created', "Page /{$path}/ (ID {$page_id}, portal: {$page['portal']})" );
 		}
+	}
+
+	/**
+	 * Two small fixes on a page that already exists. Edited pages are never touched:
+	 * - No author (made by an older version of this command): set the first administrator.
+	 * - Content still exactly as an older version of this installer wrote it: replace it
+	 *   with the current starter content.
+	 *
+	 * @param \WP_Post                                                                          $existing The page.
+	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string} $page     Page row.
+	 * @param string                                                                            $path     Page path, for the report.
+	 */
+	private function tidy_existing_page( \WP_Post $existing, array $page, string $path ): void {
+		$changes = array();
+
+		if ( 0 === (int) $existing->post_author && self::first_admin_id() > 0 ) {
+			$changes['post_author'] = self::first_admin_id();
+		}
+
+		$current = self::normalise( $existing->post_content );
+		foreach ( self::old_starter_contents( $page ) as $old ) {
+			if ( self::normalise( $old ) === $current ) {
+				$changes['post_content'] = self::starter_content( $page );
+				break;
+			}
+		}
+
+		if ( ! $changes ) {
+			return;
+		}
+
+		$result = wp_update_post( wp_slash( array( 'ID' => $existing->ID ) + $changes ), true );
+
+		if ( is_wp_error( $result ) ) {
+			$this->note( 'warning', "Could not update /{$path}/: " . $result->get_error_message() );
+			return;
+		}
+
+		$what = array();
+		if ( isset( $changes['post_author'] ) ) {
+			$what[] = 'author set to the first administrator';
+		}
+		if ( isset( $changes['post_content'] ) ) {
+			$what[] = 'placeholder text refreshed';
+		}
+		$this->note( 'updated', "Page /{$path}/: " . implode( ', ', $what ) );
+	}
+
+	/**
+	 * ID of the first administrator (lowest user ID), or 0 if there is none.
+	 */
+	private static function first_admin_id(): int {
+		$ids = get_users(
+			array(
+				'role'    => 'administrator',
+				'orderby' => 'ID',
+				'order'   => 'ASC',
+				'number'  => 1,
+				'fields'  => 'ID',
+			)
+		);
+
+		return $ids ? (int) $ids[0] : 0;
+	}
+
+	/**
+	 * Make two pieces of content comparable: same line endings, no outer whitespace.
+	 *
+	 * @param string $content Post content.
+	 */
+	private static function normalise( string $content ): string {
+		return trim( str_replace( "\r\n", "\n", $content ) );
 	}
 
 	/**
@@ -249,16 +326,52 @@ final class PageInstaller {
 	}
 
 	/**
-	 * Starter block content for a new page: a heading and a note about which phase fills it.
+	 * Starter block content for a new page: one paragraph saying which phase fills it.
+	 * No heading: the page templates already show the page title.
 	 *
 	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string} $page Page row.
 	 */
 	private static function starter_content( array $page ): string {
-		$content  = "<!-- wp:heading {\"level\":2} -->\n";
-		$content .= '<h2 class="wp-block-heading">' . esc_html( $page['title'] ) . "</h2>\n";
-		$content .= "<!-- /wp:heading -->\n\n";
+		return self::placeholder( $page, $page['phase'], false );
+	}
+
+	/**
+	 * Starter content written by older versions of this installer. A page whose content
+	 * still matches one of these exactly has never been edited, so it may be refreshed.
+	 *
+	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string} $page Page row.
+	 * @return string[]
+	 */
+	private static function old_starter_contents( array $page ): array {
+		// Version 0.1.0: a heading with the title, and the phase numbers of the old PDF plan.
+		$old_phases = array(
+			Portals::STOREFRONT => 'Phase 1 (Storefront)',
+			Portals::CUSTOMER   => 'Phase 3 (Customer portal)',
+			Portals::KITCHEN    => 'Phase 6 (Kitchen portal)',
+			Portals::ADMIN      => 'Phase 7 (Admin portal)',
+		);
+
+		return array( self::placeholder( $page, $old_phases[ $page['portal'] ], true ) );
+	}
+
+	/**
+	 * Build placeholder block content.
+	 *
+	 * @param array{slug: string, title: string} $page         Page row.
+	 * @param string                             $phase        Phase name, e.g. 'Phase 4 (Customer portal)'.
+	 * @param bool                               $with_heading Add a heading with the title (old versions only).
+	 */
+	private static function placeholder( array $page, string $phase, bool $with_heading ): string {
+		$content = '';
+
+		if ( $with_heading ) {
+			$content .= "<!-- wp:heading {\"level\":2} -->\n";
+			$content .= '<h2 class="wp-block-heading">' . esc_html( $page['title'] ) . "</h2>\n";
+			$content .= "<!-- /wp:heading -->\n\n";
+		}
+
 		$content .= "<!-- wp:paragraph -->\n";
-		$content .= '<p>' . esc_html( "This page is a placeholder. Its content is built in {$page['phase']}." ) . "</p>\n";
+		$content .= '<p>' . esc_html( "This page is a placeholder. Its content is built in {$phase}." ) . "</p>\n";
 		$content .= "<!-- /wp:paragraph -->\n";
 
 		// The sign-in page needs a working form now, for testing the portals.

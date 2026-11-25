@@ -1,6 +1,6 @@
 # Pazhamei — project rules for Claude
 
-Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a customer portal, a kitchen portal and an admin portal. Customers buy prepaid lunch packs (Trial, 6-day, 26-day) as Veg, Non-Veg or Mixed, and can skip days or pause. The full plan is in `docs/` ("Pazhamei Web App — Build Plan"). Read the section for the current phase before starting.
+Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a customer portal, a kitchen portal and an admin portal. Customers buy prepaid lunch packs (Trial, 6-day, 26-day) as Veg, Non-Veg or Mixed, and can skip days or pause. The plan is `docs/build-plan.md` ("Pazhamei Web App — Build Plan"). Read the section for the current phase before starting.
 
 ## Environment
 
@@ -26,6 +26,8 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
   - `includes/Admin/` — wp-admin screens
   - `blocks/` — one folder per `pz/*` block
   - `tests/` — PHPUnit tests
+- `docs/build-plan.md` — the build plan: phases, business rules, tables, pages. It is the source of truth; there is no PDF version.
+- `docs/PHASES.md` — phase checklist.
 - `docs/DATA-MODEL.md` — table reference. Update it in the same commit as any table change.
 
 ## Portals, URLs and roles
@@ -52,7 +54,7 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
 - One header and one footer for the whole site: the template parts `parts/header.html` and `parts/footer.html`, used by every template.
 - The header contains the `pz/portal-nav` block. It renders the WordPress Navigation menu for the current page's portal. There are four menus: Storefront, Customer, Kitchen, Admin.
 - Every page is a normal WordPress page, editable in the block editor. Pages are built from core blocks plus `pz/*` blocks. Never hard-code page HTML into PHP templates.
-- Pages are created only through `wp pz install-pages`. The installer creates missing pages and never overwrites a page that already exists.
+- Pages are created only through `wp pz install-pages`. The installer creates missing pages and never overwrites a page that already exists. Its only changes to existing pages: it sets a missing author (the first administrator), and refreshes placeholder text that still exactly matches what an older installer version wrote.
 
 ## Business rules (do not change without the owner's approval)
 

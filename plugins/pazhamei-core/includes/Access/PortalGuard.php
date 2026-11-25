@@ -5,7 +5,7 @@
  * - Logged out on a customer/kitchen/admin page -> /sign-in/?redirect_to=<that page>
  * - Logged in but wrong role                    -> their own landing page
  *
- * This protects pages only. REST routes (Phase 2+) must still check a
+ * This protects pages only. REST routes (Phase 3+) must still check a
  * capability and a nonce themselves.
  *
  * @package Pazhamei

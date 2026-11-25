@@ -24,11 +24,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class PageList {
 
-	/** Phase names from the build plan, used in the starter text. */
+	/** Phase names from docs/build-plan.md, used in the starter text. */
 	private const PHASE_STOREFRONT = 'Phase 1 (Storefront)';
-	private const PHASE_CUSTOMER   = 'Phase 3 (Customer portal)';
-	private const PHASE_KITCHEN    = 'Phase 6 (Kitchen portal)';
-	private const PHASE_ADMIN      = 'Phase 7 (Admin portal)';
+	private const PHASE_CUSTOMER   = 'Phase 4 (Customer portal)';
+	private const PHASE_KITCHEN    = 'Phase 7 (Kitchen portal)';
+	private const PHASE_ADMIN      = 'Phase 8 (Admin portal)';
 
 	/**
 	 * All pages, parents listed before their children.

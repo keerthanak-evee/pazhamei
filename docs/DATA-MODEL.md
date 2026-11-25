@@ -1,9 +1,9 @@
 # Pazhamei data model
 
 Reference for every custom table and option. Update this file in the same commit as any table change (see `CLAUDE.md`).
-Source: `docs/build-plan.pdf`, Phase 2 "Tables". The WordPress prefix is shown as `wp_`.
+Source: `docs/build-plan.md`, Phase 3 "Tables". The WordPress prefix is shown as `wp_`.
 
-**Status:** all tables are **planned**. None exist yet. They arrive in Phase 2 (subscription engine) and are created by the installer with `dbDelta`.
+**Status:** all tables are **planned**. None exist yet. They arrive in Phase 3 (Subscription engine) and are created by the installer with `dbDelta`.
 
 ## Tables
 
