@@ -1,0 +1,29 @@
+# Repo root = LocalWP site's wp-content folder.
+# Ignore everything here except Pazhamei's own code and project files.
+/*
+
+!/.gitignore
+!/CLAUDE.md
+!/.claude/
+!/.github/
+!/docs/
+!/design/
+
+!/themes/
+/themes/*
+!/themes/pazhamei-theme/
+
+!/plugins/
+/plugins/*
+!/plugins/pazhamei-core/
+
+# Never commit these, even inside our folders
+node_modules/
+vendor/
+*.log
+.env
+*.sql
+*.zip
+.DS_Store
+Thumbs.db
+!/PHASE-0-PROMPT.md
