@@ -24,8 +24,11 @@ Full detail for each phase: `docs/build-plan.md`.
 - [ ] Site Editor checked by eye (header, footer and four menus open without block errors)
 - [x] Committed as `Phase 0: foundation`, tagged `phase-0-done`
 
-Open points from the plan's Phase 0:
-- [ ] `wp pz seed`: the plan asks for four test users (one per role); three exist now (no test administrator)
+Decisions:
+- [x] Test users: `wp pz seed` makes three (customer, kitchen, pz_admin). The fourth role, administrator, is the owner's own `WpAdmin` account; no test administrator is seeded.
+- The `phase-0-done` tag stays on the "Phase 0: foundation" commit; later fixes come after it.
+
+Later:
 - [ ] Customers, meals and menus in `wp pz seed` (added in later phases, once the tables exist)
 
 ## Phase 1: Storefront
@@ -36,5 +39,11 @@ Open points from the plan's Phase 0:
 ## Phase 6: Notifications
 ## Phase 7: Kitchen portal
 ## Phase 8: Admin portal
+
+Decision (Phase 0 review):
+- V1 admin is wp-admin screens plus a dashboard, used only by the owner as `administrator`.
+- wp-admin stays administrator-only; the lockdown is not relaxed for `pz_admin`.
+- `pz_admin` staff accounts are created only after the custom `/manage` portal exists.
+
 ## Phase 9: QA, security, performance
 ## Phase 10: Go-live

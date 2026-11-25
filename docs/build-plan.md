@@ -26,7 +26,7 @@ Five decisions shape everything else:
 | 5 | Actions and manual flows \[4\] | Every button wired; admin overrides | 4–6 |
 | 6 | Notifications (new) | Emails for each event | 2–3 |
 | 7 | Kitchen portal \[5\] | Dashboard, production sheet, allergen alerts | 3–5 |
-| 8 | Admin portal \[6\] | V1: wp-admin screens + dashboard; full custom portal after launch (+12–18 h) | 3–5 |
+| 8 | Admin portal \[6\] | V1: wp-admin screens + dashboard, used only by you as administrator; full custom portal after launch (+12–18 h) | 3–5 |
 | 9 | QA, security, performance (new) | Test suite, hardening, caching rules | 6–8 |
 | 10 | Go-live (new) | Live payments, real menu, soft launch | 2–3 |
 |  | **Total** |  | **52–76 hours** |
@@ -249,9 +249,9 @@ Phase 0 gives every later phase a working site, the shared header and footer, th
 - [ ] Roles and capabilities created on activation (`pz_kitchen`, `pz_admin`, `pz_*` capabilities).
 - [ ] Portal guard and `pz/portal-nav` block; four Navigation menus created.
 - [ ] Page installer: a WP-CLI command `wp pz install-pages` that creates every page in this plan with its slug, parent, portal setting and starting block content, but never overwrites a page you have edited.
-- [ ] Seed command `wp pz seed`: four test users (one per role) now; customers, meals and menus are added in later phases.
+- [ ] Seed command `wp pz seed`: three test users (customer, kitchen, pz_admin) now, plus your own administrator account as the fourth role; customers, meals and menus are added in later phases.
 
-**Done when:** you can sign in as each of the four test users, see the right menu in the same header, and get blocked from the other portals.
+**Done when:** you can sign in as each of the three test users and your own administrator account, see the right menu in the same header, and get blocked from the other portals.
 
 ## Phase 1 — Storefront (anonymous visitors)
 
