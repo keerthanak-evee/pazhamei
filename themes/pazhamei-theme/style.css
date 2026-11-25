@@ -1,0 +1,53 @@
+/*
+Theme Name: Pazhamei
+Theme URI: https://pazhameifuelmeals.in
+Description: Block theme for the Pazhamei cloud kitchen. Design only: colours, fonts, templates and template parts. All business logic lives in the pazhamei-core plugin.
+Version: 0.1.0
+Requires at least: 6.9
+Requires PHP: 8.1
+Author: Pazhamei
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: pazhamei-theme
+*/
+
+/* Most styling lives in theme.json. Only small extras that theme.json can't express go here. */
+
+/* Sticky header. The rule sits on the template-part wrapper (<header>), because a sticky
+   element only sticks within its parent. */
+.wp-site-blocks > header.wp-block-template-part {
+	position: sticky;
+	top: env(safe-area-inset-top, 0px);
+	z-index: 50;
+}
+
+/* Admin bar is shown only to administrators; push the sticky header below it. */
+.admin-bar .wp-site-blocks > header.wp-block-template-part {
+	top: 32px;
+}
+
+@media (max-width: 782px) {
+	.admin-bar .wp-site-blocks > header.wp-block-template-part {
+		top: 46px;
+	}
+}
+
+/* No gap between the page content and the footer. */
+.wp-site-blocks > footer.wp-block-template-part {
+	margin-block-start: 0;
+}
+
+/* Footer links: no underline until hover. */
+.pz-site-footer a {
+	text-decoration: none;
+}
+
+.pz-site-footer a:hover,
+.pz-site-footer a:focus-visible {
+	text-decoration: underline;
+}
+
+/* Footer link lists: no bullets. */
+.pz-plain-list {
+	list-style: none;
+}

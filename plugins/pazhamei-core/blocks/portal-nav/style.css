@@ -1,0 +1,14 @@
+/* Layout of the pz/portal-nav block: menu, then account buttons, wrapping on small screens. */
+.pz-portal-nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 0.75rem 1.5rem;
+}
+
+.pz-portal-nav__account {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}

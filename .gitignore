@@ -21,6 +21,7 @@
 node_modules/
 vendor/
 *.log
+.phpunit.result.cache
 .env
 *.sql
 *.zip
