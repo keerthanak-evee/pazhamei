@@ -21,7 +21,7 @@ Full detail for each phase: `docs/build-plan.md`.
 - [x] `docs/DATA-MODEL.md` (tables planned)
 - [x] WooCommerce: My Account = `/sign-in` (old `/my-account` trashed and redirected), shop/product → `/plans`, cart → `/checkout`, "Go to my dashboard" button on the order-received page, HPOS compatibility declared
 - [x] Done-when checks passed over HTTP for a visitor and all three test users
-- [ ] Site Editor checked by eye (header, footer and four menus open without block errors)
+- [x] Site Editor checked by eye (header, footer, four menus and the Portal dropdown open without block errors)
 - [x] Committed as `Phase 0: foundation`, tagged `phase-0-done`
 
 Decisions:
