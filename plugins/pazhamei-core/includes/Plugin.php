@@ -15,6 +15,8 @@ use Pazhamei\Access\LoginRedirect;
 use Pazhamei\Access\PortalGuard;
 use Pazhamei\Access\PortalMeta;
 use Pazhamei\Install\Installer;
+use Pazhamei\Rest\EnquiryController;
+use Pazhamei\Woo\HidePrices;
 use Pazhamei\Woo\OrderReceived;
 use Pazhamei\Woo\ShopRedirects;
 
@@ -31,13 +33,15 @@ final class Plugin {
 	 * Register hooks for every module.
 	 */
 	public static function boot(): void {
-		Installer::register();     // Upgrades roles/settings when PZ_VERSION changes.
+		Installer::register();     // Upgrades roles, settings and tables when PZ_VERSION changes.
 		PortalMeta::register();    // The `_pz_portal` page setting and its sidebar dropdown.
 		PortalGuard::register();   // Blocks portal pages for the wrong users.
 		LoginRedirect::register(); // Sends each role to its landing page after sign-in.
 		AdminLockdown::register(); // Only administrators get wp-admin and the admin bar.
 		ShopRedirects::register(); // /my-account, shop, product and cart pages go to our pages.
 		OrderReceived::register(); // "Go to my dashboard" button after payment.
+		HidePrices::register();    // No prices for visitors who are not signed in.
+		EnquiryController::register(); // REST routes for the storefront enquiry form.
 
 		add_action( 'init', array( self::class, 'register_blocks' ) );
 

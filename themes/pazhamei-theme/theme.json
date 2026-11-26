@@ -30,7 +30,15 @@
 				{ "slug": "forest", "name": "Forest", "color": "#614837" },
 				{ "slug": "forest-dark", "name": "Forest dark", "color": "#483326" },
 				{ "slug": "forest-light", "name": "Forest light", "color": "#78614E" },
-				{ "slug": "forest-soft", "name": "Forest soft", "color": "#F4EEE8" }
+				{ "slug": "forest-soft", "name": "Forest soft", "color": "#F4EEE8" },
+				{ "slug": "parchment", "name": "Parchment (warm sections)", "color": "#FBF3E2" },
+				{ "slug": "cream", "name": "Cream (cards)", "color": "#FFF8E9" },
+				{ "slug": "oxblood", "name": "Oxblood (headings)", "color": "#5B090B" },
+				{ "slug": "hero-maroon", "name": "Hero maroon", "color": "#470D0D" },
+				{ "slug": "brass", "name": "Brass", "color": "#D8AE69" },
+				{ "slug": "gold-light", "name": "Gold light", "color": "#F3D89A" },
+				{ "slug": "leaf", "name": "Banana leaf green", "color": "#273D23" },
+				{ "slug": "leaf-dark", "name": "Banana leaf dark", "color": "#152D20" }
 			]
 		},
 		"shadow": {
@@ -175,6 +183,14 @@
 			},
 			"core/separator": {
 				"color": { "text": "var(--wp--preset--color--sandstone)" }
+			},
+			"core/details": {
+				"border": { "bottom": { "color": "var(--wp--preset--color--sandstone)", "width": "1px", "style": "solid" } },
+				"spacing": { "padding": { "top": "var(--wp--preset--spacing--30)", "bottom": "var(--wp--preset--spacing--30)" } }
+			},
+			"core/quote": {
+				"border": { "left": { "color": "var(--wp--preset--color--brass)", "width": "2px", "style": "solid" } },
+				"typography": { "fontFamily": "var(--wp--preset--font-family--heading)", "fontStyle": "italic", "fontSize": "var(--wp--preset--font-size--large)" }
 			}
 		}
 	},

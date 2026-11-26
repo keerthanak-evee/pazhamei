@@ -2,15 +2,17 @@
 /**
  * Installer: sets up the plugin's data when it is activated or upgraded.
  *
- * Phase 0 creates the roles and the `pz_settings` option. Later phases will
- * add the wp_pz_* tables here (using dbDelta), which is why every change
- * must bump PZ_VERSION.
+ * It creates the roles, the `pz_settings` option and the wp_pz_* tables (with
+ * dbDelta, which adds missing tables and columns without touching data).
+ * Every schema change must bump PZ_VERSION: the check below then upgrades
+ * any site on its next page load, without deactivating the plugin.
  *
  * @package Pazhamei
  */
 
 namespace Pazhamei\Install;
 
+use Pazhamei\Repositories\EnquiryRepository;
 use Pazhamei\Settings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,10 +28,11 @@ final class Installer {
 	public const VERSION_OPTION = 'pz_version';
 
 	/**
-	 * Hook the upgrade check. Called from Plugin::boot().
+	 * Run the upgrade check. Called from Plugin::boot(), which runs on plugins_loaded,
+	 * so new tables exist before any other module needs them.
 	 */
 	public static function register(): void {
-		add_action( 'init', array( self::class, 'maybe_upgrade' ), 5 );
+		self::maybe_upgrade();
 	}
 
 	/**
@@ -63,10 +66,21 @@ final class Installer {
 	 */
 	private static function install(): void {
 		Roles::install();
+		self::install_tables();
 
 		// add_option() does nothing if the option already exists, so saved settings are never overwritten.
 		add_option( Settings::OPTION, Settings::defaults() );
 
 		update_option( self::VERSION_OPTION, PZ_VERSION );
+	}
+
+	/**
+	 * Create or upgrade every wp_pz_* table. dbDelta compares each CREATE TABLE
+	 * statement with the real table and only adds what is missing.
+	 */
+	private static function install_tables(): void {
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		dbDelta( EnquiryRepository::schema() );
 	}
 }

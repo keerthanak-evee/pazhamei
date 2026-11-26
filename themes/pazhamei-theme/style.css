@@ -2,7 +2,7 @@
 Theme Name: Pazhamei
 Theme URI: https://pazhameifuelmeals.in
 Description: Block theme for the Pazhamei cloud kitchen. Design only: colours, fonts, templates and template parts. All business logic lives in the pazhamei-core plugin.
-Version: 0.1.0
+Version: 0.2.0
 Requires at least: 6.9
 Requires PHP: 8.1
 Author: Pazhamei
@@ -50,4 +50,241 @@ Text Domain: pazhamei-theme
 /* Footer link lists: no bullets. */
 .pz-plain-list {
 	list-style: none;
+}
+
+/* ------------------------------------------------------------------
+   Block styles (picked in the editor's Styles panel; registered in functions.php)
+   ------------------------------------------------------------------ */
+
+/* Group: Paper card. Cream card with soft corners, used for plan and meal cards. */
+.wp-block-group.is-style-pz-paper-card {
+	background-color: var(--wp--preset--color--cream);
+	border: 1px solid var(--wp--preset--color--turmeric-light);
+	border-radius: 15px;
+	padding: 8px 8px var(--wp--preset--spacing--40);
+	box-shadow: var(--wp--preset--shadow--card);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.wp-block-group.is-style-pz-paper-card > .wp-block-image img {
+	border-radius: 9px;
+	width: 100%;
+	aspect-ratio: 2.25;
+	object-fit: cover;
+}
+
+.wp-block-group.is-style-pz-paper-card > :not(.wp-block-image) {
+	margin-inline: var(--wp--preset--spacing--30);
+}
+
+/* Buttons sit at the bottom of a card, so cards in a row line up. */
+.wp-block-group.is-style-pz-paper-card > .wp-block-buttons {
+	margin-top: auto;
+	padding-top: var(--wp--preset--spacing--30);
+}
+
+/* Group: Banana leaf. Deep green with the leaf texture, light text. */
+.wp-block-group.is-style-pz-banana-leaf {
+	background-color: var(--wp--preset--color--leaf);
+	background-image: linear-gradient(100deg, rgba(15, 36, 9, 0.85), rgba(16, 40, 6, 0.5)), url("assets/images/banana-leaf.webp");
+	background-size: cover, 120% 170%;
+	background-position: center;
+	color: #fff9e6;
+}
+
+.wp-block-group.is-style-pz-banana-leaf :where(h1, h2, h3, h4) {
+	color: #fff8e6;
+}
+
+.wp-block-group.is-style-pz-banana-leaf :where(h1, h2, h3) em {
+	color: var(--wp--preset--color--gold-light);
+}
+
+/* Group: Framed paper sheet. The "How the plans work" frame. */
+.wp-block-group.is-style-pz-journey-sheet {
+	--pz-frame: clamp(12px, 1.55vw, 25px);
+	color: #45271a;
+	background-color: #f7e6c3;
+	background-image: linear-gradient(110deg, #fff4dbad, #f7e6c3d9), url("assets/images/journey-paper.webp");
+	border: var(--pz-frame) solid #85461f;
+	border-image: url("assets/images/journey-frame.webp") 36 / var(--pz-frame) round;
+}
+
+/* Group: Heritage border on top. A thin repeating gold diamond border. */
+.wp-block-group.is-style-pz-heritage-top {
+	position: relative;
+}
+
+.wp-block-group.is-style-pz-heritage-top::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: 9px;
+	background: repeat-x center / 32px 9px url("assets/images/heritage-border.svg");
+	opacity: 0.75;
+}
+
+/* Image: Leaf corner. One large rounded corner, like the prototype's portraits. */
+.wp-block-image.is-style-pz-leaf-corner img {
+	border-radius: 12px 38px 12px 12px;
+}
+
+/* Image: Round seal. Circular image that blends into paper backgrounds. */
+.wp-block-image.is-style-pz-seal img {
+	border-radius: 50%;
+	aspect-ratio: 1;
+	object-fit: cover;
+	mix-blend-mode: multiply;
+}
+
+/* On dark bands, blending would darken the seal; give it a gold ring instead. */
+.is-style-pz-banana-leaf .wp-block-image.is-style-pz-seal img {
+	mix-blend-mode: normal;
+	border: 2px solid #cfb07a;
+	max-width: min(100%, 380px);
+}
+
+.is-style-pz-banana-leaf .wp-block-image.is-style-pz-seal {
+	text-align: center;
+}
+
+/* Button: Cream, for dark backgrounds (hero, banana leaf). */
+.wp-block-button.is-style-pz-cream .wp-block-button__link {
+	background-color: #fff1d0;
+	color: #4e170e;
+}
+
+.wp-block-button.is-style-pz-cream .wp-block-button__link:hover {
+	background-color: #fff7e4;
+}
+
+/* Button: Outline, for dark backgrounds. */
+.wp-block-button.is-style-pz-ghost-light .wp-block-button__link {
+	background-color: transparent;
+	color: #fff3df;
+	border: 1px solid #c8a57b;
+}
+
+.wp-block-button.is-style-pz-ghost-light .wp-block-button__link:hover {
+	background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Quote: Testimonial. */
+.wp-block-quote.is-style-pz-testimonial {
+	color: #492f1f;
+	padding-inline-start: clamp(14px, 2vw, 28px);
+}
+
+.wp-block-quote.is-style-pz-testimonial cite {
+	display: block;
+	margin-top: 0.5em;
+	font-family: var(--wp--preset--font-family--body);
+	font-style: normal;
+	font-size: var(--wp--preset--font-size--small);
+	color: #644d3f;
+}
+
+/* Columns: Journey steps. Centred steps joined by a dotted line on wide screens. */
+.wp-block-columns.is-style-pz-journey > .wp-block-column {
+	position: relative;
+	text-align: center;
+}
+
+.wp-block-columns.is-style-pz-journey .wp-block-image {
+	margin-inline: auto;
+	max-width: clamp(98px, 12vw, 171px);
+}
+
+@media (min-width: 782px) {
+	.wp-block-columns.is-style-pz-journey > .wp-block-column:not(:last-child)::after {
+		content: "";
+		position: absolute;
+		top: clamp(49px, 6vw, 85px);
+		left: calc(50% + clamp(54px, 6.5vw, 90px));
+		width: calc(100% - clamp(108px, 13vw, 180px) + var(--wp--style--block-gap, 2em));
+		height: 1px;
+		background: repeating-linear-gradient(90deg, #9a6b40 0 3px, transparent 3px 7px);
+		transform-origin: left;
+	}
+}
+
+/* ------------------------------------------------------------------
+   Section helpers
+   ------------------------------------------------------------------ */
+
+/* FAQ: Details blocks as a tidy accordion. */
+.wp-block-details summary {
+	cursor: pointer;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: var(--wp--preset--font-size--large);
+	font-weight: 700;
+	color: var(--wp--preset--color--maroon);
+}
+
+.wp-block-details > :not(summary) {
+	margin-top: var(--wp--preset--spacing--20);
+}
+
+/* Hero: on phones the photo sits on top and the text below it, with the fade running upwards. */
+@media (max-width: 781px) {
+	.wp-block-cover.pz-hero {
+		align-items: flex-end;
+		min-height: 560px !important; /* Overrides the desktop height set in the editor. */
+	}
+
+	.wp-block-cover.pz-hero .wp-block-cover__background {
+		background: linear-gradient(0deg, #470d0d 40%, rgba(71, 13, 13, 0.9) 52%, transparent 80%) !important;
+	}
+
+	.wp-block-cover.pz-hero .wp-block-cover__image-background {
+		height: 60%;
+		object-position: 50% 40% !important;
+	}
+}
+
+/* Cooking week: six day cards, three per row on phones. */
+.pz-day-card {
+	background: #f9ecd5;
+	border: 1px solid #decc9f;
+	border-radius: 13px;
+	box-shadow: 0 3px 6px #102c153b;
+	overflow: hidden;
+	text-align: center;
+	color: #3e2619;
+	height: 100%;
+}
+
+.pz-day-card img {
+	width: 100%;
+	aspect-ratio: 1.52;
+	object-fit: cover;
+}
+
+.pz-day-card p {
+	margin: 0;
+	padding-inline: 4px;
+}
+
+@media (max-width: 781px) {
+	.pz-day-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* Grid block sets a fixed column count. */
+	}
+}
+
+/* Five-part plate and three-part pillars: thin dividers between items. */
+.pz-divided > * + * {
+	border-left: 1px solid #d1bd9e;
+}
+
+@media (max-width: 781px) {
+	.pz-divided > * + * {
+		border-left: 0;
+	}
+}
+
+/* Full-width sections stacked on a page touch each other, with no gap between them. */
+.wp-block-post-content > .alignfull + .alignfull {
+	margin-block-start: 0;
 }

@@ -34,6 +34,41 @@ Later:
 - [ ] Customers, meals and menus in `wp pz seed` (added in later phases, once the tables exist)
 
 ## Phase 1: Storefront
+
+- [x] Home built from 11 theme patterns (`themes/pazhamei-theme/patterns/home-*.php`), all core blocks: hero, heritage strip, our vision, Veg / Non-Veg / Mixed, plans teaser, what's cooking, balance in every bite, how the plans work, testimonials, FAQ teaser, call to action
+- [x] Storefront photos compressed (WebP, max 1600 px) and imported to the Media Library by `wp pz install-pages`, tagged with `_pz_media_key`; decorative textures, paper, frame and border in the theme's `assets/images/`
+- [x] Prototype look rebuilt with `theme.json` colours and block styles only (Paper card, Banana leaf, Framed paper sheet, Heritage border, Leaf corner, Round seal, Cream / Outline buttons, Testimonial, Journey steps). Tailwind and the prototype stylesheets are not loaded anywhere
+- [x] Motion: `assets/css/motion.css` + `assets/js/motion.js` (IntersectionObserver) with classes `pz-reveal`, `pz-reveal-stagger`, `pz-hover-lift`, `pz-hover-zoom`, `pz-arrow`, `pz-hero`; all off with prefers-reduced-motion
+- [x] Block `pz/plan-cards` on `/plans`: Trial, 6-day, 26-day, what's included, Enquire → `/enquire?plan=<plan>`, no prices
+- [x] `/about-contact`, `/faq` (10 Details blocks), `/enquire`, and four policy drafts (`/terms`, `/privacy-policy`, `/refund-policy`, `/delivery-policy`), each policy marked "DRAFT – review before launch"
+- [x] WordPress's own privacy page (Settings > Privacy) reused as `/privacy-policy`: storefront portal, published, no duplicate
+- [x] Block `pz/enquiry-form` (Interactivity API): fresh nonce from `GET /pz/v1/enquiries/nonce`, `POST /pz/v1/enquiries`, honeypot `company_url`, 5 per 15 minutes per salted IP hash, admin email, thank-you message, `?plan=` pre-select
+- [x] Table `wp_pz_enquiries` (dbDelta), plugin 0.1.0 → 0.2.0, version check on `plugins_loaded`; documented in `docs/DATA-MODEL.md`
+- [x] Visitors never see prices: WooCommerce price HTML and product structured data `offers` removed for visitors (`Woo/HidePrices`)
+- [x] Page templates: title and content share one constrained layout, so they line up (`page.html`, `page-portal.html`)
+- [x] PHPUnit: enquiry validation, honeypot, rate limit, IP hashing, plan catalogue (92 tests)
+- [x] Checked in headless Chrome: every page opens in the editor with 0 invalid blocks; motion and reduced motion; plan pre-select; form submit; 375 px with no horizontal scroll
+
+Decisions and assumptions (owner approved the plan; low-intervention mode):
+- `design/Images/` committed as reference only; menu PDF and Tailwind removed by the owner.
+- Never load Tailwind, `heritage-storefront.css` or `pazhamei.css`; the look comes from `theme.json`, block styles and the motion files.
+- No prices anywhere for visitors, including the Home teaser and text taken from the prototype or menu.
+- The four extra prototype sections (heritage strip, our vision, what's cooking, balance) are kept as patterns alongside the seven requested ones.
+- The enquiry REST route has no capability check, because visitors have none. Nonce + honeypot + rate limit protect it. This is the one exception to "every route checks a capability".
+- Rate limiting counts every submission that passes the nonce check (valid, invalid or honeypot). Refused attempts aren't counted.
+- Enquiry email is optional; name, mobile, pincode and plan are required. Preferred start: after today, within 60 days, not a Sunday.
+- The Trial card shows on `/plans` even while `trial_enabled` is off, because it only leads to an enquiry. The Buy button (Phase 4) will respect the switch.
+- Testimonials are placeholders marked [EDIT]; real quotes need the customer's permission.
+- No map embed on About & Contact (no third-party embeds); a Google Maps link is an [EDIT] item.
+- Photos live in the Media Library, imported from `design/Images` on local. `design/` is never deployed, so staging and production get the photos with the content migration (Phase 2 / 10).
+- FluentSMTP was not set up yet. On local only, a "PHP mail()" connection with email logging was added so enquiry emails show in its log (LocalWP's Mailpit catches them). Real SMTP is set up in Phase 2.
+
+Later:
+- [ ] Replace every [EDIT] and review every DRAFT before Phase 10
+- [ ] FAQ structured data via the SEO plugin (build plan), when the SEO plugin is chosen
+- [ ] Trusted proxy header in `Services/ClientIp` once Hostinger's setup is known (Phase 2)
+- [ ] Sign-in / Register restyle (build plan table) was not in the Phase 1 prompt; still the WooCommerce form from Phase 0
+
 ## Phase 2: Deployment setup
 ## Phase 3: Subscription engine
 ## Phase 4: Customer portal

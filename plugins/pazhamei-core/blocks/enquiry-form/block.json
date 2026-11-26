@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/enquiry-form",
+	"version": "0.2.0",
+	"title": "Enquiry form",
+	"category": "widgets",
+	"icon": "email",
+	"description": "The storefront enquiry form. Saves to wp_pz_enquiries and emails the site admin.",
+	"keywords": [ "contact", "enquiry", "form" ],
+	"textdomain": "pazhamei-core",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"interactivity": true,
+		"align": [ "wide" ],
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"viewScriptModule": "file:./view.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

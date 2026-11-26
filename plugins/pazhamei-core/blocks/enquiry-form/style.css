@@ -1,0 +1,78 @@
+/* pz/enquiry-form */
+.pz-enquiry__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 0 var(--wp--preset--spacing--40, 1.25rem);
+}
+
+.pz-enquiry__field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: 0 0 var(--wp--preset--spacing--40, 1rem);
+}
+
+.pz-enquiry__field label {
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.pz-enquiry__field :is(input, select, textarea) {
+	font: inherit;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.6em 0.8em;
+	border: 1px solid var(--wp--preset--color--sandstone, #e2dad4);
+	border-radius: 8px;
+	background: #fff;
+	color: inherit;
+}
+
+.pz-enquiry__field :is(input, select, textarea):focus-visible {
+	outline: 2px solid var(--wp--preset--color--turmeric, #ab815f);
+	outline-offset: 1px;
+}
+
+.pz-enquiry__hint {
+	font-size: 0.8rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-enquiry__error,
+.pz-enquiry__alert {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--small);
+	color: #9b1c1c;
+}
+
+.pz-enquiry__alert {
+	margin-bottom: 1rem;
+	padding: 0.6em 0.9em;
+	background: #fdf0ee;
+	border-radius: 8px;
+}
+
+.pz-enquiry [hidden] {
+	display: none !important;
+}
+
+.pz-enquiry button[disabled] {
+	opacity: 0.7;
+	cursor: progress;
+}
+
+/* Honeypot: off screen, so people never see it. Not display:none, which some bots skip. */
+.pz-enquiry__hp {
+	position: absolute !important;
+	left: -10000px !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.pz-enquiry__thanks {
+	padding: var(--wp--preset--spacing--50, 2rem);
+	background: var(--wp--preset--color--cream, #fff8e9);
+	border: 1px solid var(--wp--preset--color--turmeric-light, #e9d9c8);
+	border-radius: 15px;
+}

@@ -1,0 +1,121 @@
+/*
+ * Pazhamei motion: small animations rebuilt from the storefront prototype.
+ *
+ * Add these classes to any block (Block settings > Advanced > Additional CSS class):
+ *   pz-reveal         Fades and rises into view when scrolled to.
+ *   pz-reveal-stagger Same, but each child block follows the one before it.
+ *   pz-hover-lift     Card lifts slightly on hover.
+ *   pz-hover-zoom     Image inside zooms slightly on hover.
+ *   pz-arrow          Button gets an arrow that nudges right on hover.
+ *   pz-hero           Hero cover: the photo settles into place on load.
+ *
+ * Nothing here runs when the visitor prefers reduced motion. Content is only ever
+ * hidden while html has the `pz-motion` class, which the theme adds in <head>
+ * only when motion is allowed and the browser supports IntersectionObserver.
+ */
+
+/* Arrow on buttons: shown for everyone; it only moves when motion is allowed. */
+.pz-arrow .wp-block-button__link::after,
+.wp-block-button.pz-arrow .wp-block-button__link::after {
+	content: "→";
+	display: inline-block;
+	margin-left: 0.5em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	/* Page fade-in (the prototype's .fade-in). */
+	.pz-motion .wp-site-blocks > main {
+		animation: pz-fade-in 0.28s ease-out both;
+	}
+
+	/* Scroll reveal. */
+	.pz-motion .pz-reveal,
+	.pz-motion .pz-reveal-stagger > * {
+		opacity: 0;
+		transform: translateY(14px);
+		transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+	}
+
+	.pz-motion .pz-reveal.is-visible,
+	.pz-motion .pz-reveal-stagger.is-visible > * {
+		opacity: 1;
+		transform: none;
+	}
+
+	.pz-motion .pz-reveal-stagger.is-visible > :nth-child(2) { transition-delay: 0.07s; }
+	.pz-motion .pz-reveal-stagger.is-visible > :nth-child(3) { transition-delay: 0.14s; }
+	.pz-motion .pz-reveal-stagger.is-visible > :nth-child(4) { transition-delay: 0.21s; }
+	.pz-motion .pz-reveal-stagger.is-visible > :nth-child(5) { transition-delay: 0.28s; }
+	.pz-motion .pz-reveal-stagger.is-visible > :nth-child(6) { transition-delay: 0.35s; }
+
+	/* Journey steps: the dotted line draws itself after the steps appear. */
+	.pz-motion .wp-block-columns.is-style-pz-journey > .wp-block-column:not(:last-child)::after {
+		transform: scaleX(0);
+		transition: transform 0.4s ease-out 0.3s;
+	}
+
+	.pz-motion .is-visible .wp-block-columns.is-style-pz-journey > .wp-block-column::after,
+	.pz-motion .wp-block-columns.is-style-pz-journey.is-visible > .wp-block-column::after {
+		transform: scaleX(1);
+	}
+
+	/* Hero photo settles in (the prototype's "unfold feast"). */
+	.pz-hero .wp-block-cover__image-background {
+		transform-origin: 75% 50%;
+		animation: pz-unfold 1.2s ease-out both;
+	}
+
+	/* Hover: lift. */
+	.pz-hover-lift {
+		transition: transform 0.25s ease, box-shadow 0.25s ease;
+	}
+
+	.pz-hover-lift:hover,
+	.pz-hover-lift:focus-within {
+		transform: translateY(-4px);
+		box-shadow: var(--wp--preset--shadow--heritage);
+	}
+
+	/* Hover: zoom the image, kept inside its frame. */
+	.pz-hover-zoom,
+	.pz-hover-zoom .wp-block-image {
+		overflow: hidden;
+	}
+
+	.pz-hover-zoom img {
+		transition: transform 0.5s ease;
+	}
+
+	.pz-hover-zoom:hover img {
+		transform: scale(1.025);
+	}
+
+	/* Hover: arrow nudge. */
+	.pz-arrow .wp-block-button__link::after {
+		transition: transform 0.2s ease;
+	}
+
+	.pz-arrow .wp-block-button__link:is(:hover, :focus-visible)::after {
+		transform: translateX(4px);
+	}
+}
+
+/* If the visitor switches reduced motion on while the page is open, show everything at once. */
+@media (prefers-reduced-motion: reduce) {
+	.pz-reveal,
+	.pz-reveal-stagger > * {
+		opacity: 1 !important;
+		transform: none !important;
+	}
+}
+
+@keyframes pz-fade-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes pz-unfold {
+	from { transform: scale(1.035); opacity: 0.75; }
+	to { transform: scale(1); opacity: 1; }
+}

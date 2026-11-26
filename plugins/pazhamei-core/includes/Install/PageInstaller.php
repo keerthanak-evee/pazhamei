@@ -47,7 +47,10 @@ final class PageInstaller {
 	 */
 	public function run(): array {
 		$this->ensure_pretty_permalinks();
+		$this->report = array_merge( $this->report, MediaImporter::run() ); // Photos first: the Home content uses them.
+		$this->prepare_privacy_page();
 		$this->install_pages();
+		$this->link_privacy_page();
 		$this->install_menus();
 		$this->set_front_page();
 		$this->set_woocommerce_account_page();
@@ -123,9 +126,10 @@ final class PageInstaller {
 		}
 
 		$current = self::normalise( $existing->post_content );
+		$fresh   = self::starter_content( $page );
 		foreach ( self::old_starter_contents( $page ) as $old ) {
-			if ( self::normalise( $old ) === $current ) {
-				$changes['post_content'] = self::starter_content( $page );
+			if ( self::normalise( $old ) === $current && self::normalise( $fresh ) !== $current ) {
+				$changes['post_content'] = $fresh;
 				break;
 			}
 		}
@@ -326,13 +330,80 @@ final class PageInstaller {
 	}
 
 	/**
-	 * Starter block content for a new page: one paragraph saying which phase fills it.
+	 * WordPress makes its own draft Privacy Policy page (the one in Settings > Privacy).
+	 * Use that page rather than making a second one: give it the slug `privacy-policy`,
+	 * the storefront portal, our draft text (only if it still has WordPress's sample
+	 * text), and publish it.
+	 */
+	private function prepare_privacy_page(): void {
+		$page = get_post( (int) get_option( 'wp_page_for_privacy_policy' ) );
+		if ( ! $page || 'page' !== $page->post_type || 'trash' === $page->post_status ) {
+			return; // No WordPress privacy page: install_pages() creates /privacy-policy/ and link_privacy_page() links it.
+		}
+
+		$changes = array();
+
+		if ( 'privacy-policy' !== $page->post_name || 0 !== (int) $page->post_parent ) {
+			$taken = get_page_by_path( 'privacy-policy', OBJECT, 'page' );
+			if ( $taken && (int) $taken->ID !== (int) $page->ID ) {
+				$this->note( 'warning', "The WordPress privacy page (ID {$page->ID}) can't take /privacy-policy/: page ID {$taken->ID} already uses it. Choose one in Settings > Privacy and delete the other." );
+				return;
+			}
+			$changes['post_name']   = 'privacy-policy';
+			$changes['post_parent'] = 0;
+		}
+
+		// WordPress's sample text always contains "Suggested text:". Replace only that.
+		if ( str_contains( $page->post_content, 'Suggested text:' ) ) {
+			$changes['post_content'] = (string) PolicyContent::for_path( 'privacy-policy' );
+		}
+
+		if ( 'publish' !== $page->post_status ) {
+			$changes['post_status'] = 'publish';
+		}
+		if ( 0 === (int) $page->post_author && self::first_admin_id() > 0 ) {
+			$changes['post_author'] = self::first_admin_id();
+		}
+
+		update_post_meta( $page->ID, PagePortal::META_KEY, Portals::STOREFRONT );
+
+		if ( $changes ) {
+			$result = wp_update_post( wp_slash( array( 'ID' => $page->ID ) + $changes ), true );
+			if ( is_wp_error( $result ) ) {
+				$this->note( 'warning', 'Could not update the privacy page: ' . $result->get_error_message() );
+				return;
+			}
+			$this->note( 'updated', "Privacy page (ID {$page->ID}): " . implode( ', ', array_keys( $changes ) ) . ' updated' );
+		}
+	}
+
+	/**
+	 * Make sure Settings > Privacy points at /privacy-policy/, and warn about duplicates.
+	 */
+	private function link_privacy_page(): void {
+		$page = get_page_by_path( 'privacy-policy', OBJECT, 'page' );
+		if ( $page && (int) get_option( 'wp_page_for_privacy_policy' ) !== (int) $page->ID ) {
+			update_option( 'wp_page_for_privacy_policy', (int) $page->ID );
+			$this->note( 'updated', "Settings > Privacy now points at /privacy-policy/ (ID {$page->ID})" );
+		}
+
+		foreach ( array( 'privacy-policy-2', 'privacy-policy-3' ) as $duplicate ) {
+			$extra = get_page_by_path( $duplicate, OBJECT, 'page' );
+			if ( $extra && 'trash' !== $extra->post_status ) {
+				$this->note( 'warning', "Duplicate privacy page /{$duplicate}/ (ID {$extra->ID}). Delete it in the editor." );
+			}
+		}
+	}
+
+	/**
+	 * Starter block content for a new page. Storefront pages get real content
+	 * (StorefrontContent); the others get one paragraph saying which phase fills them.
 	 * No heading: the page templates already show the page title.
 	 *
 	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string} $page Page row.
 	 */
 	private static function starter_content( array $page ): string {
-		return self::placeholder( $page, $page['phase'], false );
+		return StorefrontContent::for_path( self::path( $page ) ) ?? self::placeholder( $page, $page['phase'], false );
 	}
 
 	/**
@@ -351,7 +422,11 @@ final class PageInstaller {
 			Portals::ADMIN      => 'Phase 7 (Admin portal)',
 		);
 
-		return array( self::placeholder( $page, $old_phases[ $page['portal'] ], true ) );
+		return array(
+			self::placeholder( $page, $old_phases[ $page['portal'] ], true ),
+			// Version 0.1.x (Phase 0): one placeholder paragraph, replaced by real content in Phase 1.
+			self::placeholder( $page, $page['phase'], false ),
+		);
 	}
 
 	/**

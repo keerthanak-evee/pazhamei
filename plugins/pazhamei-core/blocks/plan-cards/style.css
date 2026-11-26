@@ -1,0 +1,58 @@
+/* pz/plan-cards: three cream cards in a row, one column on phones. */
+.pz-plan-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: clamp(12px, 1.6vw, 24px);
+}
+
+.pz-plan-card {
+	display: flex;
+	flex-direction: column;
+	padding: 8px;
+	background: var(--wp--preset--color--cream, #fff8e9);
+	border: 1px solid var(--wp--preset--color--turmeric-light, #e9d9c8);
+	border-radius: 15px;
+	box-shadow: var(--wp--preset--shadow--card);
+	overflow: hidden;
+}
+
+.pz-plan-card__image {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 2.25;
+	object-fit: cover;
+	border-radius: 9px;
+}
+
+.pz-plan-card__body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	padding: 15px 13px 10px;
+}
+
+.pz-plan-card__name {
+	margin: 0;
+	font-size: clamp(1.45rem, 2.2vw, 2rem);
+}
+
+.pz-plan-card__label {
+	margin: 0.3em 0 0;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 700;
+	color: var(--wp--preset--color--turmeric-gold, #916c4d);
+}
+
+.pz-plan-card__summary,
+.pz-plan-card__includes {
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.pz-plan-card__includes {
+	padding-left: 1.2em;
+	margin-bottom: 1em;
+}
+
+.pz-plan-card .wp-block-buttons {
+	margin-top: auto;
+}
