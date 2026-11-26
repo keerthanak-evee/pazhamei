@@ -255,12 +255,11 @@ Phase 0 gives every later phase a working site, the shared header and footer, th
 
 ## Phase 1 — Storefront (anonymous visitors)
 
-The storefront is six editable pages plus four legal pages, built from core blocks and theme patterns; only the plan cards and the enquiry form are custom blocks.
+The storefront is five editable pages plus four legal pages (the Sign in / Register restyle moved to Phase 4), built from core blocks and theme patterns; only the plan cards and the enquiry form are custom blocks.
 
 | Page | Slug | Built from | Notes |
 | --- | --- | --- | --- |
 | Home | `/` | Patterns made from your HTML homepage: hero, how it works, Veg / Non-Veg / Mixed, plans teaser, testimonials, FAQ teaser, call to action | Each section is a pattern of core blocks, so every heading, image and button is editable. Animations from the HTML are kept only if they work without breaking editing. |
-| Sign in / Register | `/sign-in` | WooCommerce account form, restyled | Register fields: name, email, mobile, password, delivery pincode. Includes "forgot password". After sign-in, each role goes to its own landing page. |
 | Plans | `/plans` | `pz/plan-cards` block | Shows Trial, 6-day and 26-day cards with what's included, no price. Button: **Enquire** (goes to `/enquire?plan=26-day`). Logged-in customers see the price and **Buy** instead. |
 | About & Contact | `/about-contact` | Core blocks + map embed | Story, kitchen address, phone, email, WhatsApp link, delivery areas, hours. |
 | FAQ | `/faq` | Core Details blocks (accordion) | Each question is one editable Details block; add FAQ structured data via the SEO plugin. |
@@ -280,6 +279,7 @@ Set up hosting, UAT and automatic deployment straight after the storefront, so e
 - [ ] Production `wp-config.php`: environment type `production`; WP-Cron's visit-triggered mode off; a server cron job in hPanel calling WordPress every 5 minutes. Page cache (LiteSpeed): off for signed-in users, and the portal pages, /sign-in, cart, checkout and REST calls are never cached.
 - [ ] Create UAT with Hostinger's staging tool (e.g. `uat.pazhamei.in`), then: password-protect it, hide it from search, set environment type `staging`, use Razorpay test keys, send all emails only to you, and switch off the lock and reminder jobs.
 - [ ] GitHub branches `uat` and `main`, plus a GitHub Actions workflow: push to `uat` copies the plugin and theme to UAT over SSH; merge to `main` copies them to production. SSH key and host are stored as GitHub secrets.
+- [ ] One-time content migration: copy local pages, menus and Media Library photos to production (and UAT) before any real customer exists. After that, content is edited on production directly.
 - [ ] After each deploy, the plugin's version check upgrades its own tables automatically; run `wp pz install-pages` once on each site.
 - [ ] Email: domain mailbox with SPF and DKIM, connected through FluentSMTP.
 - [ ] Backups: Hostinger daily backups, plus UpdraftPlus weekly to Google Drive. Restore one backup on UAT to prove it works.
@@ -412,6 +412,7 @@ The customer portal is eight editable pages under `/account`, each holding one o
 | Landing | `/account` | `pz/customer-welcome`, core blocks | Greeting, current pack in one line, tomorrow's meal and whether it is locked, shortcuts. New customers see "Start with a trial" or "Choose a plan". |
 | Meals & types | `/account/meals` | `pz/menu-week` | This week's fixed menu for Veg, Non-Veg and Mixed side by side, with photos, nutrition and allergens. Their own type is highlighted. |
 | Plans & buy | `/account/plans` | `pz/plan-cards` (price mode) | Trial (if enabled and eligible), 6-day and 26-day cards with price per meal type. **Buy** adds the plan to the cart and goes straight to checkout. |
+| Sign in / Register | `/sign-in` | WooCommerce account form, restyled | Register fields: name, email, mobile, password, delivery pincode. Includes "forgot password". After sign-in, each role goes to its own landing page. (Moved from Phase 1.) |
 | Checkout | `/checkout` | WooCommerce checkout | Extra fields: start date (date picker allows only valid days), delivery address and pincode check, allergen confirmation, accept terms. One plan per order. Pays through Razorpay. Guest checkout is off: only signed-in customers can buy. |
 | Dashboard | `/account/dashboard` | `pz/subscription-summary`, `pz/schedule-calendar` | Pack, meal type, meals left, start and end date, status. Calendar of upcoming days with **Skip / Undo skip** per day and **Pause / Resume** for the pack. Locked days show a lock icon and the reason. While a paid order is still waiting for Razorpay's confirmation, it shows 'Confirming your payment…' and refreshes itself every few seconds. |
 | Profile | `/account/profile` | `pz/profile-form` | Name, mobile, delivery address, dietary preference, allergens with severity, special instructions, password. Address and instruction changes apply from the next unlocked day. |

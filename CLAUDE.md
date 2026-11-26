@@ -5,7 +5,7 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
 ## Session start
 
 1. Read this file, `docs/PHASES.md`, and the current phase's section of `docs/build-plan.md`.
-2. Check that `git status` is clean and that `wp db check` works. If the database fails, ask the owner to start the site in LocalWP. Don't change `wp-config.php`.
+2. Check that `git status` is clean and that `wp db query "SELECT 1"` works (`wp db check` fails on LocalWP because of the MySQL port). If `wp db query` fails in Git Bash because the mysql path has a space, `wp option get siteurl` is enough to prove the database is up. If the database fails, ask the owner to start the site in LocalWP. Don't change `wp-config.php`.
 3. Record every decision the owner makes in `docs/PHASES.md`, under its phase.
 
 ## Phases

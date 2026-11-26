@@ -67,11 +67,14 @@ Later:
 - [ ] Replace every [EDIT] and review every DRAFT before Phase 10
 - [ ] FAQ structured data via the SEO plugin (build plan), when the SEO plugin is chosen
 - [ ] Trusted proxy header in `Services/ClientIp` once Hostinger's setup is known (Phase 2)
-- [ ] Sign-in / Register restyle (build plan table) was not in the Phase 1 prompt; still the WooCommerce form from Phase 0
+- Sign-in / Register restyle moved to Phase 4 (owner decision).
 
 ## Phase 2: Deployment setup
 ## Phase 3: Subscription engine
 ## Phase 4: Customer portal
+
+- [ ] Sign-in / Register restyle: WooCommerce account form with name, email, mobile, password, delivery pincode and "forgot password" (moved from Phase 1)
+
 ## Phase 5: Actions and manual flows
 ## Phase 6: Notifications
 ## Phase 7: Kitchen portal
