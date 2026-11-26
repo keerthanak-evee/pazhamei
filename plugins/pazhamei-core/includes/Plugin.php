@@ -11,6 +11,7 @@
 namespace Pazhamei;
 
 use Pazhamei\Access\AdminLockdown;
+use Pazhamei\Admin\EnquiriesPage;
 use Pazhamei\Access\LoginRedirect;
 use Pazhamei\Access\PortalGuard;
 use Pazhamei\Access\PortalMeta;
@@ -42,6 +43,7 @@ final class Plugin {
 		OrderReceived::register(); // "Go to my dashboard" button after payment.
 		HidePrices::register();    // No prices for visitors who are not signed in.
 		EnquiryController::register(); // REST routes for the storefront enquiry form.
+		EnquiriesPage::register();     // wp-admin: Pazhamei > Enquiries (administrators only).
 
 		add_action( 'init', array( self::class, 'register_blocks' ) );
 

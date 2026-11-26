@@ -93,6 +93,56 @@ final class EnquiryRepository {
 	}
 
 	/**
+	 * Enquiries, newest first, optionally only one status.
+	 *
+	 * @param string $status Status to show, or '' for all.
+	 * @param int    $limit  Rows per page.
+	 * @param int    $offset Rows to skip.
+	 * @return array<int, array<string, string|null>>
+	 */
+	public static function list( string $status, int $limit, int $offset ): array {
+		global $wpdb;
+		$table = self::table();
+
+		if ( '' === $status ) {
+			$sql = $wpdb->prepare( 'SELECT * FROM %i ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d', $table, $limit, $offset );
+		} else {
+			$sql = $wpdb->prepare( 'SELECT * FROM %i WHERE status = %s ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d', $table, $status, $limit, $offset );
+		}
+
+		return (array) $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Prepared above.
+	}
+
+	/**
+	 * How many enquiries have each status.
+	 *
+	 * @return array<string, int> Status => count.
+	 */
+	public static function count_by_status(): array {
+		global $wpdb;
+		$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT status, COUNT(*) AS total FROM %i GROUP BY status', self::table() ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
+		$counts = array();
+		foreach ( (array) $rows as $row ) {
+			$counts[ (string) $row['status'] ] = (int) $row['total'];
+		}
+		return $counts;
+	}
+
+	/**
+	 * Change one enquiry's status.
+	 *
+	 * @param int    $id     Enquiry ID.
+	 * @param string $status New status (already validated).
+	 * @return bool Whether a row was found.
+	 */
+	public static function update_status( int $id, string $status ): bool {
+		global $wpdb;
+		$result = $wpdb->update( self::table(), array( 'status' => $status ), array( 'id' => $id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		return false !== $result;
+	}
+
+	/**
 	 * Number of saved enquiries (used by checks and, later, the admin dashboard).
 	 */
 	public static function count(): int {

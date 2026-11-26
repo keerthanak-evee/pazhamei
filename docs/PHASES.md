@@ -49,6 +49,8 @@ Later:
 - [x] PHPUnit: enquiry validation, honeypot, rate limit, IP hashing, plan catalogue (92 tests)
 - [x] Checked in headless Chrome: every page opens in the editor with 0 invalid blocks; motion and reduced motion; plan pre-select; form submit; 375 px with no horizontal scroll
 
+- [x] Follow-up: wp-admin screen Pazhamei → Enquiries (administrators only): newest first, filter by status, change status (new, contacted, converted, closed); otherwise read-only. Test for the permission rule (`EnquiryStatus::can_manage`)
+
 Decisions and assumptions (owner approved the plan; low-intervention mode):
 - `design/Images/` committed as reference only; menu PDF and Tailwind removed by the owner.
 - Never load Tailwind, `heritage-storefront.css` or `pazhamei.css`; the look comes from `theme.json`, block styles and the motion files.
