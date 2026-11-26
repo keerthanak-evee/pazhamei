@@ -133,7 +133,7 @@ Use ready plugins for payment, email, security and backups; build only the subsc
 | Backups | UpdraftPlus (free) | Daily database, weekly files, stored off-server (Google Drive). |
 | SEO (storefront only) | Yoast SEO or Rank Math | Set portal pages to noindex. |
 | Activity log | Simple History (free) | Logins, page edits, plugin changes; your own `pz_change_log` covers subscription changes. |
-| Caching | Your host's cache or LiteSpeed Cache | Exclude `/account/*`, `/kitchen/*`, `/manage/*`, cart, checkout and REST calls from page cache. |
+| Caching | Your host's cache or LiteSpeed Cache | Exclude `/account/*`, `/kitchen/*`, `/manage/*`, cart, checkout and REST calls from page cache, and never serve cached pages to signed-in users (the header changes once someone signs in). |
 
 **What not to install**
 
@@ -277,7 +277,7 @@ Set up hosting, UAT and automatic deployment straight after the storefront, so e
 
 - [ ] Buy Hostinger **Unlimited** (the old Business plan), 48-month term, Mumbai data centre. Confirm it lists staging and SSH before paying.
 - [ ] Point the domain, turn on SSL, install WordPress and the same plugins as LocalWP.
-- [ ] Production `wp-config.php`: environment type `production`; WP-Cron's visit-triggered mode off; a server cron job in hPanel calling WordPress every 5 minutes.
+- [ ] Production `wp-config.php`: environment type `production`; WP-Cron's visit-triggered mode off; a server cron job in hPanel calling WordPress every 5 minutes. Page cache (LiteSpeed): off for signed-in users, and the portal pages, /sign-in, cart, checkout and REST calls are never cached.
 - [ ] Create UAT with Hostinger's staging tool (e.g. `uat.pazhamei.in`), then: password-protect it, hide it from search, set environment type `staging`, use Razorpay test keys, send all emails only to you, and switch off the lock and reminder jobs.
 - [ ] GitHub branches `uat` and `main`, plus a GitHub Actions workflow: push to `uat` copies the plugin and theme to UAT over SSH; merge to `main` copies them to production. SSH key and host are stored as GitHub secrets.
 - [ ] After each deploy, the plugin's version check upgrades its own tables automatically; run `wp pz install-pages` once on each site.
@@ -303,7 +303,7 @@ The engine treats every purchase as a pack of N meals and lays those meals onto 
 7. **Pause:** from an unlocked date, either until a chosen date or until the customer presses Resume. Paused days move to the end of the plan.
 8. **Extension:** the end date is always the date of the pack's last scheduled meal, so skips, pauses and holidays extend it automatically.
 9. **Renewal:** buying while a pack is active creates a **queued** pack that starts the next service day after the current pack ends, and moves if that end date moves.
-10. **Trial:** sold only when the admin switch is on, once per customer (checked by account, mobile number and address).
+10. **Trial:** sold only when the admin switch is on, once per customer. Checked by account; by mobile number, compared on its last 10 digits only, so +91 or a leading 0 makes no difference; and by address, compared on pincode plus house or flat number with punctuation and filler words ("no", "flat", "door") removed.
 11. **Daily orders** are created only at the cutoff for the next day, from locked schedule rows. Skipped, paused, cancelled and completed days never become orders.
 
 ### How reflow() works
@@ -401,7 +401,7 @@ Use Action Scheduler (bundled with WooCommerce), triggered by a real server cron
 3. It inserts the pack (skipped if `order_item_id` already exists, so a repeated webhook does nothing), runs `reflow()`, logs the change and sends the welcome email.
 4. A refunded or cancelled order cancels the pack: unlocked days are removed and `reflow()` runs again.
 
-**Done when:** PHPUnit tests pass for every rule above, including Sunday and holiday skipping, the 19:59 versus 20:01 cutoff, skip-then-undo, pause-then-resume, renewal queued behind a paused pack, and a repeated payment webhook.
+**Done when:** PHPUnit tests pass for every rule above, including Sunday and holiday skipping, the 19:59 versus 20:01 cutoff, skip-then-undo, pause-then-resume, renewal queued behind a paused pack, a repeated payment webhook, and a second trial attempt using a reformatted mobile number or address.
 
 ## Phase 4 — Customer portal (your Phase 2)
 
@@ -412,8 +412,8 @@ The customer portal is eight editable pages under `/account`, each holding one o
 | Landing | `/account` | `pz/customer-welcome`, core blocks | Greeting, current pack in one line, tomorrow's meal and whether it is locked, shortcuts. New customers see "Start with a trial" or "Choose a plan". |
 | Meals & types | `/account/meals` | `pz/menu-week` | This week's fixed menu for Veg, Non-Veg and Mixed side by side, with photos, nutrition and allergens. Their own type is highlighted. |
 | Plans & buy | `/account/plans` | `pz/plan-cards` (price mode) | Trial (if enabled and eligible), 6-day and 26-day cards with price per meal type. **Buy** adds the plan to the cart and goes straight to checkout. |
-| Checkout | `/checkout` | WooCommerce checkout | Extra fields: start date (date picker allows only valid days), delivery address and pincode check, allergen confirmation, accept terms. One plan per order. Pays through Razorpay. |
-| Dashboard | `/account/dashboard` | `pz/subscription-summary`, `pz/schedule-calendar` | Pack, meal type, meals left, start and end date, status. Calendar of upcoming days with **Skip / Undo skip** per day and **Pause / Resume** for the pack. Locked days show a lock icon and the reason. |
+| Checkout | `/checkout` | WooCommerce checkout | Extra fields: start date (date picker allows only valid days), delivery address and pincode check, allergen confirmation, accept terms. One plan per order. Pays through Razorpay. Guest checkout is off: only signed-in customers can buy. |
+| Dashboard | `/account/dashboard` | `pz/subscription-summary`, `pz/schedule-calendar` | Pack, meal type, meals left, start and end date, status. Calendar of upcoming days with **Skip / Undo skip** per day and **Pause / Resume** for the pack. Locked days show a lock icon and the reason. While a paid order is still waiting for Razorpay's confirmation, it shows 'Confirming your payment…' and refreshes itself every few seconds. |
 | Profile | `/account/profile` | `pz/profile-form` | Name, mobile, delivery address, dietary preference, allergens with severity, special instructions, password. Address and instruction changes apply from the next unlocked day. |
 | Support | `/account/support` | `pz/support-tickets` | Raise a ticket (topic, message, optional date), see replies and status. |
 | History | `/account/history` | `pz/order-history` | Past packs, delivered days, payments and invoices (links to WooCommerce order pages). |

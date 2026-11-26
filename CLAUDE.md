@@ -94,7 +94,7 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
 7. **Pause:** from an unlocked date, either until a chosen date or until Resume. Paused days move to the end of the plan.
 8. **End date:** always the date of the pack's last scheduled meal. It is recalculated only by `reflow()`.
 9. **Renewal:** buying while a pack is active creates a `queued` pack. It starts on the next service day after the current pack ends.
-10. **Trial:** sold only when the admin switch is on, and once per customer (checked by account, mobile number and address).
+10. **Trial:** sold only when the admin switch is on, and once per customer. Checked by account; by mobile number, compared on its last 10 digits only, so +91 or a leading 0 makes no difference; and by address, compared on pincode plus house or flat number with punctuation and filler words ("no", "flat", "door") removed.
 11. **Daily orders:** created only by the 20:00 lock job, for the next day, from locked schedule rows. The job must be safe to rerun.
 12. **Reflow:** skip, pause, resume, holidays, renewals, cancellations and admin changes never edit dates directly. They record the change, then call `reflow()` for that customer inside a transaction.
 
