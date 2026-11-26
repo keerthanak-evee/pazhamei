@@ -176,7 +176,7 @@
 				}
 			},
 			"core/navigation": {
-				"typography": { "fontSize": "var(--wp--preset--font-size--small)", "fontWeight": "600" },
+				"typography": { "fontFamily": "var(--wp--preset--font-family--heading)", "fontSize": "1.05rem", "fontWeight": "700" },
 				"elements": {
 					"link": { "typography": { "textDecoration": "none" } }
 				}

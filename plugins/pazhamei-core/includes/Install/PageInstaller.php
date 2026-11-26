@@ -33,6 +33,9 @@ final class PageInstaller {
 	/** Template used by customer, kitchen and admin pages. */
 	private const PORTAL_TEMPLATE = 'page-portal';
 
+	/** Page meta: fingerprint of the starter content this installer last wrote (see tidy_existing_page()). */
+	private const STARTER_HASH_META = '_pz_starter_hash';
+
 	/**
 	 * Lines describing what happened: array( 'type' => 'created|exists|updated|warning', 'text' => '...' ).
 	 *
@@ -94,7 +97,10 @@ final class PageInstaller {
 					'post_parent'   => $parent_id,
 					'post_content'  => self::starter_content( $page ),
 					'page_template' => $is_portal ? self::PORTAL_TEMPLATE : '',
-					'meta_input'    => array( PagePortal::META_KEY => $page['portal'] ),
+					'meta_input'    => array(
+						PagePortal::META_KEY    => $page['portal'],
+						self::STARTER_HASH_META => self::fingerprint( self::starter_content( $page ) ),
+					),
 				),
 				true
 			);
@@ -127,10 +133,22 @@ final class PageInstaller {
 
 		$current = self::normalise( $existing->post_content );
 		$fresh   = self::starter_content( $page );
-		foreach ( self::old_starter_contents( $page ) as $old ) {
-			if ( self::normalise( $old ) === $current && self::normalise( $fresh ) !== $current ) {
-				$changes['post_content'] = $fresh;
-				break;
+		$stored  = (string) get_post_meta( $existing->ID, self::STARTER_HASH_META, true );
+
+		if ( self::normalise( $fresh ) === $current ) {
+			// Already up to date: just remember the fingerprint, so a later version can refresh it.
+			if ( $stored !== self::fingerprint( $fresh ) ) {
+				update_post_meta( $existing->ID, self::STARTER_HASH_META, self::fingerprint( $fresh ) );
+			}
+		} elseif ( '' !== $stored && $stored === self::fingerprint( $existing->post_content ) ) {
+			// Still exactly what an older installer wrote (nobody edited it): refresh it.
+			$changes['post_content'] = $fresh;
+		} else {
+			foreach ( self::old_starter_contents( $page ) as $old ) {
+				if ( self::normalise( $old ) === $current ) {
+					$changes['post_content'] = $fresh;
+					break;
+				}
 			}
 		}
 
@@ -144,13 +162,16 @@ final class PageInstaller {
 			$this->note( 'warning', "Could not update /{$path}/: " . $result->get_error_message() );
 			return;
 		}
+		if ( isset( $changes['post_content'] ) ) {
+			update_post_meta( $existing->ID, self::STARTER_HASH_META, self::fingerprint( $changes['post_content'] ) );
+		}
 
 		$what = array();
 		if ( isset( $changes['post_author'] ) ) {
 			$what[] = 'author set to the first administrator';
 		}
 		if ( isset( $changes['post_content'] ) ) {
-			$what[] = 'placeholder text refreshed';
+			$what[] = 'starter content refreshed (it was never edited)';
 		}
 		$this->note( 'updated', "Page /{$path}/: " . implode( ', ', $what ) );
 	}
@@ -170,6 +191,15 @@ final class PageInstaller {
 		);
 
 		return $ids ? (int) $ids[0] : 0;
+	}
+
+	/**
+	 * Fingerprint of page content, used to tell whether anyone has edited it since the installer wrote it.
+	 *
+	 * @param string $content Post content.
+	 */
+	private static function fingerprint( string $content ): string {
+		return md5( self::normalise( $content ) );
 	}
 
 	/**

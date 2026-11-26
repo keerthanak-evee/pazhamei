@@ -20,6 +20,7 @@ function pz_theme_enqueue_assets() {
 	$version = wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_style( 'pazhamei-theme', get_stylesheet_uri(), array(), $version );
+	wp_enqueue_style( 'pazhamei-ornaments', get_theme_file_uri( 'assets/css/ornaments.css' ), array( 'pazhamei-theme' ), $version );
 	wp_enqueue_style( 'pazhamei-motion', get_theme_file_uri( 'assets/css/motion.css' ), array( 'pazhamei-theme' ), $version );
 	wp_enqueue_script(
 		'pazhamei-motion',
@@ -46,10 +47,10 @@ function pz_theme_motion_flag() {
 add_action( 'wp_head', 'pz_theme_motion_flag', 1 );
 
 /**
- * Let the block editor use the same styles as the front end (but not the motion: nothing hides in the editor).
+ * Let the block editor use the same styles and ornaments as the front end (but not the motion: nothing hides in the editor).
  */
 function pz_theme_editor_styles() {
-	add_editor_style( 'style.css' );
+	add_editor_style( array( 'style.css', 'assets/css/ornaments.css' ) );
 }
 add_action( 'after_setup_theme', 'pz_theme_editor_styles' );
 
@@ -84,8 +85,11 @@ function pz_theme_block_styles() {
 		'core/quote'   => array(
 			'pz-testimonial' => __( 'Testimonial', 'pazhamei-theme' ),
 		),
-		'core/columns' => array(
+		'core/columns'   => array(
 			'pz-journey' => __( 'Journey steps (dotted line)', 'pazhamei-theme' ),
+		),
+		'core/separator' => array(
+			'pz-leaf' => __( 'Leaf divider', 'pazhamei-theme' ),
 		),
 	);
 

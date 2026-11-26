@@ -15,8 +15,8 @@ $pz_types = array(
 	array( 'meal-mixed', 'Mixed', 'A menu of its own, bringing vegetarian and non-vegetarian dishes through the week.' ),
 );
 ?>
-<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"}}},"backgroundColor":"kora","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull has-kora-background-color has-background" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--70)"><!-- wp:heading {"textAlign":"center","textColor":"oxblood"} -->
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"backgroundColor":"kora","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull has-kora-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)"><!-- wp:heading {"textAlign":"center","textColor":"oxblood"} -->
 <h2 class="wp-block-heading has-text-align-center has-oxblood-color has-text-color">Veg, Non-Veg or Mixed</h2>
 <!-- /wp:heading -->
 

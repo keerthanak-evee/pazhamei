@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 96" fill="none" stroke="#e2bfae" stroke-width="1.6" stroke-linecap="round"><!-- Kolam: a 3x3 dot grid turned 45 degrees, looped around (decorative). -->
+<g fill="#e2bfae" stroke="none"><circle cx="40" cy="20" r="2"/><circle cx="28" cy="34" r="2"/><circle cx="52" cy="34" r="2"/><circle cx="16" cy="48" r="2"/><circle cx="40" cy="48" r="2.6"/><circle cx="64" cy="48" r="2"/><circle cx="28" cy="62" r="2"/><circle cx="52" cy="62" r="2"/><circle cx="40" cy="76" r="2"/></g>
+<path d="M40 8 52 20 40 32 28 20Z"/><path d="M40 64 52 76 40 88 28 76Z"/><path d="M4 48 16 36 28 48 16 60Z"/><path d="M52 48 64 36 76 48 64 60Z"/>
+<path d="M40 34c8 0 8 14 0 14s-8 14 0 14"/><path d="M40 34c-8 0-8 14 0 14s8 14 0 14"/>
+<circle cx="28" cy="34" r="7"/><circle cx="52" cy="34" r="7"/><circle cx="28" cy="62" r="7"/><circle cx="52" cy="62" r="7"/>
+<path d="M40 2v4M40 90v4M0 48h2M78 48h2"/></svg>

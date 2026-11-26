@@ -2,7 +2,7 @@
 Theme Name: Pazhamei
 Theme URI: https://pazhameifuelmeals.in
 Description: Block theme for the Pazhamei cloud kitchen. Design only: colours, fonts, templates and template parts. All business logic lives in the pazhamei-core plugin.
-Version: 0.2.0
+Version: 0.3.0
 Requires at least: 6.9
 Requires PHP: 8.1
 Author: Pazhamei
@@ -286,5 +286,10 @@ Text Domain: pazhamei-theme
 
 /* Full-width sections stacked on a page touch each other, with no gap between them. */
 .wp-block-post-content > .alignfull + .alignfull {
+	margin-block-start: 0;
+}
+
+/* No gap between the header and the page: the hero (or the page's own top padding) starts right under it. */
+.wp-site-blocks > header.wp-block-template-part + main {
 	margin-block-start: 0;
 }

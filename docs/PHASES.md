@@ -51,6 +51,17 @@ Later:
 
 - [x] Follow-up: wp-admin screen Pazhamei → Enquiries (administrators only): newest first, filter by status, change status (new, contacted, converted, closed); otherwise read-only. Test for the permission rule (`EnquiryStatus::can_manage`)
 
+- [x] Follow-up: Home matched to the prototype (`design/homepage.html`) and reference image: carved pillar and kolam on the hero, wave and lace on the trust strip with illustrated icons, temple sketch, leaf dividers, kolam corners on the header and the cooking band, oxblood meal-plans band with flourished heading, gold chips, tick lists and oxblood buttons, icons on the vision pillars and the five plate parts, diamonds on the journey line, oxblood footer with a diamond border, serif menu on a cream header, tighter section spacing, phone layouts for the strip and the journey. Ornaments live in `themes/pazhamei-theme/assets/css/ornaments.css` (CSS classes, so pages stay editable). Before/after screenshots in `design/compare/`.
+- [x] Installer: storefront pages remember a fingerprint of the starter content they were given (`_pz_starter_hash`), so `wp pz install-pages` can refresh a page that nobody has edited when its patterns change. Edited pages are never touched.
+
+[REPLACE] ornaments cropped from `design/Images/ProtypeReferenceImage.jpg` (720 x 1280, enlarged 4x). Send higher-quality originals (transparent PNG or SVG) and drop them in with the same names in `themes/pazhamei-theme/assets/images/ornaments/`:
+- [ ] [REPLACE] `hero-pillar.webp`: carved wooden pillar (hero, left edge)
+- [ ] [REPLACE] `icon-temple.webp`, `icon-pot.webp`, `icon-scooter.webp`: trust-strip icons
+- [ ] [REPLACE] `temple-sketch.webp`: sepia temple tower, palms and village house ("More than a meal")
+- [ ] [REPLACE] `icon-roots.webp`, `icon-ingredients.webp`, `icon-philosophy.webp`: vision pillar icons
+- [ ] [REPLACE] `icon-grains.webp`, `icon-protein.webp`, `icon-vegetables.webp`, `icon-gravy.webp`, `icon-finish.webp`: plate-part icons
+- Redrawn as SVG (sharp at any size; replace only if you want the exact artwork): `kolam-motif.svg`, `kolam-corner.svg`, `kolam-corner-light.svg`, `kolam-lace.svg`, `leaf-divider.svg`, `hero-wave.svg`, `flourish.svg`
+
 Decisions and assumptions (owner approved the plan; low-intervention mode):
 - `design/Images/` committed as reference only; menu PDF and Tailwind removed by the owner.
 - Never load Tailwind, `heritage-storefront.css` or `pazhamei.css`; the look comes from `theme.json`, block styles and the motion files.

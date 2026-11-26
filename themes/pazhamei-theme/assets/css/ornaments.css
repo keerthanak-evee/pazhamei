@@ -1,0 +1,411 @@
+/*
+ * Pazhamei ornaments: the prototype's decorative details, rebuilt as CSS.
+ *
+ * Every ornament is a CSS background on a class, so blocks stay editable and the
+ * ornaments are invisible to screen readers. Add or remove a class in the editor
+ * (Block settings > Advanced > Additional CSS class) to add or remove an ornament.
+ *
+ *   pz-hero              Hero cover: carved pillar and kolam on the left (wide screens only).
+ *   pz-trust-strip       Cream strip under the hero: soft wave on top, lace at the ends.
+ *   pz-icon-<name>       Small illustrated icon before a paragraph or above a heading/group.
+ *                        Names: temple, pot, scooter, roots, ingredients, philosophy,
+ *                        grains, protein, vegetables, gravy, finish.
+ *   pz-temple-sketch     Faded temple-and-palms sketch at the right of a heading.
+ *   pz-flourish          Fine gold line with a diamond on both sides of a heading.
+ *   pz-chip              Small gold pill label (plan duration).
+ *   pz-checklist         List with round tick bullets.
+ *   pz-plans-band        Oxblood band for the meal plans.
+ *   pz-kolam-left        Light kolam in the left corner of a dark band.
+ *   pz-button-oxblood    Dark oxblood button (on cream cards).
+ * Block style "Leaf divider" (core/separator): thin gold line with a curry leaf.
+ * The header gets kolam corners and the footer a diamond border automatically.
+ *
+ * Raster ornaments are cropped from the reference image and marked [REPLACE] in PHASES.md.
+ */
+
+/* ---------- Header: cream bar with kolam corners ---------- */
+.pz-site-header {
+	position: relative;
+	overflow: hidden;
+}
+
+.pz-site-header::before,
+.pz-site-header::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	width: 64px;
+	height: 64px;
+	background: url("../images/ornaments/kolam-corner.svg") no-repeat left top / contain;
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+.pz-site-header::before {
+	left: 0;
+}
+
+.pz-site-header::after {
+	right: 0;
+	transform: scaleX(-1); /* Mirror of the left corner. */
+}
+
+/* ---------- Footer: diamond border along the bottom ---------- */
+.pz-site-footer {
+	position: relative;
+}
+
+.pz-site-footer::after {
+	content: "";
+	position: absolute;
+	inset: auto 0 0;
+	height: 9px;
+	background: repeat-x center / 32px 9px url("../images/heritage-border.svg");
+	opacity: 0.85;
+}
+
+/* ---------- Hero: pillar, kolam, buttons ---------- */
+.wp-block-cover.pz-hero {
+	overflow: hidden;
+}
+
+.wp-block-cover.pz-hero::before,
+.wp-block-cover.pz-hero::after {
+	content: "";
+	position: absolute;
+	z-index: 2;
+	pointer-events: none;
+}
+
+/* The carved pillar runs the full height of the hero, on the left edge. */
+.wp-block-cover.pz-hero::before {
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: clamp(34px, 4.6vw, 82px);
+	background: url("../images/ornaments/hero-pillar.webp") no-repeat center top / cover;
+	box-shadow: 6px 0 18px rgba(0, 0, 0, 0.35);
+}
+
+/* The kolam sits beside the pillar, low on the left. */
+.wp-block-cover.pz-hero::after {
+	left: calc(clamp(34px, 4.6vw, 82px) + 10px);
+	top: 58%;
+	width: clamp(34px, 3.4vw, 52px);
+	aspect-ratio: 80 / 96;
+	background: url("../images/ornaments/kolam-motif.svg") no-repeat center / contain;
+	opacity: 0.75;
+}
+
+/* Keep the hero text clear of the pillar and kolam. */
+@media (min-width: 782px) {
+	.wp-block-cover.pz-hero .wp-block-cover__inner-container {
+		padding-left: clamp(0px, calc(9vw - 60px), 60px);
+	}
+}
+
+/* Phones and small tablets: no pillar or kolam, so they never squeeze the text. */
+@media (max-width: 781px) {
+	.wp-block-cover.pz-hero::before,
+	.wp-block-cover.pz-hero::after {
+		display: none;
+	}
+}
+
+/* Hero buttons: slightly rounded rectangles, as in the prototype. */
+.pz-hero .wp-block-button__link {
+	border-radius: 7px;
+	font-size: 0.875rem;
+	font-weight: 650;
+	padding: 0.8em 1.3em;
+}
+
+/* ---------- Leaf divider (core/separator block style) ---------- */
+hr.wp-block-separator.is-style-pz-leaf {
+	border: 0;
+	height: 14px;
+	width: 120px;
+	max-width: 120px;
+	margin-left: 0;
+	background: url("../images/ornaments/leaf-divider.svg") no-repeat left center / contain !important;
+	opacity: 1;
+}
+
+.has-text-align-center + hr.wp-block-separator.is-style-pz-leaf,
+hr.wp-block-separator.is-style-pz-leaf.aligncenter {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* ---------- Trust strip under the hero ---------- */
+.pz-trust-strip {
+	position: relative;
+	overflow: visible !important;
+}
+
+/* Soft cream wave over the bottom edge of the hero. */
+.pz-trust-strip::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: -26px;
+	height: 28px;
+	background: url("../images/ornaments/hero-wave.svg") no-repeat center bottom / 100% 100%;
+	pointer-events: none;
+	z-index: 3;
+}
+
+/* Lace at both ends of the strip. */
+.pz-trust-strip::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		url("../images/ornaments/kolam-lace.svg") no-repeat left 6px center / 120px 28px,
+		url("../images/ornaments/kolam-lace.svg") no-repeat right 6px center / 120px 28px;
+	opacity: 0.8;
+	pointer-events: none;
+}
+
+.pz-trust-strip p {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+	font-weight: 700;
+	line-height: 1.2;
+	color: #452620;
+}
+
+@media (min-width: 782px) {
+	.pz-trust-strip .pz-trust-items > * + * {
+		border-left: 1px solid #decaab;
+		padding-left: clamp(16px, 3vw, 48px);
+	}
+}
+
+/* Phones: the three promises side by side, icon above the words, thin dividers. */
+@media (max-width: 781px) {
+	.pz-trust-strip .pz-trust-items {
+		display: grid !important;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0 !important;
+	}
+
+	.pz-trust-strip .pz-trust-items > p {
+		flex-direction: column;
+		gap: 4px;
+		padding: 0 6px;
+		text-align: center;
+		font-size: 0.85rem;
+	}
+
+	.pz-trust-strip .pz-trust-items > * + * {
+		border-left: 1px solid #decaab;
+	}
+}
+
+@media (max-width: 1100px) {
+	.pz-trust-strip::after {
+		display: none; /* Not enough room for the lace beside the items. */
+	}
+}
+
+/* ---------- Small illustrated icons ---------- */
+[class*="pz-icon-"]::before {
+	content: "";
+	display: inline-block;
+	flex: none;
+	background: no-repeat center / contain;
+	vertical-align: middle;
+}
+
+/* Trust strip: icon before the text. */
+p[class*="pz-icon-"] {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+p[class*="pz-icon-"]::before {
+	width: 40px;
+	height: 34px;
+}
+
+/* Pillars and plate parts: icon on its own line above the heading or text. */
+:is(h3, h4, .wp-block-group)[class*="pz-icon-"]::before {
+	display: block;
+	width: 44px;
+	height: 28px;
+	margin-bottom: 6px;
+}
+
+.wp-block-group[class*="pz-icon-"]::before {
+	margin-inline: auto;
+}
+
+.pz-icon-temple::before { background-image: url("../images/ornaments/icon-temple.webp"); }
+.pz-icon-pot::before { background-image: url("../images/ornaments/icon-pot.webp"); }
+.pz-icon-scooter::before { background-image: url("../images/ornaments/icon-scooter.webp"); }
+.pz-icon-roots::before { background-image: url("../images/ornaments/icon-roots.webp"); }
+.pz-icon-ingredients::before { background-image: url("../images/ornaments/icon-ingredients.webp"); }
+.pz-icon-philosophy::before { background-image: url("../images/ornaments/icon-philosophy.webp"); }
+.pz-icon-grains::before { background-image: url("../images/ornaments/icon-grains.webp"); }
+.pz-icon-protein::before { background-image: url("../images/ornaments/icon-protein.webp"); }
+.pz-icon-vegetables::before { background-image: url("../images/ornaments/icon-vegetables.webp"); }
+.pz-icon-gravy::before { background-image: url("../images/ornaments/icon-gravy.webp"); }
+.pz-icon-finish::before { background-image: url("../images/ornaments/icon-finish.webp"); }
+
+/* ---------- Temple sketch beside a heading ---------- */
+.pz-temple-sketch {
+	background: url("../images/ornaments/temple-sketch.webp") no-repeat right center / auto 100%;
+	padding-right: clamp(120px, 15vw, 210px);
+	min-height: 5.5rem;
+}
+
+/* Phones: a smaller sketch, so the heading keeps most of the width. */
+@media (max-width: 600px) {
+	.pz-temple-sketch {
+		background-size: 84px auto;
+		background-position: right bottom;
+		padding-right: 88px;
+		min-height: 0;
+	}
+}
+
+/* ---------- Heading flourish ---------- */
+.pz-flourish {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4em;
+}
+
+.pz-flourish::before,
+.pz-flourish::after {
+	content: "";
+	flex: none;
+	width: clamp(40px, 7vw, 90px);
+	height: 12px;
+	background: url("../images/ornaments/flourish.svg") no-repeat center / contain;
+}
+
+.pz-flourish::after {
+	transform: scaleX(-1);
+}
+
+/* ---------- Plan cards: chip, ticks, oxblood button ---------- */
+.pz-chip {
+	display: inline-block;
+	align-self: flex-start;
+	width: fit-content;
+	padding: 0.2em 0.75em;
+	border-radius: 999px;
+	background: #f4dfb3;
+	color: #71501b !important;
+	font-size: 0.75rem !important;
+}
+
+.pz-checklist {
+	list-style: none;
+	padding-left: 0 !important;
+}
+
+.pz-checklist li {
+	position: relative;
+	padding-left: 1.6em;
+}
+
+.pz-checklist li::before {
+	content: "✓";
+	position: absolute;
+	left: 0;
+	top: 0.25em;
+	display: grid;
+	place-items: center;
+	width: 1.1em;
+	height: 1.1em;
+	border-radius: 50%;
+	background: #f4dfb3;
+	color: #71501b;
+	font-size: 0.72em;
+	font-weight: 700;
+}
+
+.pz-button-oxblood .wp-block-button__link {
+	background-color: var(--wp--preset--color--oxblood);
+	color: #fff8e6;
+}
+
+.pz-button-oxblood .wp-block-button__link:hover {
+	background-color: #3d0607;
+}
+
+/* ---------- Oxblood band for the meal plans ---------- */
+.pz-plans-band {
+	color: #f6e7d6;
+}
+
+.pz-plans-band > :is(h2, p) a {
+	color: var(--wp--preset--color--gold-light);
+}
+
+.pz-plans-band .is-style-pz-paper-card {
+	color: var(--wp--preset--color--espresso);
+	border-color: #e7cf9f;
+}
+
+/* ---------- Kolam in the left corner of a dark band ---------- */
+.pz-kolam-left {
+	position: relative;
+}
+
+.pz-kolam-left::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: clamp(60px, 7vw, 110px);
+	aspect-ratio: 1;
+	background: url("../images/ornaments/kolam-corner-light.svg") no-repeat left top / contain;
+	opacity: 0.55;
+	pointer-events: none;
+}
+
+/* ---------- Journey: a small diamond in the middle of each dotted line ---------- */
+@media (min-width: 782px) {
+	.wp-block-columns.is-style-pz-journey > .wp-block-column:not(:last-child)::before {
+		content: "❖";
+		position: absolute;
+		z-index: 1;
+		left: calc(100% + var(--wp--style--block-gap, 2em) / 2);
+		top: clamp(49px, 6vw, 85px);
+		transform: translate(-50%, -50%);
+		padding: 0 3px;
+		color: #894713;
+		font: 15px/1 Georgia, serif;
+		background: #f8e8c9;
+	}
+}
+
+/* ---------- Journey on phones: seal on the left, words on the right ---------- */
+@media (max-width: 781px) {
+	.wp-block-columns.is-style-pz-journey > .wp-block-column {
+		display: grid;
+		grid-template-columns: clamp(64px, 20vw, 94px) 1fr;
+		column-gap: 14px;
+		align-items: center;
+		text-align: left;
+	}
+
+	.wp-block-columns.is-style-pz-journey > .wp-block-column > .wp-block-image {
+		grid-row: span 2;
+		margin: 0;
+		max-width: none;
+	}
+
+	.wp-block-columns.is-style-pz-journey > .wp-block-column > :is(h3, p) {
+		margin: 0;
+		text-align: left;
+	}
+}

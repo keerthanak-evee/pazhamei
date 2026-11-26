@@ -18,8 +18,8 @@ $pz_days = array(
 	array( 'Saturday', 'Ponni white rice', 'cooking-ponni-rice' ),
 );
 ?>
-<!-- wp:group {"align":"full","className":"is-style-pz-banana-leaf","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull is-style-pz-banana-leaf" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)"><!-- wp:columns {"verticalAlignment":"center","align":"wide"} -->
+<!-- wp:group {"align":"full","className":"is-style-pz-banana-leaf pz-kolam-left","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull is-style-pz-banana-leaf pz-kolam-left" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)"><!-- wp:columns {"verticalAlignment":"center","align":"wide"} -->
 <div class="wp-block-columns alignwide are-vertically-aligned-center"><!-- wp:column {"verticalAlignment":"center","width":"24%"} -->
 <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:24%"><!-- wp:heading {"style":{"typography":{"fontSize":"clamp(1.8rem, 3vw, 3rem)","lineHeight":"1.05"}}} -->
 <h2 class="wp-block-heading" style="font-size:clamp(1.8rem, 3vw, 3rem);line-height:1.05">What’s cooking at <em>Pazhamei?</em></h2>

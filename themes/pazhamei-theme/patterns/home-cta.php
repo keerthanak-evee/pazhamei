@@ -14,7 +14,7 @@
 <div class="wp-block-group alignfull is-style-pz-banana-leaf" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)"><!-- wp:columns {"verticalAlignment":"center","align":"wide","className":"pz-reveal-stagger"} -->
 <div class="wp-block-columns alignwide are-vertically-aligned-center pz-reveal-stagger"><!-- wp:column {"verticalAlignment":"center","width":"55%"} -->
 <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:55%"><!-- wp:heading {"style":{"typography":{"fontSize":"clamp(2.6rem, 5.2vw, 5rem)","lineHeight":"1","fontWeight":"500"}}} -->
-<h2 class="wp-block-heading" style="font-size:clamp(2.6rem, 5.2vw, 5rem);font-weight:500;line-height:1">A taste of <em>tradition</em></h2>
+<h2 class="wp-block-heading" style="font-size:clamp(2.6rem, 5.2vw, 5rem);font-weight:500;line-height:1">A Taste of <em>Tradition</em></h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"style":{"color":{"text":"#f3eddb"}}} -->
