@@ -1,0 +1,134 @@
+/*
+ * pz/account-form: the fields and button of the sign-in, register and
+ * forgot-password forms (Login&RegisterPAgeReference.jpg). The card and the
+ * wine panel around them are theme block styles (pages.css).
+ */
+.pz-auth-form form {
+	margin: 0;
+}
+
+.pz-auth-form__field,
+.pz-auth-form .woocommerce-form-row {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: 0 0 0.85rem;
+}
+
+.pz-auth-form label {
+	margin: 0;
+	font-weight: 500;
+	font-size: 1.05rem;
+	color: var(--wp--preset--color--espresso, #211b18);
+}
+
+.pz-auth-form__label-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.25rem 1rem;
+}
+
+.pz-auth-form__forgot {
+	color: var(--wp--preset--color--oxblood, #5b090b);
+	font-size: 1rem;
+	text-decoration: none;
+}
+
+.pz-auth-form__forgot:hover,
+.pz-auth-form__forgot:focus-visible {
+	text-decoration: underline;
+}
+
+.pz-auth-form input:is([type="text"], [type="email"], [type="tel"], [type="password"]) {
+	font: inherit;
+	font-size: 1.05rem;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.5em 0.85em;
+	border: 1px solid #d9cdb8;
+	border-radius: 7px;
+	background: #fff;
+	color: var(--wp--preset--color--espresso, #211b18);
+}
+
+.pz-auth-form input::placeholder {
+	color: #8a7d72;
+}
+
+.pz-auth-form input:focus-visible {
+	outline: 2px solid var(--wp--preset--color--turmeric, #ab815f);
+	outline-offset: 1px;
+}
+
+/* Oxblood pill button with an arrow. */
+.pz-auth-form :is(.pz-auth-form__submit, .woocommerce-Button) {
+	display: block;
+	width: 100%;
+	margin-top: 0.4rem;
+	padding: 0.75em 1.2em;
+	border: 0;
+	border-radius: 999px;
+	background: var(--wp--preset--color--hero-maroon, #470d0d);
+	color: #fff8e9;
+	font: inherit;
+	font-size: 1.1rem;
+	cursor: pointer;
+}
+
+.pz-auth-form :is(.pz-auth-form__submit, .woocommerce-Button):hover,
+.pz-auth-form :is(.pz-auth-form__submit, .woocommerce-Button):focus-visible {
+	background: var(--wp--preset--color--oxblood, #5b090b);
+}
+
+/* WooCommerce notices (errors, "email sent") inside the card. */
+.pz-auth-form :is(.woocommerce-error, .woocommerce-message, .woocommerce-info, .wc-block-components-notice-banner) {
+	margin: 0 0 1rem;
+	padding: 0.65em 0.9em;
+	list-style: none;
+	border-radius: 8px;
+	font-size: 0.95rem;
+}
+
+.pz-auth-form .woocommerce-error,
+.pz-auth-form .wc-block-components-notice-banner.is-error {
+	background: #fdf0ee;
+	color: #8a1c1c;
+	border: 1px solid #efc9c3;
+}
+
+.pz-auth-form :is(.woocommerce-message, .woocommerce-info) {
+	background: #f3f7ee;
+	color: #2f4a22;
+	border: 1px solid #d3e2c5;
+}
+
+/* Privacy text WooCommerce adds under the register fields, and the strength meter. */
+.pz-auth-form .woocommerce-privacy-policy-text p {
+	margin: 0 0 0.6rem;
+	font-size: 0.78rem;
+	line-height: 1.45;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-auth-form .woocommerce-password-strength {
+	font-size: 0.85rem;
+	padding: 0.2em 0.5em;
+	border-radius: 5px;
+}
+
+.pz-auth-form .woocommerce-password-hint {
+	font-size: 0.8rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+/* WooCommerce's own forgot-password form: show its fields like ours. */
+.pz-auth-form .lost_reset_password > p:first-of-type {
+	margin-top: 0;
+}
+
+.pz-auth-form .woocommerce-form-row .required {
+	color: var(--wp--preset--color--oxblood, #5b090b);
+	text-decoration: none;
+}

@@ -65,6 +65,9 @@ final class MediaImporter {
 			'about-spices'           => array( 'story-spice-table.jpg', 'A brass pot, a banana leaf and bowls of ground spices' ),
 			'contact-spices'         => array( 'kitchen-spices.jpg', 'Spices used in Tamil cooking' ),
 			'faq-clock'              => array( 'faq-clock.jpg', 'A clock showing 8:00 PM IST' ),
+			// Sign in / Register (Login&RegisterPAgeReference.jpg) and the customer portal.
+			'signin-thali'           => array( 'signin-thali.jpg', 'A brass thali on a banana leaf with rice, greens and a fry, beside a tiffin carrier' ),
+			'member-tiffin'          => array( 'member-brass-tiffin.jpg', 'A brass tiffin carrier' ),
 		);
 	}
 

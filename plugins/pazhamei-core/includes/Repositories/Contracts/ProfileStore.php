@@ -54,4 +54,11 @@ interface ProfileStore {
 	 * @return array<int, array{name: string, severity: string}>
 	 */
 	public function allergens( int $customer_id ): array;
+
+	/**
+	 * The customer whose profile has this mobile (10 digits), or 0.
+	 *
+	 * @param string $mobile 10 digits.
+	 */
+	public function customer_by_mobile( string $mobile ): int;
 }

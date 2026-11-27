@@ -22,6 +22,7 @@ use Pazhamei\Install\Installer;
 use Pazhamei\Rest\AdminController;
 use Pazhamei\Rest\EnquiryController;
 use Pazhamei\Rest\ScheduleController;
+use Pazhamei\Woo\AccountForms;
 use Pazhamei\Woo\CheckoutFields;
 use Pazhamei\Woo\HidePrices;
 use Pazhamei\Woo\OrderHooks;
@@ -47,6 +48,7 @@ final class Plugin {
 		PortalMeta::register();    // The `_pz_portal` page setting and its sidebar dropdown.
 		PortalGuard::register();   // Blocks portal pages for the wrong users.
 		LoginRedirect::register(); // Sends each role to its landing page after sign-in.
+		AccountForms::register();  // Register fields, phone sign-in, sign-in page views.
 		AdminLockdown::register(); // Only administrators get wp-admin and the admin bar.
 		ShopRedirects::register(); // /my-account, shop, product and cart pages go to our pages.
 		MovedPages::register();    // /about-contact and /enquire go to /about-us (301).

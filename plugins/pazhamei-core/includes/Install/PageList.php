@@ -59,7 +59,7 @@ final class PageList {
 		return array(
 			// Storefront: top-level pages, open to everyone.
 			self::row( 'home', 'Home', '', $s, self::PHASE_STOREFRONT ),
-			self::row( 'sign-in', 'Sign in', '', $s, self::PHASE_STOREFRONT ),
+			self::row( 'sign-in', 'Sign in', '', $s, self::PHASE_STOREFRONT, self::LANDING_TEMPLATE ), // WooCommerce My Account page; views: sign in, register, forgot password.
 			self::row( 'plans', 'Plans', '', $s, self::PHASE_STOREFRONT, self::LANDING_TEMPLATE ),
 			self::row( 'about-us', 'About Us', '', $s, self::PHASE_STOREFRONT, self::LANDING_TEMPLATE ), // Was /about-contact; holds the enquiry form (#contact).
 			self::row( 'faq', 'FAQ', '', $s, self::PHASE_STOREFRONT, self::LANDING_TEMPLATE ),

@@ -570,6 +570,284 @@
 	background: #f6dfae;
 }
 
+/* ---------- Sign in / Register (Login&RegisterPAgeReference.jpg) ---------- */
+/*
+ * The page has four views (sign-in, register, lost-password, account). The
+ * plugin adds body class pz-auth-view--<view>; only that view shows. In the
+ * editor (no such body class) every view shows, one under the other.
+ */
+.pz-auth {
+	min-height: 70vh;
+}
+
+.pz-auth__view {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 720px;
+	margin-inline: auto;
+}
+
+.pz-auth__view + .pz-auth__view {
+	margin-top: var(--wp--preset--spacing--60);
+}
+
+body[class*="pz-auth-view--"] .pz-auth__view {
+	display: none;
+	margin-top: 0;
+}
+
+body.pz-auth-view--sign-in .pz-auth__view--sign-in,
+body.pz-auth-view--register .pz-auth__view--register,
+body.pz-auth-view--lost-password .pz-auth__view--lost-password,
+body.pz-auth-view--account .pz-auth__view--account {
+	display: flex;
+}
+
+.pz-auth__view--account {
+	max-width: 960px;
+}
+
+/* Group: Wine welcome panel. Oxblood with a gold inner frame and light kolam corners. */
+.wp-block-group.is-style-pz-auth-panel {
+	position: relative;
+	isolation: isolate;
+	flex: 0 0 46%;
+	box-sizing: border-box;
+	padding: 34px 28px 32px;
+	color: #fbeed3;
+	background: var(--wp--preset--color--hero-maroon);
+	border-radius: 10px;
+	outline: 1px solid #a07547;
+	outline-offset: -9px;
+}
+
+.wp-block-group.is-style-pz-auth-panel::before,
+.wp-block-group.is-style-pz-auth-panel::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	width: 46px;
+	aspect-ratio: 1;
+	background: url("../images/ornaments/kolam-corner-light.svg") no-repeat center / contain;
+	opacity: 0.75;
+	pointer-events: none;
+}
+
+.wp-block-group.is-style-pz-auth-panel::before {
+	top: 14px;
+	left: 14px;
+}
+
+.wp-block-group.is-style-pz-auth-panel::after {
+	right: 14px;
+	bottom: 14px;
+	transform: rotate(180deg);
+}
+
+.pz-auth__logo {
+	gap: 10px;
+	margin-bottom: 18px;
+}
+
+.pz-auth__emblem {
+	width: 38px;
+	margin: 0;
+	flex: none;
+}
+
+.pz-auth__emblem img {
+	width: 100%;
+	border-radius: 50%;
+	outline: 1px solid #c79a5c;
+	outline-offset: 2px;
+}
+
+.pz-auth__brand > * {
+	margin: 0;
+}
+
+.pz-auth__wordmark {
+	font-family: var(--wp--preset--font-family--brand);
+	font-size: 1.45rem;
+	letter-spacing: 0.06em;
+	line-height: 1.1;
+	color: #fbeed3;
+}
+
+.pz-auth__tagline {
+	font-size: 0.55rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #e6c98f;
+}
+
+.pz-auth__photo {
+	margin: 0 0 22px;
+}
+
+.pz-auth__photo img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1.16;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
+.is-style-pz-auth-panel .pz-auth__welcome {
+	margin: 0 0 14px;
+	color: #fbeed3;
+	font-size: clamp(1.7rem, 2.5vw, 2.15rem);
+	font-weight: 600;
+	line-height: 1.12;
+}
+
+.pz-auth__points {
+	margin: 0;
+	font-size: 0.95rem;
+	color: #f3e3c4;
+}
+
+.pz-auth__points li + li {
+	margin-top: 4px;
+}
+
+.pz-auth__points li {
+	padding-left: 1.4em;
+}
+
+/* A plain gold tick, as in the reference (no round chip on the dark panel). */
+.pz-auth__points li::before {
+	top: 0.15em;
+	background: none;
+	color: #e6c98f;
+	font-size: 0.95em;
+	font-weight: 400;
+}
+
+/* Group: White form card. Sits over the edge of the wine panel. */
+.wp-block-group.is-style-pz-auth-card {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 54%;
+	box-sizing: border-box;
+	min-height: 560px;
+	padding: 30px 32px 22px;
+	background: #fff;
+	border: 1px solid #e4d8c3;
+	border-radius: 10px;
+	box-shadow: var(--wp--preset--shadow--heritage);
+	color: var(--wp--preset--color--espresso);
+}
+
+.pz-auth__view--sign-in .is-style-pz-auth-card {
+	margin-left: -14px;
+}
+
+.pz-auth__view--register .is-style-pz-auth-card {
+	margin-right: -14px;
+}
+
+.pz-auth__view--lost-password .is-style-pz-auth-card,
+.pz-auth__view--account .is-style-pz-auth-card {
+	min-height: 0;
+	max-width: 460px;
+}
+
+.pz-auth__view--account .is-style-pz-auth-card {
+	max-width: none;
+}
+
+.is-style-pz-auth-card h1 {
+	margin: 0 0 10px;
+	color: var(--wp--preset--color--espresso);
+	font-size: clamp(2rem, 3.2vw, 2.6rem);
+	font-weight: 700;
+	line-height: 1.08;
+}
+
+.is-style-pz-auth-card > .pz-auth-form {
+	margin-top: 0;
+}
+
+.is-style-pz-auth-card .pz-auth__intro {
+	margin: 0 0 18px;
+	font-size: 1.05rem;
+}
+
+/* "Don't have an account? Create Account": at the bottom, under a thin line. */
+.is-style-pz-auth-card .pz-auth__switch {
+	margin: auto 0 0;
+	padding-top: 16px;
+	border-top: 1px solid #e8dfd0;
+	text-align: center;
+	font-size: 1rem;
+}
+
+.is-style-pz-auth-card .pz-auth__switch a {
+	color: var(--wp--preset--color--hero-maroon);
+	text-decoration: none;
+}
+
+.is-style-pz-auth-card .pz-auth__switch a:hover,
+.is-style-pz-auth-card .pz-auth__switch a:focus-visible {
+	text-decoration: underline;
+}
+
+/* WooCommerce account pages: our portal menu replaces WooCommerce's own. */
+.pz-auth__view--account .woocommerce-MyAccount-navigation {
+	display: none;
+}
+
+.pz-auth__view--account .woocommerce-MyAccount-content {
+	width: 100%;
+	float: none;
+}
+
+/* Phones: the panel becomes a short banner above (sign in) or below (register) the card. */
+@media (max-width: 781px) {
+	.pz-auth__view {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.pz-auth__view--register {
+		flex-direction: column-reverse;
+	}
+
+	.wp-block-group.is-style-pz-auth-panel {
+		flex-basis: auto;
+		padding: 22px 22px 20px;
+	}
+
+	.pz-auth__view .is-style-pz-auth-card {
+		min-height: 0;
+		margin: -12px 0 0;
+		padding: 24px 20px 18px;
+	}
+
+	.pz-auth__view--register .is-style-pz-auth-card {
+		margin: 0 0 -12px;
+	}
+
+	.pz-auth__photo,
+	.pz-auth__points {
+		display: none;
+	}
+
+	.is-style-pz-auth-panel .pz-auth__welcome {
+		margin: 0 0 10px;
+		text-align: center;
+		font-size: 1.45rem;
+	}
+
+	.pz-auth__logo {
+		margin-bottom: 10px;
+	}
+}
+
 /* ---------- Motion (only when the visitor allows it) ---------- */
 @media (prefers-reduced-motion: no-preference) {
 	.pz-plan-card__actions .wp-block-button__link,

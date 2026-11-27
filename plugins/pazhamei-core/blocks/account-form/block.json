@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/account-form",
+	"version": "0.4.0",
+	"title": "Account form",
+	"category": "widgets",
+	"icon": "admin-users",
+	"description": "One form of the sign-in page: Sign in, Register, Forgot password, or the WooCommerce account pages (orders). Shown only when the page is in that view.",
+	"keywords": [ "sign in", "login", "register", "password" ],
+	"textdomain": "pazhamei-core",
+	"attributes": {
+		"mode": { "type": "string", "enum": [ "sign-in", "register", "lost-password", "account" ], "default": "sign-in" }
+	},
+	"supports": {
+		"html": false,
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

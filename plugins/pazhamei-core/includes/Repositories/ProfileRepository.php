@@ -97,4 +97,12 @@ final class ProfileRepository implements ProfileStore {
 			$rows
 		);
 	}
+
+	/** {@inheritDoc} */
+	public function customer_by_mobile( string $mobile ): int {
+		if ( '' === $mobile ) {
+			return 0;
+		}
+		return (int) Db::value( Db::wpdb()->prepare( 'SELECT customer_id FROM %i WHERE mobile = %s ORDER BY id LIMIT 1', self::table(), $mobile ) );
+	}
 }

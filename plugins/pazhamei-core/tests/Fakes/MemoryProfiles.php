@@ -73,4 +73,12 @@ final class MemoryProfiles implements ProfileStore {
 	public function allergens( int $customer_id ): array {
 		return $this->allergen_data[ $customer_id ] ?? array();
 	}
+
+	public function customer_by_mobile( string $mobile ): int {
+		if ( '' === $mobile ) {
+			return 0;
+		}
+		$rows = $this->db->rows( 'customer_profiles', static fn( $r ) => $r['mobile'] === $mobile );
+		return $rows ? (int) $rows[0]['customer_id'] : 0;
+	}
 }

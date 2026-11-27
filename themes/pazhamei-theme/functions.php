@@ -112,6 +112,8 @@ function pz_theme_block_styles() {
 			'pz-cutoff-note'   => __( 'Wine panel with gold frame', 'pazhamei-theme' ),
 			'pz-enquiry-sheet' => __( 'Enquiry card (oxblood top edge)', 'pazhamei-theme' ),
 			'pz-tabs'          => __( 'Tabs (each inner group is a tab)', 'pazhamei-theme' ),
+			'pz-auth-panel'    => __( 'Wine welcome panel (sign in)', 'pazhamei-theme' ),
+			'pz-auth-card'     => __( 'White form card (sign in)', 'pazhamei-theme' ),
 		),
 		'core/image'   => array(
 			'pz-leaf-corner' => __( 'Leaf corner', 'pazhamei-theme' ),

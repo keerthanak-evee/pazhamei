@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Content for Home, Plans, About Us and FAQ.
+ * Content for Home, Plans, About Us, FAQ and Sign in.
  */
 final class StorefrontContent {
 
@@ -63,6 +63,11 @@ final class StorefrontContent {
 		'pazhamei/page-faq',
 	);
 
+	/** Sign in: the Sign in, Register and Forgot password views (Login&RegisterPAgeReference.jpg). */
+	public const SIGN_IN_PATTERNS = array(
+		'pazhamei/page-sign-in',
+	);
+
 	/**
 	 * Content for a page path, or null if this class has none for it
 	 * (or the theme's patterns are not available because another theme is active).
@@ -79,6 +84,8 @@ final class StorefrontContent {
 				return self::from_patterns( self::ABOUT_PATTERNS );
 			case 'faq':
 				return self::from_patterns( self::FAQ_PATTERNS );
+			case 'sign-in':
+				return self::from_patterns( self::SIGN_IN_PATTERNS );
 			default:
 				return PolicyContent::for_path( $path );
 		}
