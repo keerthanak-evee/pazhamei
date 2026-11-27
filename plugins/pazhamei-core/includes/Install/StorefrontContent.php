@@ -68,6 +68,11 @@ final class StorefrontContent {
 		'pazhamei/page-sign-in',
 	);
 
+	/** Customer portal pages (Phase 4): page path => theme patterns. */
+	public const ACCOUNT_PATTERNS = array(
+		'account/plans' => array( 'pazhamei/account-plans' ),
+	);
+
 	/**
 	 * Content for a page path, or null if this class has none for it
 	 * (or the theme's patterns are not available because another theme is active).
@@ -87,6 +92,9 @@ final class StorefrontContent {
 			case 'sign-in':
 				return self::from_patterns( self::SIGN_IN_PATTERNS );
 			default:
+				if ( isset( self::ACCOUNT_PATTERNS[ $path ] ) ) {
+					return self::from_patterns( self::ACCOUNT_PATTERNS[ $path ] );
+				}
 				return PolicyContent::for_path( $path );
 		}
 	}
@@ -97,7 +105,7 @@ final class StorefrontContent {
 	 * @param string $path Page path.
 	 */
 	public static function uses_patterns( string $path ): bool {
-		return in_array( $path, array( 'home', 'plans', 'about-us', 'faq' ), true );
+		return in_array( $path, array( 'home', 'plans', 'about-us', 'faq', 'sign-in' ), true ) || isset( self::ACCOUNT_PATTERNS[ $path ] );
 	}
 
 	/**

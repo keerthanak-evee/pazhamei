@@ -116,3 +116,98 @@
 .pz-plan-card__actions .wp-block-button__link {
 	line-height: 1.2;
 }
+
+/* ---------- Signed-in customers: meal type, price and Buy ---------- */
+.pz-plan-cards > .woocommerce-notices-wrapper {
+	grid-column: 1 / -1;
+}
+
+.pz-plan-card__types {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 0 0 12px;
+	padding: 0;
+	border: 0;
+}
+
+.pz-plan-card__type {
+	position: relative;
+	cursor: pointer;
+}
+
+.pz-plan-card__type input {
+	position: absolute;
+	opacity: 0;
+	inset: 0;
+	margin: 0;
+	cursor: pointer;
+}
+
+.pz-plan-card__type span {
+	display: inline-block;
+	min-height: 32px;
+	box-sizing: border-box;
+	padding: 5px 12px;
+	border: 1px solid #c9ad7a;
+	border-radius: 99px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #5a3f2b;
+	background: #fffaf0;
+}
+
+.pz-plan-card__type input:checked + span {
+	color: #fff8ea;
+	background: var(--wp--preset--color--oxblood, #5b090b);
+	border-color: var(--wp--preset--color--oxblood, #5b090b);
+}
+
+.pz-plan-card__type input:focus-visible + span {
+	outline: 2px solid var(--wp--preset--color--turmeric, #ab815f);
+	outline-offset: 2px;
+}
+
+.pz-plan-card__price {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin: 0 0 14px;
+}
+
+.pz-plan-card__amount {
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(1.8rem, 2.4vw, 2.2rem);
+	font-weight: 700;
+	line-height: 1;
+	color: #40281d;
+}
+
+.pz-plan-card__per {
+	font-size: var(--wp--preset--font-size--small);
+	color: #6b5544;
+}
+
+/* Enquire becomes the quieter, outlined button next to Buy. */
+.pz-plan-card__actions .is-style-outline .wp-block-button__link {
+	color: var(--wp--preset--color--oxblood, #5b090b);
+	background: transparent;
+	border: 1px solid var(--wp--preset--color--oxblood, #5b090b);
+}
+
+.pz-plan-card__actions .is-style-outline .wp-block-button__link:hover,
+.pz-plan-card__actions .is-style-outline .wp-block-button__link:focus-visible {
+	color: #fff8ea;
+	background: var(--wp--preset--color--oxblood, #5b090b);
+}
+
+.pz-plan-card__buy::after {
+	content: "→";
+	line-height: 1;
+}
+
+/* When the Trial card is hidden (buy mode), centre the cards that are left. */
+.pz-plan-cards[data-mode="buy"] {
+	grid-template-columns: repeat(auto-fit, minmax(240px, 380px));
+	justify-content: center;
+}

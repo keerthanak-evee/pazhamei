@@ -94,6 +94,7 @@ add_action( 'after_setup_theme', 'pz_theme_editor_styles' );
 function pz_theme_pattern_categories() {
 	register_block_pattern_category( 'pazhamei-home', array( 'label' => __( 'Pazhamei: Home sections', 'pazhamei-theme' ) ) );
 	register_block_pattern_category( 'pazhamei-pages', array( 'label' => __( 'Pazhamei: Plans, About Us and FAQ sections', 'pazhamei-theme' ) ) );
+	register_block_pattern_category( 'pazhamei-account', array( 'label' => __( 'Pazhamei: Customer portal pages', 'pazhamei-theme' ) ) );
 }
 add_action( 'init', 'pz_theme_pattern_categories' );
 

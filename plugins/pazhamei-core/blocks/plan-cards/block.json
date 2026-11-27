@@ -2,11 +2,11 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "pz/plan-cards",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"title": "Plan cards",
 	"category": "widgets",
 	"icon": "grid-view",
-	"description": "The Trial, 6-day and 26-day plans with what each includes. Visitors see an Enquire button and no prices.",
+	"description": "The Trial, 6-day and 26-day plans with what each includes. Visitors see an Enquire button and no prices; signed-in customers choose a meal type, see its price and can Buy.",
 	"keywords": [ "plans", "pricing", "subscription", "pack" ],
 	"textdomain": "pazhamei-core",
 	"attributes": {
@@ -14,10 +14,12 @@
 	},
 	"supports": {
 		"html": false,
+		"interactivity": true,
 		"align": [ "wide", "full" ],
 		"spacing": { "margin": true, "padding": true }
 	},
 	"editorScript": "file:./editor.js",
+	"viewScriptModule": "file:./view.js",
 	"style": "file:./style.css",
 	"render": "file:./render.php"
 }

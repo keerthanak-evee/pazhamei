@@ -23,6 +23,7 @@ use Pazhamei\Rest\AdminController;
 use Pazhamei\Rest\EnquiryController;
 use Pazhamei\Rest\ScheduleController;
 use Pazhamei\Woo\AccountForms;
+use Pazhamei\Woo\BuyLink;
 use Pazhamei\Woo\CheckoutFields;
 use Pazhamei\Woo\HidePrices;
 use Pazhamei\Woo\OrderHooks;
@@ -62,6 +63,7 @@ final class Plugin {
 		PlanProducts::register();       // The trial switch on the plan products.
 		CheckoutFields::register();     // Start date field and plan rules at checkout.
 		OrderHooks::register();         // Paid order → pack; cancelled/refunded order → pack cancelled.
+		BuyLink::register();            // Plan card Buy button: one plan in the cart, then checkout.
 		TestPay::register();            // Local only: "Pazhamei Test Pay" marks orders paid, for testing.
 		Scheduler::register();          // 20:00 lock, 23:30 close day, 00:10 pack status.
 		ScheduleController::register(); // Customer REST routes: schedule, skip, pause, resume.
