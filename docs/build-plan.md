@@ -296,14 +296,14 @@ The engine treats every purchase as a pack of N meals and lays those meals onto 
 
 1. **Service days** are Monday to Saturday. Sunday is always off; admin-declared holidays are also off.
 2. **A plan is a pack of meals:** Trial = 1, 6-day = 6, 26-day = 26. A pack's meal type (Veg, Non-Veg, Mixed) is fixed at purchase.
-3. **Cutoff:** a change for date D is allowed until 20:00 IST on the calendar day before D. After that, D is **locked**. The 20:00 time is a setting.
+3. **Cutoff:** a change for date D is allowed until 20:00 IST on the calendar day before D. After that, D is **locked**. The 20:00 time is a setting. Monday follows the same rule: its cutoff is Sunday 20:00.
 4. **Start date:** the customer picks it at checkout. It must be a service day that is not yet locked, within 30 days.
-5. **One meal per customer per day.** The schedule table has a unique key on (customer, date), so duplicate or overlapping orders cannot exist.
-6. **Skip:** any unlocked scheduled day can be skipped, and the skip can be undone until the cutoff. The meal moves to the end of the plan.
-7. **Pause:** from an unlocked date, either until a chosen date or until the customer presses Resume. Paused days move to the end of the plan.
+5. **One meal per customer per day.** The schedule table has a unique key on (customer, date), so duplicate or overlapping orders cannot exist. (Not final: subscriptions and daily orders carry a `quantity` column, default 1 and not exposed, so more meals a day can be allowed later.)
+6. **Skip:** any unlocked scheduled day can be skipped, and the skip can be undone until the cutoff. The meal moves to the end of the plan. No limit on skips per pack.
+7. **Pause:** from an unlocked date, either until a chosen date (the last paused day) or until the customer presses Resume. No time limit and no auto-resume: an open-ended pause lasts until the customer or admin resumes. Paused days move to the end of the plan.
 8. **Extension:** the end date is always the date of the pack's last scheduled meal, so skips, pauses and holidays extend it automatically.
-9. **Renewal:** buying while a pack is active creates a **queued** pack that starts the next service day after the current pack ends, and moves if that end date moves. If the current pack is on an open-ended pause, the queued pack stays queued with no dates until the customer resumes.
-10. **Trial:** sold only when the admin switch is on, once per customer. Checked by account; by mobile number, compared on its last 10 digits only, so +91 or a leading 0 makes no difference; and by address, compared on pincode plus house or flat number with punctuation and filler words ("no", "flat", "door") removed.
+9. **Renewal:** buying while a pack is active creates a **queued** pack that starts the next service day after the current pack ends, and moves if that end date moves. If the current pack is on an open-ended pause, the queued pack stays queued with no dates until the customer resumes. A renewal may use a different meal type.
+10. **Trial:** sold only when the admin switch is on, at the admin-set trial price (can be ₹0), with no approval step, once per customer. Checked by account; by mobile number, compared on its last 10 digits only, so +91 or a leading 0 makes no difference; and by address, compared on pincode plus house or flat number with punctuation and filler words ("no", "flat", "door") removed.
 11. **Daily orders** are created only at the cutoff for the next day, from locked schedule rows. Skipped, paused, cancelled and completed days never become orders.
 
 ### How reflow() works
@@ -379,7 +379,7 @@ wp_pz_enquiries (id, name, mobile, email, area, pincode, plan_interest, meal_typ
   status ENUM('new','contacted','converted','closed'), assigned_to, notes, created_at)
 ```
 
-Meals (`pz_meal` post type) carry meta for kcal, protein, carbs, fat, fibre, suitable meal types and an "unavailable" flag. Settings (cutoff time, trial on/off, trial price, max pause days, delivery pincodes) live in one `pz_settings` option.
+Meals (`pz_meal` post type) carry meta for kcal, protein, carbs, fat, fibre, suitable meal types and an "unavailable" flag. Settings (cutoff time, trial on/off, trial price, auto-mark delivered, delivery pincodes) live in one `pz_settings` option. Pauses have no maximum length (owner decision).
 
 ### Scheduled jobs
 
@@ -389,7 +389,7 @@ Use Action Scheduler (bundled with WooCommerce), triggered by a real server cron
 | --- | --- | --- |
 | 20:00 daily | Lock tomorrow | Tomorrow's `scheduled` rows → `locked`; create `wp_pz_daily_orders` with address, allergen and menu snapshots. Safe to rerun. |
 | 20:05 daily | Kitchen summary | Email tomorrow's counts to kitchen and admin. |
-| 23:30 daily | Close today | Today's locked orders not marked failed → `delivered`; add to `consumed_meals`. |
+| 23:30 daily | Close today | If `auto_mark_delivered` is on (default): today's locked orders not marked failed → `delivered`; `consumed_meals` updated. If off: they stay locked until someone marks them. |
 | 00:10 daily | Pack status | Packs with all meals delivered → `completed`; queued pack becomes `active`; dated pauses that ended → resume + reflow. |
 | 09:00 daily | Reminders | "2 meals left" renewal reminder; "paused for X days" nudge. |
 | Saturday 10:00 | Next week's menu | Copy the weekly template into next week's dated menus as drafts for admin review. |
@@ -441,7 +441,7 @@ Every button calls one REST endpoint, and every endpoint checks role, nonce and 
 | Place order | `/checkout` | Customer | WooCommerce + Razorpay | Start date valid, pincode served | Order paid → pack activated |
 | Skip | Dashboard calendar | Customer | `POST /pz/v1/schedule/{date}/skip` | Day is scheduled, not locked, belongs to user | Row `skipped`, reflow, end date +1 service day |
 | Undo skip | Dashboard calendar | Customer | `DELETE /pz/v1/schedule/{date}/skip` | Not locked | Reflow, end date back |
-| Pause | Dashboard | Customer | `POST /pz/v1/subscriptions/{id}/pause` | Start date unlocked, end date optional, max pause days | Pause row, pack `paused`, reflow |
+| Pause | Dashboard | Customer | `POST /pz/v1/subscriptions/{id}/pause` | Start date unlocked, end date optional (no maximum length) | Pause row, pack `paused` if open-ended, reflow |
 | Resume | Dashboard | Customer | `POST /pz/v1/subscriptions/{id}/resume` | Resume date unlocked | Pause ended, reflow, new end date |
 | Save profile | `/account/profile` | Customer | `PUT /pz/v1/me/profile` | Valid pincode, allergen list | Profile saved; applies from next unlocked day |
 | Raise ticket | `/account/support` | Customer | `POST /pz/v1/support/tickets` | Required fields | Ticket, admin email |
@@ -565,7 +565,7 @@ Add a date range filter and a CSV download on every card.
 ### Added pages
 
 - **Subscriptions** (`/manage/subscriptions`): all packs with filters, and the overrides from Phase 5.
-- **Settings** (`/manage/settings`): cutoff time, trial switch and price, max pause days, delivery pincodes, holidays, "Run lock now".
+- **Settings** (`/manage/settings`): cutoff time, trial switch and price, auto-mark delivered, delivery pincodes, holidays, "Run lock now".
 
 **Done when:** every dashboard number matches a direct database count on seeded data, and a kitchen user gets blocked from every `/manage` page and endpoint.
 
@@ -615,18 +615,18 @@ Claude can start Phase 0 today; the items below are needed by the phase shown, a
 
 ### Decisions
 
-| # | Question | Default in this plan |
+| # | Question | Decision (owner, Phase 3) |
 | --- | --- | --- |
-| 1 | Monday's cutoff: Sunday 8 PM or Saturday 8 PM (if the kitchen buys on Sunday)? | Sunday 8 PM (the rule as written) |
-| 2 | Longest allowed pause, and what happens after it? | 30 days, then auto-resume with an email |
-| 3 | Limit on skips per pack? | No limit |
-| 4 | Trial: free or paid, and does admin approve each one? | Admin switch on/off, set price (can be ₹0), no approval step |
-| 5 | Can one account get two meals a day (e.g. family)? | No, one meal per customer per day |
+| 1 | Monday's cutoff: Sunday 8 PM or Saturday 8 PM (if the kitchen buys on Sunday)? | **Decided:** Sunday 8 PM, the same rule as every day |
+| 2 | Longest allowed pause, and what happens after it? | **Decided:** no time limit. Dated pauses end on their date; open-ended pauses last until the customer or admin resumes. No auto-resume. A "paused a while" reminder comes in Phase 6 |
+| 3 | Limit on skips per pack? | **Decided:** no limit |
+| 4 | Trial: free or paid, and does admin approve each one? | **Decided:** admin switch on/off, admin-set price (can be ₹0), no approval step; eligibility by normalised mobile and address |
+| 5 | Can one account get two meals a day (e.g. family)? | **Open:** one meal per customer per day for now. A `quantity` column (default 1, not exposed) is ready on subscriptions and daily orders |
 | 6 | What does "Mixed" mean: its own menu, or alternating Veg / Non-Veg days? | Its own menu per day |
-| 7 | Can a renewal use a different meal type? | Yes |
-| 8 | Refund for unused meals when a customer cancels? | Per-meal price × meals left, minus a fee you set |
-| 9 | Failed delivery: automatic meal credit, or admin decides? | Admin decides |
-| 10 | If the kitchen doesn't mark a delivery, is it counted as delivered at 23:30? | Yes |
+| 7 | Can a renewal use a different meal type? | **Decided:** yes |
+| 8 | Refund for unused meals when a customer cancels? | **Decided:** refunds are handled offline by the owner. Cancelling only removes unlocked days, sets the status and logs it; no refund calculation |
+| 9 | Failed delivery: automatic meal credit, or admin decides? | **Open:** a `failed` status plus an admin "Credit meal" action (adds a meal, reflows). No automatic credit |
+| 10 | If the kitchen doesn't mark a delivery, is it counted as delivered at 23:30? | **Open:** setting `auto_mark_delivered`, default on. When off, locked days stay locked until marked |
 | 11 | Revenue: cash collected, or value of meals delivered? | Cash collected, plus a second "earned" figure |
 | 12 | One header with four menus, or a different header design per portal? | One header, four menus |
 

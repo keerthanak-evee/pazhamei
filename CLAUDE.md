@@ -86,17 +86,20 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
 ## Business rules (do not change without the owner's approval)
 
 1. Service days are Monday to Saturday. Sunday is always off. Admin-declared holidays (`wp_pz_holidays`) are also off.
-2. A plan is a pack of meals: Trial = 1, 6-day = 6, 26-day = 26. The meal type (VEG, NONVEG, MIXED) is fixed at purchase.
-3. **Cutoff:** a change for date D is allowed until 20:00 IST on the calendar day before D. After that, D is locked. The 20:00 time comes from the `pz_settings` option.
+2. A plan is a pack of meals: Trial = 1, 6-day = 6, 26-day = 26. The meal type (VEG, NONVEG, MIXED) is fixed at purchase; only the admin can change it later (unlocked days only).
+3. **Cutoff:** a change for date D is allowed until 20:00 IST on the calendar day before D. After that, D is locked. The 20:00 time comes from the `pz_settings` option. Monday follows the same rule: its cutoff is Sunday 20:00.
 4. **Start date:** the customer picks it at checkout. It must be an unlocked service day within 30 days.
-5. **One meal per customer per day:** `wp_pz_schedule` has `UNIQUE (customer_id, service_date)`.
-6. **Skip:** allowed on an unlocked scheduled day, and can be undone until the cutoff. The meal moves to the end of the plan.
-7. **Pause:** from an unlocked date, either until a chosen date or until Resume. Paused days move to the end of the plan.
+5. **One meal per customer per day:** `wp_pz_schedule` has `UNIQUE (customer_id, service_date)`. Not final: `wp_pz_subscriptions` and `wp_pz_daily_orders` carry a `quantity` column (default 1, not exposed anywhere) so more meals a day can be allowed later.
+6. **Skip:** allowed on an unlocked scheduled day, and can be undone until the cutoff. The meal moves to the end of the plan. No limit on skips per pack.
+7. **Pause:** from an unlocked date, either until a chosen date (the last paused day) or until Resume. No time limit and no auto-resume: an open-ended pause lasts until the customer or admin resumes. Paused days move to the end of the plan.
 8. **End date:** always the date of the pack's last scheduled meal. It is recalculated only by `reflow()`.
-9. **Renewal:** buying while a pack is active creates a `queued` pack. It starts on the next service day after the current pack ends. If the current pack is on an open-ended pause, the queued pack has no dates and waits until the customer resumes.
-10. **Trial:** sold only when the admin switch is on, and once per customer. Checked by account; by mobile number, compared on its last 10 digits only, so +91 or a leading 0 makes no difference; and by address, compared on pincode plus house or flat number with punctuation and filler words ("no", "flat", "door") removed.
+9. **Renewal:** buying while a pack is active creates a `queued` pack. It starts on the next service day after the current pack ends. If the current pack is on an open-ended pause, the queued pack has no dates and waits until the customer resumes. A renewal may use a different meal type.
+10. **Trial:** sold only when the admin switch (`trial_enabled`) is on, at the admin-set `trial_price` (can be 0), with no approval step, and once per customer. Checked by account; by mobile number, compared on its last 10 digits only, so +91 or a leading 0 makes no difference; and by address, compared on pincode plus house or flat number with punctuation and filler words ("no", "flat", "door") removed.
 11. **Daily orders:** created only by the 20:00 lock job, for the next day, from locked schedule rows. The job must be safe to rerun.
 12. **Reflow:** skip, pause, resume, holidays, renewals, cancellations and admin changes never edit dates directly. They record the change, then call `reflow()` for that customer inside a transaction.
+13. **Cancel:** cancelling a pack (admin action, or a WooCommerce refund or cancellation) only removes its unlocked days, sets the status and logs it. Refunds are handled offline by the owner; the plugin never calculates a refund.
+14. **Failed delivery:** a locked day can be marked `failed`. There is no automatic credit; the admin's "Credit meal" action adds one meal to the pack and reflows.
+15. **Closing the day:** with the setting `auto_mark_delivered` on (default), locked days not marked failed by 23:30 count as delivered. With it off, they stay locked until someone marks them.
 
 ## Coding conventions
 

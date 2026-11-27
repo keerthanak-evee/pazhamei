@@ -85,8 +85,19 @@ Later:
 ## Phase 2: Deployment setup
 ## Phase 3: Subscription engine
 
-Decision (owner):
-- Renewal during an open-ended pause: the new pack stays `queued` with no dates until the customer resumes (business rule 9). Checkout warns about it (Phase 4 checkout row in the build plan).
+Phase 2 (deployment) is on hold; Phase 3 is built and tested locally only.
+
+Decisions (owner, Phase 3 kickoff):
+1. Monday's cutoff is Sunday 20:00, the same rule as every day: changes for date D close at 20:00 on D-1 (rule 3).
+2. Pause has no time limit. Dated pauses end on their date; open-ended pauses last until the customer (or admin) resumes. No auto-resume. A hook (`pz_pause_ongoing`) is left for a Phase 6 "you've been paused a while" reminder (rule 7). `max_pause_days` removed from settings.
+3. No limit on skips per pack (rule 6).
+4. Trial: admin switch on/off and an admin-set price (can be 0); no approval step. Eligibility uses the normalised mobile and address rule (rule 10).
+5. **Open:** one meal per account per day for now. `UNIQUE (customer, date)` stays; `quantity` column (default 1, not exposed) on subscriptions and daily orders so allowing more later is cheap (rule 5).
+6. Refunds are handled offline by the owner. Cancelling a pack (admin action, or a WooCommerce refund/cancellation) only removes unlocked days, sets the status and logs it. No refund calculation (rule 13).
+7. A renewal may choose a different meal type (rule 9).
+8. **Open:** failed delivery. A `failed` status plus an admin "Credit meal" action (adds a meal and reflows). No automatic crediting (rule 14).
+9. **Open:** auto-marking delivered. Setting `auto_mark_delivered`, default ON: locked days not marked failed by 23:30 count as delivered. When OFF they stay locked until someone marks them (rule 15).
+10. Renewal during an open-ended pause waits (`queued`, no dates) until the customer resumes (rule 9). Phase 4 checkout warns: "Your plan is paused. Resume it to start your new pack."
 
 ## Phase 4: Customer portal
 
