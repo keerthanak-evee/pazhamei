@@ -15,10 +15,16 @@ use Pazhamei\Admin\EnquiriesPage;
 use Pazhamei\Access\LoginRedirect;
 use Pazhamei\Access\PortalGuard;
 use Pazhamei\Access\PortalMeta;
+use Pazhamei\Cron\Scheduler;
 use Pazhamei\Install\Installer;
+use Pazhamei\Rest\AdminController;
 use Pazhamei\Rest\EnquiryController;
+use Pazhamei\Rest\ScheduleController;
+use Pazhamei\Woo\CheckoutFields;
 use Pazhamei\Woo\HidePrices;
+use Pazhamei\Woo\OrderHooks;
 use Pazhamei\Woo\OrderReceived;
+use Pazhamei\Woo\PlanProducts;
 use Pazhamei\Woo\ShopRedirects;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -45,10 +51,19 @@ final class Plugin {
 		EnquiryController::register(); // REST routes for the storefront enquiry form.
 		EnquiriesPage::register();     // wp-admin: Pazhamei > Enquiries (administrators only).
 
+		// Subscription engine (Phase 3).
+		PlanProducts::register();       // Trial price and trial switch on the plan products.
+		CheckoutFields::register();     // Start date field and plan rules at checkout.
+		OrderHooks::register();         // Paid order → pack; cancelled/refunded order → pack cancelled.
+		Scheduler::register();          // 20:00 lock, 23:30 close day, 00:10 pack status.
+		ScheduleController::register(); // Customer REST routes: schedule, skip, pause, resume.
+		AdminController::register();    // Admin REST routes: holidays, credit, cancel, meal type.
+
 		add_action( 'init', array( self::class, 'register_blocks' ) );
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'pz', Cli\Commands::class );
+			Cli\EngineCommands::register();
 		}
 	}
 

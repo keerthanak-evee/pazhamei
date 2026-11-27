@@ -12,6 +12,7 @@
 
 namespace Pazhamei\Install;
 
+use Pazhamei\Cron\Scheduler;
 use Pazhamei\Repositories\EnquiryRepository;
 use Pazhamei\Repositories\SchemaRepository;
 use Pazhamei\Repositories\Stores;
@@ -49,6 +50,7 @@ final class Installer {
 	 * roles and settings are only removed on uninstall (see uninstall.php).
 	 */
 	public static function deactivate(): void {
+		Scheduler::unschedule_all(); // Re-created on the next page load after activation.
 		flush_rewrite_rules();
 	}
 
