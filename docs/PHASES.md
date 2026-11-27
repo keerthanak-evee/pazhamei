@@ -84,6 +84,10 @@ Later:
 
 ## Phase 2: Deployment setup
 ## Phase 3: Subscription engine
+
+Decision (owner):
+- Renewal during an open-ended pause: the new pack stays `queued` with no dates until the customer resumes (business rule 9). Checkout warns about it (Phase 4 checkout row in the build plan).
+
 ## Phase 4: Customer portal
 
 - [ ] Sign-in / Register restyle: WooCommerce account form with name, email, mobile, password, delivery pincode and "forgot password" (moved from Phase 1)
