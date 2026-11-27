@@ -61,6 +61,7 @@ final class PageInstaller {
 		$this->report = array_merge( $this->report, MovedPagesMigration::tidy_up( array( self::class, 'is_untouched' ) ) );
 		$this->set_front_page();
 		$this->set_woocommerce_account_page();
+		$this->report = array_merge( $this->report, WooAccountSettings::apply() ); // Registration on, guest checkout off.
 		$this->set_site_logo();
 
 		return $this->report;
