@@ -13,6 +13,8 @@
 namespace Pazhamei\Install;
 
 use Pazhamei\Repositories\EnquiryRepository;
+use Pazhamei\Repositories\SchemaRepository;
+use Pazhamei\Repositories\Stores;
 use Pazhamei\Settings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -70,6 +72,7 @@ final class Installer {
 
 		// add_option() does nothing if the option already exists, so saved settings are never overwritten.
 		add_option( Settings::OPTION, Settings::defaults() );
+		Settings::upgrade();
 
 		update_option( self::VERSION_OPTION, PZ_VERSION );
 	}
@@ -77,10 +80,14 @@ final class Installer {
 	/**
 	 * Create or upgrade every wp_pz_* table. dbDelta compares each CREATE TABLE
 	 * statement with the real table and only adds what is missing.
+	 * Every table must be InnoDB (transactions and row locks need it).
 	 */
 	private static function install_tables(): void {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		dbDelta( EnquiryRepository::schema() );
+		dbDelta( Stores::schemas() );
+
+		SchemaRepository::convert_to_innodb();
 	}
 }
