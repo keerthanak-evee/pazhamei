@@ -114,6 +114,34 @@ final class Plans {
 	}
 
 	/**
+	 * Meals in a pack, by plan code (TRIAL 1, D6 6, D26 26); 0 if unknown.
+	 *
+	 * @param string $code Plan code as stored on the pack.
+	 */
+	public static function meals_for_code( string $code ): int {
+		foreach ( self::all() as $plan ) {
+			if ( $plan['code'] === $code ) {
+				return $plan['meals'];
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * URL value for a plan code, e.g. 'D6' => '6-day'; '' if unknown.
+	 *
+	 * @param string $code Plan code.
+	 */
+	public static function slug_for_code( string $code ): string {
+		foreach ( self::all() as $slug => $plan ) {
+			if ( $plan['code'] === $code ) {
+				return $slug;
+			}
+		}
+		return '';
+	}
+
+	/**
 	 * Is this a known meal type code (VEG, NONVEG, MIXED)?
 	 *
 	 * @param string $value Submitted value.

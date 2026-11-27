@@ -56,4 +56,21 @@ final class ClockTest extends TestCase {
 		$this->expectException( InvalidArgumentException::class );
 		Clock::resolve( '30/11/2026 8pm', 'local', $this->real, $this->ist );
 	}
+
+	public function test_constant_overrides_the_option(): void {
+		$this->assertSame( '2026-12-01 10:00:00', Clock::pick_fake( '2026-12-01 10:00:00', '2026-11-29 20:01:00' ) );
+		$this->assertSame( '2026-11-29 20:01:00', Clock::pick_fake( null, '2026-11-29 20:01:00' ) );
+		$this->assertSame( '2026-11-29 20:01:00', Clock::pick_fake( '', '2026-11-29 20:01:00' ) );
+		$this->assertNull( Clock::pick_fake( null, '' ) );
+	}
+
+	public function test_fake_time_is_ignored_with_a_warning_when_not_local(): void {
+		$this->assertTrue( Clock::is_ignored( '2026-11-29 20:01:00', 'staging' ) );
+		$this->assertTrue( Clock::is_ignored( '2026-11-29 20:01:00', 'production' ) );
+		$this->assertFalse( Clock::is_ignored( '2026-11-29 20:01:00', 'local' ) );
+		$this->assertFalse( Clock::is_ignored( null, 'production' ), 'Nothing set, nothing to warn about' );
+
+		$now = Clock::resolve( Clock::pick_fake( null, '2026-11-29 20:01:00' ), 'staging', $this->real, $this->ist );
+		$this->assertSame( '2026-11-26 10:00:00', $now->format( 'Y-m-d H:i:s' ), 'The option is ignored on staging' );
+	}
 }
