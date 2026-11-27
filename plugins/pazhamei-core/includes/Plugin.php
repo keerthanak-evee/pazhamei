@@ -27,6 +27,7 @@ use Pazhamei\Woo\OrderHooks;
 use Pazhamei\Woo\OrderReceived;
 use Pazhamei\Woo\PlanProducts;
 use Pazhamei\Woo\ShopRedirects;
+use Pazhamei\Woo\TestPay;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -57,6 +58,7 @@ final class Plugin {
 		PlanProducts::register();       // Trial price and trial switch on the plan products.
 		CheckoutFields::register();     // Start date field and plan rules at checkout.
 		OrderHooks::register();         // Paid order → pack; cancelled/refunded order → pack cancelled.
+		TestPay::register();            // Local only: "Pazhamei Test Pay" marks orders paid, for testing.
 		Scheduler::register();          // 20:00 lock, 23:30 close day, 00:10 pack status.
 		ScheduleController::register(); // Customer REST routes: schedule, skip, pause, resume.
 		AdminController::register();    // Admin REST routes: holidays, credit, cancel, meal type.
