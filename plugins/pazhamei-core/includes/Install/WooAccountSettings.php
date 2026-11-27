@@ -9,6 +9,7 @@
  * - Guest checkout is off: only signed-in customers can buy a plan.
  * - The terms checkbox at checkout links to /terms.
  * - Checkout addresses are in India (default Tamil Nadu); prices in INR.
+ * - The site date format is "26 Nov 2026".
  *
  * @package Pazhamei
  */
@@ -37,6 +38,8 @@ final class WooAccountSettings {
 		'woocommerce_specific_allowed_countries'     => array( 'IN' ),
 		'woocommerce_default_country'                => 'IN:TN',
 		'woocommerce_currency'                       => 'INR',
+		// Dates like "26 Nov 2026" everywhere, including WooCommerce's order pages (CLAUDE.md).
+		'date_format'                                => 'j M Y',
 	);
 
 	/**
