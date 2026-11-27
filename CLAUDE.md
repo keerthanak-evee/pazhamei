@@ -73,7 +73,11 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
 - Menus are `wp_navigation` posts, rendered by `pz/portal-nav` through a `core/navigation` block with `ref`. Never create classic `nav_menu` menus.
 - Fonts and other assets are self-hosted in the theme. No Google Fonts or other external CDNs.
 - Every page is a normal WordPress page, editable in the block editor. Pages are built from core blocks plus `pz/*` blocks. Never hard-code page HTML into PHP templates.
-- Pages are created only through `wp pz install-pages`. The installer creates missing pages and never overwrites a page that already exists. Its only changes to existing pages: it sets a missing author (the first administrator), and refreshes placeholder text that still exactly matches what an older installer version wrote.
+- Pages are created only through `wp pz install-pages`. The installer creates missing pages and never overwrites a page that already exists. Its only changes to existing pages: it sets a missing author (the first administrator); it refreshes starter content that nobody has edited (fingerprint in `_pz_starter_hash`), together with that page's template; and it renames or retires pages that moved, pointing old links at the new address (`Install/MovedPagesMigration`).
+- Home, Plans, About Us and FAQ are built from theme patterns (`patterns/home-*.php`, `patterns/page-*.php`). Plans, About Us and FAQ use the `page-landing` template (full width, no title: each page's first section has the H1). After adding or removing a pattern file, bump the theme version in `style.css`, or WordPress keeps its cached pattern list.
+- Storefront pages: `/` (Home), `/plans`, `/about-us`, `/faq`, `/sign-in` and the four policy pages. The Storefront menu is Home, Plans, About Us, FAQ.
+- The enquiry form (`pz/enquiry-form`) lives only on `/about-us/#contact`. Plan-card Enquire buttons go to `/about-us/?plan=<plan>#contact`, which pre-selects the plan. "Talk to the kitchen" buttons go to `/about-us/#contact`.
+- Old addresses redirect permanently (301, `Access/MovedPages`): `/about-contact` → `/about-us/`, and `/enquire` → `/about-us/#contact`, keeping any `?plan=`. Never reuse those slugs.
 
 ## WooCommerce pages
 

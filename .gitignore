@@ -18,6 +18,7 @@
 !/plugins/pazhamei-core/
 
 # Never commit these, even inside our folders
+/.claude/settings.local.json
 node_modules/
 vendor/
 *.log

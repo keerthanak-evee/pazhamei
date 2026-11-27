@@ -56,7 +56,7 @@ if ( $pz_hero['id'] > 0 ) {
 <!-- /wp:button -->
 
 <!-- wp:button {"className":"is-style-pz-ghost-light"} -->
-<div class="wp-block-button is-style-pz-ghost-light"><a class="wp-block-button__link wp-element-button" href="/about-contact">Discover our story</a></div>
+<div class="wp-block-button is-style-pz-ghost-light"><a class="wp-block-button__link wp-element-button" href="/about-us/">Discover our story</a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group --></div></div>

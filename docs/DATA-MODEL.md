@@ -152,7 +152,7 @@ wp_pz_substitutions (id, menu_id, original_meal_id, replacement_meal_id, reason,
 
 ## wp_pz_enquiries (exists, Phase 1)
 
-One row per enquiry from the `/enquire` form (`pz/enquiry-form` → `POST /wp-json/pz/v1/enquiries`). Definition: `EnquiryRepository::schema()`.
+One row per enquiry from the enquiry form on `/about-us/#contact` (`pz/enquiry-form` → `POST /wp-json/pz/v1/enquiries`). Definition: `EnquiryRepository::schema()`.
 
 | Column | Type | Notes |
 |---|---|---|

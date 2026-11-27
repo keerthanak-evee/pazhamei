@@ -45,7 +45,7 @@ $pz_plans = array(
 
 <!-- wp:buttons -->
 <div class="wp-block-buttons"><!-- wp:button {"className":"pz-arrow pz-button-oxblood"} -->
-<div class="wp-block-button pz-arrow pz-button-oxblood"><a class="wp-block-button__link wp-element-button" href="/enquire?plan=<?php echo esc_attr( $pz_plan[5] ); ?>">Enquire</a></div>
+<div class="wp-block-button pz-arrow pz-button-oxblood"><a class="wp-block-button__link wp-element-button" href="/about-us/?plan=<?php echo esc_attr( $pz_plan[5] ); ?>#contact">Enquire</a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group --></div>

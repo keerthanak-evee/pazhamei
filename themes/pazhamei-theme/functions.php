@@ -21,6 +21,7 @@ function pz_theme_enqueue_assets() {
 
 	wp_enqueue_style( 'pazhamei-theme', get_stylesheet_uri(), array(), $version );
 	wp_enqueue_style( 'pazhamei-ornaments', get_theme_file_uri( 'assets/css/ornaments.css' ), array( 'pazhamei-theme' ), $version );
+	wp_enqueue_style( 'pazhamei-pages', get_theme_file_uri( 'assets/css/pages.css' ), array( 'pazhamei-ornaments' ), $version );
 	wp_enqueue_style( 'pazhamei-motion', get_theme_file_uri( 'assets/css/motion.css' ), array( 'pazhamei-theme' ), $version );
 	wp_enqueue_script(
 		'pazhamei-motion',
@@ -34,6 +35,39 @@ function pz_theme_enqueue_assets() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'pz_theme_enqueue_assets' );
+
+/**
+ * Register the tabs script. It is loaded only on pages that have a Group with the
+ * "Tabs" style (see pz_theme_tabs_script()), so other pages don't download it.
+ */
+function pz_theme_register_tabs() {
+	wp_register_script(
+		'pazhamei-tabs',
+		get_theme_file_uri( 'assets/js/tabs.js' ),
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+}
+add_action( 'init', 'pz_theme_register_tabs' );
+
+/**
+ * Load the tabs script when a Group with the "Tabs" style is on the page.
+ *
+ * @param string $html  Rendered block.
+ * @param array  $block Block data.
+ * @return string Unchanged HTML.
+ */
+function pz_theme_tabs_script( $html, $block ) {
+	if ( false !== strpos( (string) ( $block['attrs']['className'] ?? '' ), 'is-style-pz-tabs' ) ) {
+		wp_enqueue_script( 'pazhamei-tabs' );
+	}
+	return $html;
+}
+add_filter( 'render_block_core/group', 'pz_theme_tabs_script', 10, 2 );
 
 /**
  * Switch motion on before the page paints, so revealed blocks don't flash.
@@ -50,7 +84,7 @@ add_action( 'wp_head', 'pz_theme_motion_flag', 1 );
  * Let the block editor use the same styles and ornaments as the front end (but not the motion: nothing hides in the editor).
  */
 function pz_theme_editor_styles() {
-	add_editor_style( array( 'style.css', 'assets/css/ornaments.css' ) );
+	add_editor_style( array( 'style.css', 'assets/css/ornaments.css', 'assets/css/pages.css' ) );
 }
 add_action( 'after_setup_theme', 'pz_theme_editor_styles' );
 
@@ -59,7 +93,7 @@ add_action( 'after_setup_theme', 'pz_theme_editor_styles' );
  */
 function pz_theme_pattern_categories() {
 	register_block_pattern_category( 'pazhamei-home', array( 'label' => __( 'Pazhamei: Home sections', 'pazhamei-theme' ) ) );
-	register_block_pattern_category( 'pazhamei-pages', array( 'label' => __( 'Pazhamei: Page sections', 'pazhamei-theme' ) ) );
+	register_block_pattern_category( 'pazhamei-pages', array( 'label' => __( 'Pazhamei: Plans, About Us and FAQ sections', 'pazhamei-theme' ) ) );
 }
 add_action( 'init', 'pz_theme_pattern_categories' );
 
@@ -73,10 +107,17 @@ function pz_theme_block_styles() {
 			'pz-banana-leaf'   => __( 'Banana leaf', 'pazhamei-theme' ),
 			'pz-journey-sheet' => __( 'Framed paper sheet', 'pazhamei-theme' ),
 			'pz-heritage-top'  => __( 'Heritage border on top', 'pazhamei-theme' ),
+			'pz-tile'          => __( 'Tile (cream, on dark bands)', 'pazhamei-theme' ),
+			'pz-faq-sheet'     => __( 'FAQ sheet (dashed top edge)', 'pazhamei-theme' ),
+			'pz-cutoff-note'   => __( 'Wine panel with gold frame', 'pazhamei-theme' ),
+			'pz-enquiry-sheet' => __( 'Enquiry card (oxblood top edge)', 'pazhamei-theme' ),
+			'pz-tabs'          => __( 'Tabs (each inner group is a tab)', 'pazhamei-theme' ),
 		),
 		'core/image'   => array(
 			'pz-leaf-corner' => __( 'Leaf corner', 'pazhamei-theme' ),
 			'pz-seal'        => __( 'Round seal', 'pazhamei-theme' ),
+			'pz-arch'        => __( 'Arch frame', 'pazhamei-theme' ),
+			'pz-route-icon'  => __( 'Small round icon', 'pazhamei-theme' ),
 		),
 		'core/button'  => array(
 			'pz-cream'       => __( 'Cream (on dark)', 'pazhamei-theme' ),
@@ -87,6 +128,11 @@ function pz_theme_block_styles() {
 		),
 		'core/columns'   => array(
 			'pz-journey' => __( 'Journey steps (dotted line)', 'pazhamei-theme' ),
+			'pz-route'   => __( 'Route steps (thin line)', 'pazhamei-theme' ),
+		),
+		'core/table'     => array(
+			'pz-menu-table' => __( 'Menu table', 'pazhamei-theme' ),
+			'pz-address'    => __( 'Address rows', 'pazhamei-theme' ),
 		),
 		'core/separator' => array(
 			'pz-leaf' => __( 'Leaf divider', 'pazhamei-theme' ),

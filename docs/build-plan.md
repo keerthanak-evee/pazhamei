@@ -66,7 +66,7 @@ Blocks never touch the database directly: they call the REST API, which runs the
 
 | Portal | URL prefix | Who can open | Menu (editable in Appearance → Editor → Navigation) |
 | --- | --- | --- | --- |
-| Storefront | `/` (top-level pages) | Everyone | Storefront menu: Home, Plans, About & Contact, FAQ, Enquire, Sign in |
+| Storefront | `/` (top-level pages) | Everyone | Storefront menu: Home, Plans, About Us, FAQ, Sign in |
 | Customer | `/account/...` | Customer | Customer menu: Home, Meals, Plans, Dashboard, Support, Sign out |
 | Kitchen | `/kitchen/...` | Kitchen in-charge, Admin | Kitchen menu: Dashboard, Allergens & Instructions, Production sheet |
 | Admin | `/manage/...` | Admin | Admin menu: Dashboard, Menu & Meals, Customers, Enquiries, Subscriptions, Users & Roles, Settings |
@@ -255,15 +255,15 @@ Phase 0 gives every later phase a working site, the shared header and footer, th
 
 ## Phase 1 — Storefront (anonymous visitors)
 
-The storefront is five editable pages plus four legal pages (the Sign in / Register restyle moved to Phase 4), built from core blocks and theme patterns; only the plan cards and the enquiry form are custom blocks.
+The storefront is four editable pages (Home, Plans, About Us, FAQ) plus four legal pages (the Sign in / Register restyle moved to Phase 4), built from core blocks and theme patterns; only the plan cards and the enquiry form are custom blocks.
 
 | Page | Slug | Built from | Notes |
 | --- | --- | --- | --- |
 | Home | `/` | Patterns made from your HTML homepage: hero, how it works, Veg / Non-Veg / Mixed, plans teaser, testimonials, FAQ teaser, call to action | Each section is a pattern of core blocks, so every heading, image and button is editable. Animations from the HTML are kept only if they work without breaking editing. |
-| Plans | `/plans` | `pz/plan-cards` block | Shows Trial, 6-day and 26-day cards with what's included, no price. Button: **Enquire** (goes to `/enquire?plan=26-day`). Logged-in customers see the price and **Buy** instead. |
-| About & Contact | `/about-contact` | Core blocks + map embed | Story, kitchen address, phone, email, WhatsApp link, delivery areas, hours. |
+| Plans | `/plans` | `pz/plan-cards` block | Shows Trial, 6-day and 26-day cards with what's included, no price. Button: **Enquire** (goes to `/about-us/?plan=26-day#contact`, plan pre-selected). Below the cards: a "Sample menu" with Veg / Non-Veg / Mixed tabs, replaced by the real weekly menu (`pz/menu-week`) in Phase 8. Logged-in customers see the price and **Buy** instead. |
+| About Us | `/about-us` (was `/about-contact`, 301) | Core blocks and theme patterns; `pz/enquiry-form` block | About sections first (hero, philosophy, kitchen-to-table route, link to the plans), then Contact at `#contact`: kitchen address, phone, email, WhatsApp link, delivery areas, hours, and the enquiry form. No map embed (a Google Maps link instead). |
 | FAQ | `/faq` | Core Details blocks (accordion) | Each question is one editable Details block; add FAQ structured data via the SEO plugin. |
-| Enquire | `/enquire` | `pz/enquiry-form` block | Fields: name, mobile, email, area/pincode, plan interest, meal type, preferred start date, message. Saved to `wp_pz_enquiries`; admin gets an email; visitor sees a thank-you message. Spam protection: honeypot field, rate limit per IP, nonce. |
+| Enquiry form | `/about-us/#contact` (`/enquire` redirects there with a 301, keeping `?plan=`) | `pz/enquiry-form` block | Fields: name, mobile, email, area/pincode, plan interest, meal type, preferred start date, message. Saved to `wp_pz_enquiries`; admin gets an email; visitor sees a thank-you message. Spam protection: honeypot field, rate limit per IP, nonce. |
 | Terms, Privacy, Refund & Cancellation, Delivery policy | `/terms`, `/privacy-policy`, `/refund-policy`, `/delivery-policy` | Core blocks | Needed for Razorpay activation; linked in the footer. |
 
 **Hiding prices properly.** Hiding the price on `/plans` is not enough. Also redirect the WooCommerce shop and product pages to `/plans` for anonymous visitors, and remove the price from product structured data. Razorpay's website review asks for a [test account username and password](https://razorpay.com/docs/payments/dashboard/account-settings/business-website-details.md), so give them a customer login that can see prices.
@@ -436,7 +436,7 @@ Every button calls one REST endpoint, and every endpoint checks role, nonce and 
 
 | Button | Page | Role | Endpoint | Server checks | Result |
 | --- | --- | --- | --- | --- | --- |
-| Send enquiry | `/enquire` | Anyone | `POST /pz/v1/enquiries` | Required fields, honeypot, rate limit | Row in `wp_pz_enquiries`, admin email |
+| Send enquiry | `/about-us/#contact` | Anyone | `POST /pz/v1/enquiries` | Required fields, honeypot, rate limit | Row in `wp_pz_enquiries`, admin email |
 | Buy | `/account/plans` | Customer | WooCommerce add-to-cart → checkout | Trial eligibility, one plan per cart | Cart → Razorpay payment |
 | Place order | `/checkout` | Customer | WooCommerce + Razorpay | Start date valid, pincode served | Order paid → pack activated |
 | Skip | Dashboard calendar | Customer | `POST /pz/v1/schedule/{date}/skip` | Day is scheduled, not locked, belongs to user | Row `skipped`, reflow, end date +1 service day |

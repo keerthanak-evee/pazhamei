@@ -13,6 +13,7 @@ namespace Pazhamei;
 use Pazhamei\Access\AdminLockdown;
 use Pazhamei\Admin\EnquiriesPage;
 use Pazhamei\Access\LoginRedirect;
+use Pazhamei\Access\MovedPages;
 use Pazhamei\Access\PortalGuard;
 use Pazhamei\Access\PortalMeta;
 use Pazhamei\Cron\Scheduler;
@@ -46,6 +47,7 @@ final class Plugin {
 		LoginRedirect::register(); // Sends each role to its landing page after sign-in.
 		AdminLockdown::register(); // Only administrators get wp-admin and the admin bar.
 		ShopRedirects::register(); // /my-account, shop, product and cart pages go to our pages.
+		MovedPages::register();    // /about-contact and /enquire go to /about-us (301).
 		OrderReceived::register(); // "Go to my dashboard" button after payment.
 		HidePrices::register();    // No prices for visitors who are not signed in.
 		EnquiryController::register(); // REST routes for the storefront enquiry form.

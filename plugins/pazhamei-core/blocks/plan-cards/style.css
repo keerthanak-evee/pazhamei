@@ -1,19 +1,29 @@
-/* pz/plan-cards: three cream cards in a row, one column on phones. */
+/* pz/plan-cards: three cream cards in a row (one column on phones), made for a dark band. */
 .pz-plan-cards {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-	gap: clamp(12px, 1.6vw, 24px);
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: clamp(10px, 1.2vw, 18px);
+}
+
+@media (max-width: 781px) {
+	.pz-plan-cards {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }
 
 .pz-plan-card {
 	display: flex;
 	flex-direction: column;
-	padding: 8px;
-	background: var(--wp--preset--color--cream, #fff8e9);
-	border: 1px solid var(--wp--preset--color--turmeric-light, #e9d9c8);
-	border-radius: 15px;
+	align-items: flex-start;
+	padding: clamp(16px, 1.6vw, 26px);
+	color: #40281d;
+	background: var(--wp--preset--color--parchment, #fbf3e2);
+	border-radius: 10px;
 	box-shadow: var(--wp--preset--shadow--card);
-	overflow: hidden;
+}
+
+.pz-plan-card > * {
+	margin: 0;
 }
 
 .pz-plan-card__image {
@@ -21,38 +31,88 @@
 	height: auto;
 	aspect-ratio: 2.25;
 	object-fit: cover;
-	border-radius: 9px;
-}
-
-.pz-plan-card__body {
-	display: flex;
-	flex: 1;
-	flex-direction: column;
-	padding: 15px 13px 10px;
+	border-radius: 7px;
+	margin-bottom: 12px;
 }
 
 .pz-plan-card__name {
 	margin: 0;
-	font-size: clamp(1.45rem, 2.2vw, 2rem);
+	color: #40281d;
+	font-size: clamp(1.4rem, 2vw, 1.95rem);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
 }
 
-.pz-plan-card__label {
-	margin: 0.3em 0 0;
+.pz-plan-card__chip {
+	display: inline-block;
+	margin: 10px 0 0;
+	padding: 3px 10px;
+	border-radius: 20px;
+	background: #edddba;
+	font-size: 13px;
+	font-weight: 650;
+	line-height: 1.5;
+}
+
+.pz-plan-card__summary {
+	margin-top: 10px;
 	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.48;
+}
+
+.pz-plan-card__includes {
+	list-style: none;
+	margin: 12px 0 16px;
+	padding: 0;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.48;
+}
+
+.pz-plan-card__includes li::before {
+	content: "✓";
+	margin-right: 7px;
+	color: #826027;
 	font-weight: 700;
-	color: var(--wp--preset--color--turmeric-gold, #916c4d);
 }
 
-.pz-plan-card__summary,
-.pz-plan-card__includes {
-	font-size: var(--wp--preset--font-size--small);
+/* Empty for visitors. Phase 4 prints the price here for signed-in customers. */
+.pz-plan-card__price:empty {
+	display: none;
 }
 
-.pz-plan-card__includes {
-	padding-left: 1.2em;
-	margin-bottom: 1em;
-}
-
-.pz-plan-card .wp-block-buttons {
+.pz-plan-card__actions {
 	margin-top: auto;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pz-plan-card__actions .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 18px;
+	min-height: 44px;
+	padding: 10px 20px;
+	color: #fff8ea;
+	background: var(--wp--preset--color--oxblood, #5b090b);
+	border-radius: 99px;
+	font-weight: 650;
+}
+
+.pz-plan-card__actions .wp-block-button__link:hover,
+.pz-plan-card__actions .wp-block-button__link:focus-visible {
+	color: #fff8ea;
+	background: var(--wp--preset--color--hero-maroon, #470d0d);
+}
+
+/* An "opens elsewhere" arrow, as in the prototype. Its fallback font has a tall line box, so pin it. */
+.pz-plan-card__enquire::after {
+	content: "↗";
+	font-size: 0.95em;
+	line-height: 1;
+}
+
+.pz-plan-card__actions .wp-block-button__link {
+	line-height: 1.2;
 }

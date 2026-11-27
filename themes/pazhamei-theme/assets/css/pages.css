@@ -1,0 +1,583 @@
+/*
+ * Pazhamei page sections: Plans, About Us and FAQ (design/prototype-v2.html).
+ *
+ * Everything here hangs off a block style (picked in the editor's Styles panel,
+ * registered in functions.php) or a class on a core block, so the pages stay
+ * editable. Loaded on the front end and in the editor. Ornaments are in
+ * ornaments.css, motion in motion.css.
+ */
+
+/* ---------- Shared: section headings and colours ---------- */
+.pz-section-title {
+	font-size: clamp(1.75rem, 3vw, 2.9rem);
+	font-weight: 600;
+	line-height: 1.07;
+	letter-spacing: -0.035em;
+}
+
+.pz-page-hero,
+.pz-paper-section {
+	color: #39271d;
+	background-color: var(--wp--preset--color--parchment);
+}
+
+/* ---------- Page hero: big title on the left, a photo in an arch on the right ---------- */
+.pz-page-hero {
+	position: relative;
+	z-index: 1; /* The About Us arch hangs over the next band. */
+}
+
+.pz-page-hero h1 {
+	margin: 0;
+	color: #491313;
+	font-size: clamp(2.5rem, 4.65vw, 4.5rem);
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -0.045em;
+}
+
+.pz-page-hero h1 em {
+	font-weight: 500;
+}
+
+.pz-page-hero p {
+	max-width: 45ch;
+	color: #4b392a;
+	font-size: clamp(15px, 1.15vw, 18px);
+	line-height: 1.5;
+}
+
+/* Image: Arch frame. A thin gold frame with a rounded top, like a temple doorway. */
+.wp-block-image.is-style-pz-arch {
+	box-sizing: border-box;
+	width: min(100%, 435px);
+	margin-inline: auto 0;
+	padding: 8px;
+	background: var(--wp--preset--color--parchment);
+	border: 1px solid #ae8849;
+	border-radius: 52% 52% 0 0 / 65% 65% 0 0;
+}
+
+.wp-block-image.is-style-pz-arch img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 259 / 200;
+	object-fit: cover;
+	border-radius: inherit;
+}
+
+/* Tall arch (About Us): a portrait photo that hangs over the band below. */
+.wp-block-image.is-style-pz-arch.pz-arch-tall {
+	width: min(100%, 392px);
+	border-radius: 50% 50% 0 0 / 38% 38% 0 0;
+}
+
+.wp-block-image.is-style-pz-arch.pz-arch-tall img {
+	aspect-ratio: 260 / 352;
+}
+
+.pz-hang-over-next .wp-block-image.pz-arch-tall {
+	margin-bottom: clamp(-230px, -14vw, -90px);
+}
+
+@media (max-width: 781px) {
+	.wp-block-image.is-style-pz-arch {
+		width: min(72%, 300px);
+		margin-inline: 0 auto;
+	}
+
+	.wp-block-image.is-style-pz-arch.pz-arch-tall {
+		width: min(60%, 215px);
+		margin-inline: auto 0;
+	}
+
+	.pz-hang-over-next .wp-block-image.pz-arch-tall {
+		margin-bottom: -26vw;
+	}
+}
+
+/* ---------- Group: Tile. Cream tile with an icon, on dark bands ---------- */
+.wp-block-group.is-style-pz-tile {
+	box-sizing: border-box;
+	height: 100%;
+	padding: clamp(16px, 1.6vw, 26px);
+	color: #40281d;
+	background: var(--wp--preset--color--parchment);
+	border-radius: 10px;
+}
+
+.wp-block-group.is-style-pz-tile > * {
+	margin-block: 0;
+}
+
+.wp-block-group.is-style-pz-tile :where(h2, h3) {
+	color: #40281d;
+	font-size: clamp(1.35rem, 2vw, 1.95rem);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.025em;
+}
+
+.wp-block-group.is-style-pz-tile p {
+	margin-top: 7px;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.48;
+}
+
+/* Tiles keep their icon on the left, not centred like the Home pillars. */
+.wp-block-group.is-style-pz-tile[class*="pz-icon-"]::before {
+	width: 29px;
+	height: 29px;
+	margin: 0 0 9px;
+	mix-blend-mode: multiply;
+}
+
+.pz-icon-bowl::before { background-image: url("../images/ornaments/icon-bowl.webp"); }
+.pz-icon-plate::before { background-image: url("../images/ornaments/icon-plate.webp"); }
+.pz-icon-stopwatch::before { background-image: url("../images/ornaments/icon-stopwatch.webp"); }
+
+/* ---------- Plans: menu tabs and the sample menu table ---------- */
+.pz-stamp {
+	display: inline-block;
+	margin-inline: auto;
+	padding: 2px 10px;
+	border: 1px solid #ae8849;
+	border-radius: 4px;
+	color: #6b4c22;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* Group: Tabs. Without JavaScript (and in the editor) the inner groups simply stack. */
+.wp-block-group.is-style-pz-tabs > .wp-block-group {
+	margin-block-start: var(--wp--preset--spacing--40);
+}
+
+.wp-block-group.is-style-pz-tabs.is-tabbed > .wp-block-group {
+	margin-block-start: 0;
+}
+
+.pz-tabs__list {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.pz-tabs__tab {
+	min-height: 44px;
+	padding: 8px;
+	color: #fff8e5;
+	background: #294b2c;
+	border: 0;
+	border-radius: 8px 8px 0 0;
+	font: inherit;
+	font-weight: 650;
+	cursor: pointer;
+}
+
+.pz-tabs__tab:nth-child(2) {
+	background: #581b1a;
+}
+
+.pz-tabs__tab:nth-child(3) {
+	background: #896123;
+}
+
+.pz-tabs__tab[aria-selected="true"] {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+	box-shadow: inset 0 -4px #ddbd70;
+}
+
+.pz-tabs__tab:focus-visible {
+	outline: 3px solid #92713b;
+	outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+	.pz-tabs__list {
+		gap: 3px;
+	}
+
+	.pz-tabs__tab {
+		font-size: 13px;
+	}
+}
+
+/* Table: Menu table. Scrolls sideways inside its own box on phones, never the page. */
+.wp-block-table.is-style-pz-menu-table {
+	margin: 0;
+	overflow-x: auto;
+	background: #fff9e8;
+	border: 1px solid #d6c4a4;
+	border-radius: 0 0 8px 8px;
+}
+
+.wp-block-table.is-style-pz-menu-table table {
+	width: 100%;
+	min-width: 620px;
+	border-collapse: collapse;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.4;
+	text-align: left;
+}
+
+.wp-block-table.is-style-pz-menu-table :is(th, td) {
+	padding: 9px;
+	border: 0;
+	vertical-align: top;
+	text-align: left;
+}
+
+.wp-block-table.is-style-pz-menu-table thead {
+	color: #452b1a;
+	background: #e9dcc2;
+	border: 0;
+}
+
+.wp-block-table.is-style-pz-menu-table tbody tr + tr {
+	border-top: 1px solid #dccdae;
+}
+
+.wp-block-table.is-style-pz-menu-table tbody td:first-child {
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: 19px;
+	font-weight: 600;
+}
+
+.wp-block-table.is-style-pz-menu-table figcaption {
+	margin: 0;
+	padding: 6px 9px 8px;
+	color: #6b5a45;
+	font-size: 12px;
+	text-align: left;
+}
+
+/* ---------- About Us: philosophy band, route, closing band ---------- */
+.pz-philosophy {
+	position: relative;
+	isolation: isolate;
+}
+
+/* A kolam lace across the right half, behind the hanging arch. */
+.pz-philosophy::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	top: 44%;
+	right: 0;
+	width: 46%;
+	height: 30px;
+	background: url("../images/ornaments/kolam-lace.svg") repeat-x center / auto 100%;
+	opacity: 0.55;
+	pointer-events: none;
+}
+
+.wp-block-image.pz-still {
+	width: min(43%, 430px);
+	margin-bottom: clamp(24px, 3.5vw, 55px);
+}
+
+.wp-block-image.pz-still img {
+	width: 100%;
+	height: auto;
+	border-radius: 9px;
+}
+
+/* Columns: Route steps. Small round icons joined by a thin line. */
+.wp-block-columns.is-style-pz-route {
+	flex-wrap: nowrap !important; /* Three short steps fit side by side, even on phones. */
+	gap: 0;
+}
+
+.wp-block-columns.is-style-pz-route > .wp-block-column {
+	position: relative;
+	flex-basis: 0;
+	flex-grow: 1;
+	text-align: center;
+}
+
+.wp-block-columns.is-style-pz-route > .wp-block-column:not(:last-child)::after {
+	content: "";
+	position: absolute;
+	top: 24px;
+	left: calc(50% + 28px);
+	width: calc(100% - 56px);
+	border-top: 1px solid #bda373;
+}
+
+.wp-block-columns.is-style-pz-route p {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(16px, 1.6vw, 23px);
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+/* Image: Small round icon (48 px), for route steps. */
+.wp-block-image.is-style-pz-route-icon {
+	width: 48px;
+	margin: 0 auto 5px;
+}
+
+.wp-block-image.is-style-pz-route-icon img {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+/* ---------- About Us: contact section ---------- */
+.pz-contact {
+	scroll-margin-top: 90px; /* Clear the sticky header when opened at #contact. */
+}
+
+.pz-contact-title {
+	margin: 0;
+	color: var(--wp--preset--color--oxblood);
+	font-size: clamp(2.75rem, 5.2vw, 4.9rem);
+	font-weight: 600;
+	line-height: 0.96;
+	letter-spacing: -0.045em;
+}
+
+.pz-contact-title em {
+	display: block;
+	color: #85542b;
+	font-weight: 500;
+}
+
+.wp-block-image.pz-contact-photo img {
+	width: 100%;
+	height: clamp(150px, 14vw, 220px);
+	object-fit: cover;
+}
+
+/* Table: Address rows. Label on the left, details on the right, a thin line between rows. */
+.wp-block-table.is-style-pz-address {
+	margin: 10px 0 0;
+}
+
+.wp-block-table.is-style-pz-address table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.45;
+}
+
+.wp-block-table.is-style-pz-address td {
+	padding: 12px 0;
+	border: 0;
+	border-bottom: 1px solid #d9cbb6;
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+
+.wp-block-table.is-style-pz-address td:first-child {
+	width: 33%;
+	padding-right: 12px;
+	color: #5f3020;
+	font-weight: 700;
+}
+
+.wp-block-table.is-style-pz-address a {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* Group: Enquiry card. Cream card with an oxblood top edge, around the enquiry form. */
+.wp-block-group.is-style-pz-enquiry-sheet {
+	padding: clamp(20px, 3vw, 44px);
+	background: #fffcf5;
+	border: 1px solid #d7c3a6;
+	border-top: 5px solid var(--wp--preset--color--oxblood);
+	border-radius: 5px 5px 12px 12px;
+}
+
+.wp-block-group.is-style-pz-enquiry-sheet :where(h2) {
+	color: var(--wp--preset--color--oxblood);
+	font-size: clamp(1.9rem, 3vw, 2.75rem);
+	font-weight: 600;
+	letter-spacing: -0.035em;
+}
+
+.is-style-pz-enquiry-sheet .pz-enquiry__field :is(input, select, textarea) {
+	min-height: 44px;
+	background: #fffcf5;
+	border-color: #b6a68e;
+	border-radius: 5px;
+}
+
+.is-style-pz-enquiry-sheet .pz-enquiry .wp-block-button__link {
+	color: #fff8ea;
+	background: var(--wp--preset--color--oxblood);
+	border-radius: 6px;
+}
+
+.is-style-pz-enquiry-sheet .pz-enquiry .wp-block-button__link:hover {
+	background: var(--wp--preset--color--hero-maroon);
+}
+
+/* ---------- FAQ ---------- */
+/* Kolam corners: top left and bottom right of the section. */
+.pz-kolam-corners {
+	position: relative;
+	isolation: isolate;
+}
+
+.pz-kolam-corners::before,
+.pz-kolam-corners::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	width: clamp(56px, 9vw, 142px);
+	aspect-ratio: 1;
+	background: url("../images/ornaments/kolam-corner.svg") no-repeat center / contain;
+	pointer-events: none;
+}
+
+.pz-kolam-corners::before {
+	top: 10px;
+	left: 10px;
+}
+
+.pz-kolam-corners::after {
+	right: 10px;
+	bottom: 10px;
+	transform: rotate(180deg);
+}
+
+.pz-faq-intro {
+	padding-bottom: 24px;
+	border-bottom: 1px solid #bda87c;
+	text-align: center;
+}
+
+.pz-faq-intro h1 {
+	margin: 0;
+	color: var(--wp--preset--color--leaf);
+	font-size: clamp(2.6rem, 5.3vw, 4.9rem);
+	font-weight: 600;
+	line-height: 0.96;
+	letter-spacing: -0.045em;
+}
+
+.pz-faq-intro p {
+	max-width: 46ch;
+	margin-inline: auto;
+}
+
+/* Group: FAQ sheet. Paper with a dashed oxblood top edge; the questions open with + and −. */
+.wp-block-group.is-style-pz-faq-sheet {
+	padding: clamp(18px, 2.3vw, 36px);
+	background: #fff9e8;
+	border-top: 5px dashed #87463b;
+	border-radius: 9px;
+	box-shadow: 0 8px 24px #58391d18;
+}
+
+.is-style-pz-faq-sheet .wp-block-details {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.is-style-pz-faq-sheet .wp-block-details + .wp-block-details {
+	border-top: 1px solid #cfbd98;
+}
+
+.is-style-pz-faq-sheet .wp-block-details summary {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: 48px;
+	padding: 13px 0;
+	list-style: none;
+	color: #39271d;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(1.3rem, 2vw, 1.9rem);
+	font-weight: 600;
+	line-height: 1.15;
+}
+
+.is-style-pz-faq-sheet .wp-block-details summary::-webkit-details-marker {
+	display: none;
+}
+
+.is-style-pz-faq-sheet .wp-block-details summary::after {
+	content: "+";
+	flex: none;
+	color: #96763d;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1.1rem;
+}
+
+.is-style-pz-faq-sheet .wp-block-details[open] summary::after {
+	content: "−";
+}
+
+.is-style-pz-faq-sheet .wp-block-details > :not(summary) {
+	margin: 0 0 16px;
+	line-height: 1.6;
+}
+
+/* Group: Wine panel with a gold frame (the 8 pm rule). */
+.wp-block-group.is-style-pz-cutoff-note {
+	padding: clamp(18px, 2.3vw, 36px);
+	color: #fff4dd;
+	background: #511916;
+	border-radius: 9px;
+	outline: 1px solid #a07547;
+	outline-offset: -8px;
+}
+
+.is-style-pz-cutoff-note :where(h2, h3) {
+	color: #fff4dd;
+	font-size: clamp(1.7rem, 2.6vw, 2.5rem);
+	font-weight: 600;
+}
+
+.is-style-pz-cutoff-note .pz-label {
+	color: #f6d899;
+	font-size: 11px;
+	font-weight: 650;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.is-style-pz-cutoff-note .wp-block-image {
+	width: min(53%, 160px);
+	margin: 12px auto 18px;
+}
+
+.is-style-pz-cutoff-note .wp-block-image img {
+	width: 100%;
+	border-radius: 50%;
+}
+
+.is-style-pz-cutoff-note .wp-block-button__link {
+	color: #471914;
+	background: #eed098;
+}
+
+.is-style-pz-cutoff-note .wp-block-button__link:hover {
+	color: #471914;
+	background: #f6dfae;
+}
+
+/* ---------- Motion (only when the visitor allows it) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+	.pz-plan-card__actions .wp-block-button__link,
+	.pz-tabs__tab {
+		transition: transform 0.18s ease, box-shadow 0.18s ease;
+	}
+
+	.pz-plan-card__actions .wp-block-button__link:hover {
+		transform: translateY(-2px);
+	}
+}

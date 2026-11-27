@@ -199,6 +199,7 @@
 		{ "name": "footer", "title": "Footer", "area": "footer" }
 	],
 	"customTemplates": [
-		{ "name": "page-portal", "title": "Portal page (wide)", "postTypes": [ "page" ] }
+		{ "name": "page-portal", "title": "Portal page (wide)", "postTypes": [ "page" ] },
+		{ "name": "page-landing", "title": "Storefront page (full width, no title)", "postTypes": [ "page" ] }
 	]
 }

@@ -59,6 +59,12 @@ final class MediaImporter {
 			'journey-kitchen'        => array( 'journey-kitchen.webp', '' ),
 			'journey-delivery'       => array( 'journey-delivery.webp', '' ),
 			'cta-feast'              => array( 'explore-meal.webp', 'Illustrated banana-leaf lunch with rice, curries, curd and a brass tumbler' ),
+			// Plans, About Us and FAQ (prototype-v2).
+			'plans-hero'             => array( 'plans-hero-tray.jpg', 'A lunch tray of red rice, pepper chicken, vegetables, dal and fruit' ),
+			'about-vessels'          => array( 'story-vessels.jpg', 'Brass cooking vessels beside clay pots, cardamom and star anise' ),
+			'about-spices'           => array( 'story-spice-table.jpg', 'A brass pot, a banana leaf and bowls of ground spices' ),
+			'contact-spices'         => array( 'kitchen-spices.jpg', 'Spices used in Tamil cooking' ),
+			'faq-clock'              => array( 'faq-clock.jpg', 'A clock showing 8:00 PM IST' ),
 		);
 	}
 

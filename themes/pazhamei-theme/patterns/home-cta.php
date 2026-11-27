@@ -27,7 +27,7 @@
 <!-- /wp:button -->
 
 <!-- wp:button {"className":"is-style-pz-ghost-light"} -->
-<div class="wp-block-button is-style-pz-ghost-light"><a class="wp-block-button__link wp-element-button" href="/enquire">Send an enquiry</a></div>
+<div class="wp-block-button is-style-pz-ghost-light"><a class="wp-block-button__link wp-element-button" href="/about-us/#contact">Send an enquiry</a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:column -->

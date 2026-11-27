@@ -5,8 +5,12 @@
  * Used by `wp pz install-pages`. To add a page in a later phase, add a row
  * here and run the command again; existing pages are never touched.
  *
- * Each page row: slug, title, parent slug ('' for top level), portal, and the
- * phase of the build plan that fills it with real content.
+ * Each page row: slug, title, parent slug ('' for top level), portal, the
+ * phase of the build plan that fills it with real content, and the page
+ * template ('' for the theme's default page template).
+ *
+ * Pages that moved are listed in RENAMED and RETIRED; AccessMovedPages
+ * redirects their old addresses.
  *
  * @package Pazhamei
  */
@@ -30,10 +34,21 @@ final class PageList {
 	private const PHASE_KITCHEN    = 'Phase 7 (Kitchen portal)';
 	private const PHASE_ADMIN      = 'Phase 8 (Admin portal)';
 
+	/** Full-width storefront pages whose first section carries the title (theme template). */
+	private const LANDING_TEMPLATE = 'page-landing';
+
+	/** Renamed pages: old slug => array( new slug, new title ). The installer renames them once. */
+	public const RENAMED = array(
+		'about-contact' => array( 'about-us', 'About Us' ),
+	);
+
+	/** Pages no longer needed: the installer moves them to the Trash if nobody edited them. */
+	public const RETIRED = array( 'enquire' );
+
 	/**
 	 * All pages, parents listed before their children.
 	 *
-	 * @return array<int, array{slug: string, title: string, parent: string, portal: string, phase: string}>
+	 * @return array<int, array{slug: string, title: string, parent: string, portal: string, phase: string, template: string}>
 	 */
 	public static function pages(): array {
 		$s = Portals::STOREFRONT;
@@ -45,10 +60,9 @@ final class PageList {
 			// Storefront: top-level pages, open to everyone.
 			self::row( 'home', 'Home', '', $s, self::PHASE_STOREFRONT ),
 			self::row( 'sign-in', 'Sign in', '', $s, self::PHASE_STOREFRONT ),
-			self::row( 'plans', 'Plans', '', $s, self::PHASE_STOREFRONT ),
-			self::row( 'about-contact', 'About & Contact', '', $s, self::PHASE_STOREFRONT ),
-			self::row( 'faq', 'FAQ', '', $s, self::PHASE_STOREFRONT ),
-			self::row( 'enquire', 'Enquire', '', $s, self::PHASE_STOREFRONT ),
+			self::row( 'plans', 'Plans', '', $s, self::PHASE_STOREFRONT, self::LANDING_TEMPLATE ),
+			self::row( 'about-us', 'About Us', '', $s, self::PHASE_STOREFRONT, self::LANDING_TEMPLATE ), // Was /about-contact; holds the enquiry form (#contact).
+			self::row( 'faq', 'FAQ', '', $s, self::PHASE_STOREFRONT, self::LANDING_TEMPLATE ),
 			self::row( 'terms', 'Terms & Conditions', '', $s, self::PHASE_STOREFRONT ),
 			self::row( 'privacy-policy', 'Privacy Policy', '', $s, self::PHASE_STOREFRONT ),
 			self::row( 'refund-policy', 'Refund & Cancellation Policy', '', $s, self::PHASE_STOREFRONT ),
@@ -90,11 +104,10 @@ final class PageList {
 	public static function menus(): array {
 		return array(
 			Portals::STOREFRONT => array(
-				'Home'            => 'home',
-				'Plans'           => 'plans',
-				'About & Contact' => 'about-contact',
-				'FAQ'             => 'faq',
-				'Enquire'         => 'enquire',
+				'Home'     => 'home',
+				'Plans'    => 'plans',
+				'About Us' => 'about-us',
+				'FAQ'      => 'faq',
 			),
 			Portals::CUSTOMER   => array(
 				'Home'      => 'account',
@@ -128,10 +141,11 @@ final class PageList {
 	 * @param string $title  Page title.
 	 * @param string $parent Parent page slug, '' for top level.
 	 * @param string $portal Portal name.
-	 * @param string $phase  Build-plan phase that fills the page.
-	 * @return array{slug: string, title: string, parent: string, portal: string, phase: string}
+	 * @param string $phase    Build-plan phase that fills the page.
+	 * @param string $template Page template slug, '' for the default.
+	 * @return array{slug: string, title: string, parent: string, portal: string, phase: string, template: string}
 	 */
-	private static function row( string $slug, string $title, string $parent, string $portal, string $phase ): array {
-		return compact( 'slug', 'title', 'parent', 'portal', 'phase' );
+	private static function row( string $slug, string $title, string $parent, string $portal, string $phase, string $template = '' ): array {
+		return compact( 'slug', 'title', 'parent', 'portal', 'phase', 'template' );
 	}
 }

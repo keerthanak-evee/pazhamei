@@ -7,7 +7,9 @@
  *   (see tidy_existing_page()): a missing author is set, and placeholder text that is
  *   still exactly as an older installer wrote it is refreshed.
  * - New pages are owned by the first administrator.
- * - A menu that already exists is never changed.
+ * - A menu that already exists is never changed, except for links to pages that
+ *   moved (see MovedPagesMigration).
+ * - Pages that moved are renamed or retired once (MovedPagesMigration).
  * - Site settings (front page, WooCommerce My Account page) are set every run.
  *
  * Every step adds a line to the report, which the WP-CLI command prints.
@@ -52,9 +54,11 @@ final class PageInstaller {
 		$this->ensure_pretty_permalinks();
 		$this->report = array_merge( $this->report, MediaImporter::run() ); // Photos first: the Home content uses them.
 		$this->prepare_privacy_page();
+		$this->report = array_merge( $this->report, MovedPagesMigration::rename_pages() ); // Before install_pages(), so /about-us/ keeps the old page.
 		$this->install_pages();
 		$this->link_privacy_page();
 		$this->install_menus();
+		$this->report = array_merge( $this->report, MovedPagesMigration::tidy_up( array( self::class, 'is_untouched' ) ) );
 		$this->set_front_page();
 		$this->set_woocommerce_account_page();
 		$this->set_site_logo();
@@ -96,7 +100,7 @@ final class PageInstaller {
 					'post_name'     => $page['slug'],
 					'post_parent'   => $parent_id,
 					'post_content'  => self::starter_content( $page ),
-					'page_template' => $is_portal ? self::PORTAL_TEMPLATE : '',
+					'page_template' => '' !== $page['template'] ? $page['template'] : ( $is_portal ? self::PORTAL_TEMPLATE : '' ),
 					'meta_input'    => array(
 						PagePortal::META_KEY    => $page['portal'],
 						self::STARTER_HASH_META => self::fingerprint( self::starter_content( $page ) ),
@@ -121,7 +125,7 @@ final class PageInstaller {
 	 *   with the current starter content.
 	 *
 	 * @param \WP_Post                                                                          $existing The page.
-	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string} $page     Page row.
+	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string, template: string} $page     Page row.
 	 * @param string                                                                            $path     Page path, for the report.
 	 */
 	private function tidy_existing_page( \WP_Post $existing, array $page, string $path ): void {
@@ -135,8 +139,20 @@ final class PageInstaller {
 		$fresh   = self::starter_content( $page );
 		$stored  = (string) get_post_meta( $existing->ID, self::STARTER_HASH_META, true );
 
-		if ( self::normalise( $fresh ) === $current ) {
+		// Pages built from theme patterns: if the patterns can't be found (another theme is
+		// active, or WordPress still has an old pattern list cached), never fall back to the
+		// placeholder: leave the page as it is.
+		if ( StorefrontContent::uses_patterns( $path ) && null === StorefrontContent::for_path( $path ) ) {
+			$this->note( 'warning', "Page /{$path}/: the theme's patterns were not found, so its content was left alone. Check that pazhamei-theme is active; after adding a pattern file, bump the theme version (style.css) so WordPress reads the pattern list again." );
+			$fresh = null;
+		}
+
+		$is_starter = false;
+		if ( null === $fresh ) {
+			$is_starter = false; // Nothing to compare with.
+		} elseif ( self::normalise( $fresh ) === $current ) {
 			// Already up to date: just remember the fingerprint, so a later version can refresh it.
+			$is_starter = true;
 			if ( $stored !== self::fingerprint( $fresh ) ) {
 				update_post_meta( $existing->ID, self::STARTER_HASH_META, self::fingerprint( $fresh ) );
 			}
@@ -150,6 +166,13 @@ final class PageInstaller {
 					break;
 				}
 			}
+		}
+
+		// The page template goes with the starter content (e.g. the full-width storefront pages).
+		// Pages someone edited keep whatever template they have.
+		if ( ( $is_starter || isset( $changes['post_content'] ) ) && '' !== $page['template']
+			&& get_page_template_slug( $existing ) !== $page['template'] ) {
+			$changes['page_template'] = $page['template'];
 		}
 
 		if ( ! $changes ) {
@@ -173,6 +196,9 @@ final class PageInstaller {
 		if ( isset( $changes['post_content'] ) ) {
 			$what[] = 'starter content refreshed (it was never edited)';
 		}
+		if ( isset( $changes['page_template'] ) ) {
+			$what[] = "template set to '{$changes['page_template']}'";
+		}
 		$this->note( 'updated', "Page /{$path}/: " . implode( ', ', $what ) );
 	}
 
@@ -191,6 +217,27 @@ final class PageInstaller {
 		);
 
 		return $ids ? (int) $ids[0] : 0;
+	}
+
+	/**
+	 * True if the page still holds exactly the content this installer last wrote (nobody edited it).
+	 *
+	 * @param \WP_Post $page The page.
+	 */
+	public static function is_untouched( \WP_Post $page ): bool {
+		$stored = (string) get_post_meta( $page->ID, self::STARTER_HASH_META, true );
+
+		return '' !== $stored && self::fingerprint( $page->post_content ) === $stored;
+	}
+
+	/**
+	 * Remember new content as the installer's own, so the page still counts as untouched.
+	 *
+	 * @param int    $page_id Page ID.
+	 * @param string $content The content now saved.
+	 */
+	public static function remember_starter( int $page_id, string $content ): void {
+		update_post_meta( $page_id, self::STARTER_HASH_META, self::fingerprint( $content ) );
 	}
 
 	/**
@@ -430,7 +477,7 @@ final class PageInstaller {
 	 * (StorefrontContent); the others get one paragraph saying which phase fills them.
 	 * No heading: the page templates already show the page title.
 	 *
-	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string} $page Page row.
+	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string, template: string} $page Page row.
 	 */
 	private static function starter_content( array $page ): string {
 		return StorefrontContent::for_path( self::path( $page ) ) ?? self::placeholder( $page, $page['phase'], false );
@@ -440,7 +487,7 @@ final class PageInstaller {
 	 * Starter content written by older versions of this installer. A page whose content
 	 * still matches one of these exactly has never been edited, so it may be refreshed.
 	 *
-	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string} $page Page row.
+	 * @param array{slug: string, title: string, parent: string, portal: string, phase: string, template: string} $page Page row.
 	 * @return string[]
 	 */
 	private static function old_starter_contents( array $page ): array {

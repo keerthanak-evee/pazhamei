@@ -39,8 +39,8 @@ Later:
 - [x] Storefront photos compressed (WebP, max 1600 px) and imported to the Media Library by `wp pz install-pages`, tagged with `_pz_media_key`; decorative textures, paper, frame and border in the theme's `assets/images/`
 - [x] Prototype look rebuilt with `theme.json` colours and block styles only (Paper card, Banana leaf, Framed paper sheet, Heritage border, Leaf corner, Round seal, Cream / Outline buttons, Testimonial, Journey steps). Tailwind and the prototype stylesheets are not loaded anywhere
 - [x] Motion: `assets/css/motion.css` + `assets/js/motion.js` (IntersectionObserver) with classes `pz-reveal`, `pz-reveal-stagger`, `pz-hover-lift`, `pz-hover-zoom`, `pz-arrow`, `pz-hero`; all off with prefers-reduced-motion
-- [x] Block `pz/plan-cards` on `/plans`: Trial, 6-day, 26-day, what's included, Enquire → `/enquire?plan=<plan>`, no prices
-- [x] `/about-contact`, `/faq` (10 Details blocks), `/enquire`, and four policy drafts (`/terms`, `/privacy-policy`, `/refund-policy`, `/delivery-policy`), each policy marked "DRAFT – review before launch"
+- [x] Block `pz/plan-cards` on `/plans`: Trial, 6-day, 26-day, what's included, Enquire → `/enquire?plan=<plan>`, no prices (design update: now `/about-us/?plan=<plan>#contact`)
+- [x] `/about-contact`, `/faq` (10 Details blocks), `/enquire` (design update: About & Contact became `/about-us`; the enquiry form moved there and `/enquire` redirects), and four policy drafts (`/terms`, `/privacy-policy`, `/refund-policy`, `/delivery-policy`), each policy marked "DRAFT – review before launch"
 - [x] WordPress's own privacy page (Settings > Privacy) reused as `/privacy-policy`: storefront portal, published, no duplicate
 - [x] Block `pz/enquiry-form` (Interactivity API): fresh nonce from `GET /pz/v1/enquiries/nonce`, `POST /pz/v1/enquiries`, honeypot `company_url`, 5 per 15 minutes per salted IP hash, admin email, thank-you message, `?plan=` pre-select
 - [x] Table `wp_pz_enquiries` (dbDelta), plugin 0.1.0 → 0.2.0, version check on `plugins_loaded`; documented in `docs/DATA-MODEL.md`
@@ -156,6 +156,115 @@ Later:
 - [ ] Phase 7–8: `pz_meal` post type, menu snapshot (`menu_id`) on daily orders, kitchen marking via `DeliveryService`
 - [ ] Phase 2 (on hold): real server cron for Action Scheduler on Hostinger
 
+## Design update: FAQ, About Us, Plans (before Phase 4)
+
+Source: `design/prototype-v2.html`, the owner's updated prototype (`design/homepage.html` is the older one). Screenshots in `design/compare/design-update/`: `before/`, `prototype/` and `after/`, at 1440 and 375 px.
+
+Decisions (owner):
+- About & Contact becomes one page, "About Us", at `/about-us`. It is the same page (ID kept), with the About sections first and then Contact with the enquiry form at `#contact`. `/about-contact` redirects to `/about-us/` (301).
+- Storefront menu: one "About Us" item replaces "About & Contact" (which the owner had relabelled "ContactUs"), and Enquire is removed. The menu is now Home, Plans, About Us, FAQ.
+- The enquiry form lives only on `/about-us/#contact`:
+  - Plan-card Enquire buttons go to `/about-us/?plan=<plan>#contact`, with the plan pre-selected.
+  - `/enquire` redirects to `/about-us/#contact` (301) and keeps `?plan=`.
+  - The `/enquire` page is in the Trash and out of the installer's page list.
+  - `pz/enquiry-form` and `POST /pz/v1/enquiries` stay.
+- Every "Talk to the kitchen" button goes to `/about-us/#contact`.
+- The menu table on `/plans` is labelled "Sample menu". The real weekly menu (`pz/menu-week`) replaces it in Phase 8.
+- Prototype text that contradicts current decisions is not used:
+  - "Two skip extensions": there's no skip limit.
+  - "Paused up to 30 days": there's no pause limit.
+  - "Refunded pro-rata via Razorpay": refunds are handled offline.
+  - "Allergens lock packing until QC": not decided.
+
+Built:
+- [x] **Plans:**
+  - Hero with an arch photo.
+  - "Choose your subscription duration" wine band with the restyled `pz/plan-cards`.
+  - "Sample menu" with Veg / Non-Veg / Mixed tabs.
+  - "Built for health & calorie clarity" banana-leaf band with four icon tiles.
+- [x] **`pz/plan-cards` 0.3.0:**
+  - Cream cards without photos; an editor switch "Show plan photos" brings them back.
+  - Each card has a chip, a tick list and "Enquire ↗".
+  - Slots for Phase 4: `.pz-plan-card__price` (empty for visitors) and `.pz-plan-card__actions` (Buy goes next to Enquire). The wrapper has `data-mode="enquire"`.
+  - Card texts follow the current rules.
+- [x] **About Us:**
+  - Hero with a tall arch photo that hangs over the next band.
+  - "The Pazhamei philosophy": still photo, kolam lace, three icon tiles.
+  - "From our Guindy kitchen to your table" route.
+  - Green "Experience a taste of tradition" band.
+  - Contact (`#contact`): "Talk to our kitchen", a photo, address rows, and the enquiry form in a card.
+- [x] **FAQ:**
+  - Centred title with kolam corners.
+  - 12 questions on a paper sheet with + / −.
+  - "The 8 pm rule" panel with the clock and "Talk to the kitchen".
+- [x] **Theme 0.4.0:**
+  - Patterns `page-plans-*`, `page-about-*` and `page-faq`.
+  - Template `page-landing` (full width, no title).
+  - `assets/css/pages.css`.
+  - `assets/js/tabs.js`, loaded only where a Tabs group is used.
+  - New block styles: Tile, FAQ sheet, Wine panel with gold frame, Enquiry card and Tabs (group); Arch frame and Small round icon (image); Route steps (columns); Menu table and Address rows (table).
+- [x] **Installer (`Install/MovedPagesMigration`):**
+  - Renames `/about-contact`, trashes the untouched `/enquire`, and fixes the Storefront menu.
+  - Points old links at the new addresses in Site Editor template parts, menus and edited pages.
+  - Sets page templates together with the starter content.
+  - Never falls back to the placeholder when a page's theme patterns are missing.
+- [x] **Redirects:** `Access/MovedPages` (301), with `MovedPagesTest` (8 tests).
+- [x] **Home:** only links changed ("Discover our story" → `/about-us/`, "Send an enquiry" → `/about-us/#contact`, plan Enquire buttons).
+- [x] **Footer:** the About Us and Enquire links changed, in the theme file and in the owner's Site Editor copy. The owner's other footer edits are kept.
+- [x] **Checked:**
+  - Editor: 0 invalid blocks on Home, Plans, About Us and FAQ; the footer and Storefront menu parse cleanly.
+  - 375 px: no sideways scroll.
+  - Reduced motion: nothing animates and nothing stays hidden.
+  - Tabs work by click and with the arrow keys.
+  - `?plan=` pre-selects the plan; the 301s work; visitors see no prices.
+  - 214 PHPUnit tests pass.
+
+FAQ answers, re-checked against the current rules:
+- **Cutoff:** 8 pm IST the evening before; Monday's lunch locks at 8 pm on Sunday.
+- **Skip:** the lunch moves to the end of the plan. No limit; undo until the cutoff.
+- **Pause:** until a chosen date or until Resume, with no time limit. A pack bought during a pause waits until the customer resumes.
+- **Trial:** only when trials are open; one per customer, checked by account, mobile and address. No price shown.
+- **Meal type:** fixed per pack, and the next pack can differ. Staff can switch unlocked days (rule 2).
+- **Cancel and refund:** a locked lunch is still delivered and the rest are removed. The team settles refunds offline. Marked DRAFT, with a link to the refund policy.
+- **Allergens:** the profile is shown to the kitchen with every order. Cross-contamination wording is [EDIT]. No QC packing lock.
+- **Still DRAFT or [EDIT]:** delivery areas, allergen wording, refund terms, phone hours.
+
+Assumptions:
+- **Contact rows:** they keep the old About & Contact facts (delivery areas, hours, map link) with their [EDIT] markers. The old [EDIT] story paragraphs were dropped: the new design has no story block, and the hero and philosophy sections carry the story.
+- **Contact details:** the prototype's address (Plot 42, SIDCO Industrial Estate, Guindy) and phone hours (Mon–Sat, 7 am–9 pm) are used, marked [EDIT] until the owner confirms them.
+- **Enquiry form:** it keeps its own fields and REST submission (stored, emailed, rate-limited). The prototype's "Compose email" (mailto) button is not used.
+- **Headings:** Contact is an H2 on About Us, because the page's H1 is the About hero. The page titles ("About Us", "Plans", "FAQ") aren't shown on the page; each hero holds the H1.
+- **Footer:** the "Enquire" link stays, pointing to `/about-us/#contact`.
+- **Unconfirmed tile texts:** "Separate veg and non-veg prep lines" and "calories … listed for each lunch" come from the prototype. Confirm them before launch.
+- **Ornaments:** the FAQ's square kolam corner tiles are drawn with our `kolam-corner.svg` (a quarter lace), and the philosophy band uses `kolam-lace.svg`. Both are SVGs, so they stay sharp, but they don't match the prototype's artwork exactly.
+- **Address changes:** the FAQ's "address changes" wording is kept. The 8 pm lock snapshots the address, so a later change applies from the next unlocked day.
+
+[REPLACE] (weak images; drop better ones into `design/Images` with the same names, delete the Media Library item and run `wp pz install-pages`):
+- [ ] [REPLACE] `plans-hero-tray.jpg` (Media Library `plans-hero`): 290×224, extracted from prototype-v2, shown up to 435 px wide.
+- [ ] [REPLACE] `story-vessels.jpg` (`about-vessels`): 291×394, shown up to 392 px wide.
+- [ ] [REPLACE] `story-spice-table.jpg` (`about-spices`): 299×185, shown up to 430 px wide.
+- [ ] [REPLACE] `faq-clock.jpg` (`faq-clock`): 153×153; fine on normal screens, soft on retina.
+- [ ] [REPLACE] Theme icons `assets/images/ornaments/icon-bowl.webp`, `icon-plate.webp`, `icon-stopwatch.webp`: 29×28 from prototype-v2. Send SVG or 2× PNG.
+- `member-brass-tiffin.jpg` (173×379) is committed for the Phase 4 customer dashboard and isn't used yet.
+
+Home differences in prototype-v2 (listed only, not changed):
+- **Header:** logo only (no "PAZHAMEI" wordmark), menu "Home, Meal Plans, FAQ, About Us", no Sign in button.
+- **Hero:** a different photo (rice and curries in brass bowls).
+- **Vision:** a real photo (a pot on a wood fire) instead of the illustrated kitchen.
+- **Removed sections:** no "Veg, Non-Veg or Mixed" section, and no "Questions, answered" FAQ teaser.
+- **Meal plans band:** no "Compare all plans" link.
+- **Balance section:** a different photo (bowls of grains and lentils).
+- **Testimonials:** one quote with a "Read community stories" link.
+- **Closing band:** a single "Explore Now" button (no "Send an enquiry").
+- **Footer:**
+  - Logo emblem and an italic tagline.
+  - Columns are Contact the kitchen / Quick links / Accounts (Sign in, Customer portal, Kitchen, Admin) instead of Policies.
+  - A "Photography" credits fold, and no copyright line.
+
+Noticed (not changed):
+- **Footer email:** in the owner's Site Editor footer, the email text says `support@pazhamei.in` but the link opens `care@pazhameifuelmeals.in`. Fix it in the Site Editor.
+- **Razorpay warnings:** the Razorpay plugin prints "Undefined array key description" warnings above wp-admin pages (`woo-razorpay/checkout-block.php` line 42) until Razorpay is configured. That's a third-party plugin, so we leave it alone.
+
 ## Phase 4: Customer portal
 
 - [ ] Sign-in / Register restyle: WooCommerce account form with name, email, mobile, password, delivery pincode and "forgot password" (moved from Phase 1)
@@ -169,6 +278,9 @@ Decision (Phase 0 review):
 - V1 admin is wp-admin screens plus a dashboard, used only by the owner as `administrator`.
 - wp-admin stays administrator-only; the lockdown is not relaxed for `pz_admin`.
 - `pz_admin` staff accounts are created only after the custom `/manage` portal exists.
+
+Later:
+- [ ] Replace the "Sample menu" on `/plans` (pattern `page-plans-menu`) with the real weekly menu, `pz/menu-week` (owner, design update).
 
 ## Phase 9: QA, security, performance
 ## Phase 10: Go-live
