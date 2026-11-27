@@ -19,8 +19,8 @@ Conventions: dates are `date` columns holding IST dates (`Y-m-d`); times are `da
 | `wp_pz_change_log` | Every change, with before/after values | exists (0.3.0) | `ChangeLogRepository` |
 | `wp_pz_customer_profiles` | Mobile, dietary preference, instructions, zone; also the per-customer lock row | exists (0.3.0) | `ProfileRepository` |
 | `wp_pz_trial_claims` | Who has had a trial, by account, mobile and address (rule 10) | exists (0.3.0) | `TrialClaimRepository` |
-| `wp_pz_customer_allergens` | A customer's allergens, with severity | exists (0.3.0), used from Phase 4 | `CatalogSchema` |
-| `wp_pz_allergens` | Allergen list | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
+| `wp_pz_customer_allergens` | A customer's allergens, with severity (`mild`, `moderate`, `severe`), edited on /account/profile | exists (0.3.0), used from Phase 4 | `CatalogSchema`, `AllergenRepository` |
+| `wp_pz_allergens` | Allergen list; the installer seeds 10 starter allergens (0.4.0) | exists (0.3.0), used from Phase 4 | `CatalogSchema`, `AllergenRepository` |
 | `wp_pz_ingredients` | Ingredient list | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
 | `wp_pz_ingredient_allergens` | Ingredient → allergen map | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
 | `wp_pz_meal_ingredients` | Meal → ingredient, with grams | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
@@ -95,7 +95,7 @@ Indexes: `KEY customer_id`, `KEY status`.
 | `meal_type` | varchar(10) | |
 | `quantity` | smallint unsigned, default 1 | Always 1; not exposed (open decision 5) |
 | `menu_id` | bigint unsigned, NULL | Menu snapshot (Phase 7–8); NULL until menus exist |
-| `address_json` | text | Delivery address snapshot from the pack's WooCommerce order |
+| `address_json` | text | Delivery address snapshot: the customer's saved address (WooCommerce billing address, edited on /account/profile), or the pack's order if the account has none. Taken at 20:00, so a change applies from the next unlocked day |
 | `allergens_json` | text | Customer allergens at lock time |
 | `instructions` | text | Delivery instructions at lock time |
 | `status` | varchar(20) | `confirmed`, `preparing`, `packed`, `out_for_delivery`, `delivered`, `failed`, `cancelled` (holiday declared after the lock) |

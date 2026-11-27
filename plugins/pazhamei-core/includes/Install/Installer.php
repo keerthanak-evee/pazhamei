@@ -12,7 +12,9 @@
 
 namespace Pazhamei\Install;
 
+use Pazhamei\Clock;
 use Pazhamei\Cron\Scheduler;
+use Pazhamei\Repositories\AllergenRepository;
 use Pazhamei\Repositories\EnquiryRepository;
 use Pazhamei\Repositories\SchemaRepository;
 use Pazhamei\Repositories\Stores;
@@ -75,6 +77,9 @@ final class Installer {
 		// add_option() does nothing if the option already exists, so saved settings are never overwritten.
 		add_option( Settings::OPTION, Settings::defaults() );
 		Settings::upgrade();
+
+		// Starter allergen list (Phase 4); existing rows are never changed.
+		AllergenRepository::seed( Clock::now()->format( 'Y-m-d H:i:s' ) );
 
 		update_option( self::VERSION_OPTION, PZ_VERSION );
 	}

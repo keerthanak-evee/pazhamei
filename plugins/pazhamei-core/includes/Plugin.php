@@ -21,6 +21,7 @@ use Pazhamei\Cron\Scheduler;
 use Pazhamei\Install\Installer;
 use Pazhamei\Rest\AdminController;
 use Pazhamei\Rest\CheckoutController;
+use Pazhamei\Rest\ProfileController;
 use Pazhamei\Rest\EnquiryController;
 use Pazhamei\Rest\ScheduleController;
 use Pazhamei\Woo\AccountForms;
@@ -69,6 +70,7 @@ final class Plugin {
 		Scheduler::register();          // 20:00 lock, 23:30 close day, 00:10 pack status.
 		ScheduleController::register(); // Customer REST routes: schedule, skip, pause, resume.
 		CheckoutController::register(); // REST: start dates for the checkout date picker.
+		ProfileController::register();  // REST: the customer Profile page and password change.
 		AdminController::register();    // Admin REST routes: holidays, credit, cancel, meal type.
 
 		add_action( 'init', array( self::class, 'register_blocks' ) );

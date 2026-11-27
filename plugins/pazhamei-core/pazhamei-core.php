@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Pazhamei Core
  * Description:       Business logic for the Pazhamei cloud kitchen: portals, roles, access control and the subscription engine.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.9
  * Requires PHP:      8.1
  * Requires Plugins:  woocommerce
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Plugin version. Bump this whenever the database schema, roles or settings change:
 // the installer compares it with the stored `pz_version` option and upgrades.
-define( 'PZ_VERSION', '0.3.0' );
+define( 'PZ_VERSION', '0.4.0' );
 
 // Handy paths, used by the rest of the plugin.
 define( 'PZ_CORE_FILE', __FILE__ );

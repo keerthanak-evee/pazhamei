@@ -1,0 +1,62 @@
+/* pz/profile-form: phone first. Fields, buttons and panels come from assets/css/portal.css. */
+.pz-profile {
+	display: grid;
+	gap: 18px;
+	max-width: 760px;
+}
+
+.pz-profile h2 {
+	margin: 0 0 6px;
+	font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+}
+
+.pz-profile h3 {
+	margin: 18px 0 8px;
+	font-size: 1.25rem;
+}
+
+.pz-profile__row {
+	display: grid;
+	gap: 0 14px;
+}
+
+@media (min-width: 600px) {
+	.pz-profile__row {
+		grid-template-columns: 2fr 1fr;
+	}
+}
+
+.pz-profile__allergens {
+	margin: 0 0 14px;
+	padding: 0;
+	border: 0;
+}
+
+.pz-profile__allergens legend {
+	font-weight: 600;
+}
+
+.pz-profile__allergen {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 6px 12px;
+	margin: 0;
+	padding: 6px 0;
+	border-bottom: 1px solid #efe6d6;
+}
+
+.pz-profile__allergen select {
+	min-height: 40px;
+	min-width: 150px;
+	padding: 0.3em 0.6em;
+	border: 1px solid #d9cdb8;
+	border-radius: 8px;
+	background: #fff;
+	font: inherit;
+}
+
+.pz-field__error:empty {
+	display: none;
+}

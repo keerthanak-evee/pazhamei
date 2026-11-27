@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/profile-form",
+	"version": "0.4.0",
+	"title": "Profile form",
+	"category": "widgets",
+	"icon": "admin-users",
+	"description": "The customer's profile: name, mobile, delivery address, dietary preference, allergens with severity, special instructions, and password change.",
+	"keywords": [ "profile", "address", "allergens", "password" ],
+	"textdomain": "pazhamei-core",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"interactivity": true,
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"viewScriptModule": "file:./view.js",
+	"style": [ "pz-portal", "file:./style.css" ],
+	"render": "file:./render.php"
+}
