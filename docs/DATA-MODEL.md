@@ -25,7 +25,7 @@ Conventions: dates are `date` columns holding IST dates (`Y-m-d`); times are `da
 | `wp_pz_ingredient_allergens` | Ingredient → allergen map | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
 | `wp_pz_meal_ingredients` | Meal → ingredient, with grams | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
 | `wp_pz_menu_templates` | Weekly fixed menu: weekday × meal type → meals | exists (0.3.0), used from Phase 8 | `CatalogSchema` |
-| `wp_pz_menus`, `wp_pz_menu_items` | Menu for a real date × meal type, draft or published | exists (0.3.0), used from Phase 8 | `CatalogSchema` |
+| `wp_pz_menus`, `wp_pz_menu_items` | Menu for a real date × meal type, draft or published. Read by /account/meals (Phase 4); entered in Phase 8 (local sample data: `wp pz seed --only=menus`) | exists (0.3.0) | `CatalogSchema`, `MenuRepository` |
 | `wp_pz_substitutions` | Requested meal swaps and their approval | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
 | `wp_pz_enquiries` | Storefront enquiries | exists (0.2.0) | `EnquiryRepository` |
 | `wp_pz_support_tickets`, `wp_pz_support_messages` | Customer support threads (raised on /account/support; admin replies in Phase 8) | exists (0.4.1) | `SupportRepository` |
@@ -148,7 +148,7 @@ wp_pz_substitutions (id, menu_id, original_meal_id, replacement_meal_id, reason,
     requested_by, decided_by, decided_at, created_at)
 ```
 
-`meal_id` columns hold `pz_meal` post IDs (the post type arrives with the menu screens).
+`meal_id` columns hold `pz_meal` post IDs. The `pz_meal` post type exists from Phase 4 (`Admin\MealPostType`, administrators only, not public): title, excerpt, featured image, and meta `_pz_kcal` and `_pz_protein_g`. A meal's allergens come from its ingredients (`wp_pz_meal_ingredients` → `wp_pz_ingredient_allergens`). Local sample meals carry `_pz_sample`.
 
 ## wp_pz_enquiries (exists, Phase 1)
 

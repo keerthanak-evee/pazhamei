@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/menu-week",
+	"version": "0.4.0",
+	"title": "Menu of the week",
+	"category": "widgets",
+	"icon": "food",
+	"description": "This week's menu for Veg, Non-Veg and Mixed side by side, with photos, calories, protein and allergens. The customer's own meal type is highlighted.",
+	"keywords": [ "menu", "meals", "week" ],
+	"textdomain": "pazhamei-core",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"interactivity": true,
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"viewScriptModule": "file:./view.js",
+	"style": [ "pz-portal", "file:./style.css" ],
+	"render": "file:./render.php"
+}

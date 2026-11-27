@@ -1,0 +1,145 @@
+/* pz/menu-week: day tabs, then Veg / Non-Veg / Mixed. Phone first: one column, own type first. */
+.pz-menu-week__range {
+	margin: 0 0 10px;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-menu-week__tabs {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 6px;
+	margin-bottom: 16px;
+}
+
+.pz-menu-week__tab {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-height: 52px;
+	padding: 6px 4px;
+	border: 1px solid #e2c98f;
+	border-radius: 10px;
+	background: #fff;
+	color: var(--wp--preset--color--espresso, #211b18);
+	font: inherit;
+	font-weight: 650;
+	cursor: pointer;
+}
+
+.pz-menu-week__tab small {
+	font-weight: 400;
+}
+
+.pz-menu-week__tab[aria-selected="true"] {
+	background: var(--wp--preset--color--hero-maroon, #470d0d);
+	border-color: var(--wp--preset--color--hero-maroon, #470d0d);
+	color: #fff8e9;
+}
+
+.pz-menu-week__day-title {
+	margin: 0 0 12px;
+	font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+}
+
+.pz-menu-week__types {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.pz-menu-type.is-mine {
+	order: -1; /* Phones: your type first. */
+}
+
+@media (min-width: 782px) {
+	.pz-menu-week__types {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.pz-menu-type.is-mine {
+		order: 0; /* Wide screens: Veg, Non-Veg, Mixed in their usual order. */
+	}
+}
+
+.pz-menu-type {
+	padding: 14px;
+	background: #fff;
+	border: 1px solid #e8dfd0;
+	border-radius: 12px;
+}
+
+.pz-menu-type.is-mine {
+	background: var(--wp--preset--color--cream, #fff8e9);
+	border: 2px solid var(--wp--preset--color--oxblood, #5b090b);
+}
+
+.pz-menu-type__name {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 6px;
+	margin: 0 0 10px;
+	font-size: 1.3rem;
+}
+
+.pz-menu-type__mine {
+	padding: 2px 10px;
+	border-radius: 99px;
+	background: var(--wp--preset--color--oxblood, #5b090b);
+	color: #fff8e9;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.75rem;
+	font-weight: 650;
+}
+
+.pz-menu-type__soon {
+	margin: 0;
+	padding: 18px 10px;
+	text-align: center;
+	color: #8f857b;
+	background: #f6f1e8;
+	border-radius: 8px;
+}
+
+.pz-meal > p {
+	margin: 0 0 6px;
+}
+
+.pz-meal__image {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 1.6;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 10px;
+}
+
+.pz-meal__name {
+	font-weight: 700;
+}
+
+.pz-meal__desc {
+	font-size: 0.9rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-meal__facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.pz-meal__facts span {
+	padding: 2px 8px;
+	border-radius: 99px;
+	background: #efe6d6;
+	font-size: 0.8rem;
+}
+
+.pz-meal__allergens {
+	font-size: 0.85rem;
+	color: #8a1c1c;
+}

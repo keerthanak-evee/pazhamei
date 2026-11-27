@@ -12,6 +12,7 @@ namespace Pazhamei;
 
 use Pazhamei\Access\AdminLockdown;
 use Pazhamei\Admin\EnquiriesPage;
+use Pazhamei\Admin\MealPostType;
 use Pazhamei\Admin\PlansPricesPage;
 use Pazhamei\Access\LoginRedirect;
 use Pazhamei\Access\MovedPages;
@@ -61,6 +62,7 @@ final class Plugin {
 		EnquiryController::register(); // REST routes for the storefront enquiry form.
 		EnquiriesPage::register();     // wp-admin: Pazhamei > Enquiries (administrators only).
 		PlansPricesPage::register();   // wp-admin: Pazhamei > Plans and Prices (administrators only).
+		MealPostType::register();      // The pz_meal post type (menus point at meals).
 
 		// Subscription engine (Phase 3).
 		PlanProducts::register();       // The trial switch on the plan products.

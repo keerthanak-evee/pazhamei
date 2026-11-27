@@ -68,18 +68,40 @@ final class Commands {
 	}
 
 	/**
-	 * Create the test users test_customer, test_kitchen and test_admin.
+	 * Create the test users and the sample menus (local sites only).
 	 *
-	 * Each gets a new random password, printed here only. Running it again
-	 * resets the passwords. Runs only on local sites.
+	 * Users: test_customer, test_kitchen and test_admin. Each gets a new
+	 * random password, printed here only; running it again resets them.
+	 *
+	 * Menus: sample meals (pz_meal posts marked _pz_sample) with ingredients
+	 * and allergens, and published Veg / Non-Veg / Mixed menus for this week
+	 * and next week, so /account/meals can be tested. Safe to rerun.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--only=<what>]
+	 * : Seed only "users" or only "menus". Default: both.
 	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp pz seed
+	 *     wp pz seed --only=menus
+	 *
+	 * @param array<int, string>    $args       Positional arguments (none).
+	 * @param array<string, string> $assoc_args Options.
 	 */
-	public function seed(): void {
+	public function seed( array $args = array(), array $assoc_args = array() ): void {
 		if ( ! Environment::allows_dev_tools( wp_get_environment_type() ) ) {
 			WP_CLI::error( 'wp pz seed runs only on local sites (environment type "local"), never on staging or production.' );
+		}
+
+		$only = (string) ( $assoc_args['only'] ?? '' );
+		if ( '' === $only || 'menus' === $only ) {
+			$report = SampleMenus::run();
+			WP_CLI::success( sprintf( 'Sample menus: %d meals, %d menus published (%s to %s).', $report['meals'], $report['menus'], $report['from'], $report['to'] ) );
+		}
+		if ( 'menus' === $only ) {
+			return;
 		}
 
 		$rows = array();

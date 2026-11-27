@@ -71,6 +71,7 @@ final class StorefrontContent {
 	/** Customer portal pages (Phase 4): page path => theme patterns. */
 	public const ACCOUNT_PATTERNS = array(
 		'account'           => array( 'pazhamei/account-home' ),
+		'account/meals'     => array( 'pazhamei/account-meals' ),
 		'account/plans'     => array( 'pazhamei/account-plans' ),
 		'account/dashboard' => array( 'pazhamei/account-dashboard' ),
 		'account/profile'   => array( 'pazhamei/account-profile' ),
