@@ -117,8 +117,9 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
 ## Testing
 
 - Every business rule needs a PHPUnit test. Run the tests before every commit.
-- Get the current time from `Pazhamei\Clock::now()`. To fake it for time-based rules, define `PZ_FAKE_NOW` (`Y-m-d H:i:s`) in the local `wp-config.php`.
-- `wp pz seed` and `PZ_FAKE_NOW` work only when the environment type is `local`; they refuse or are ignored on staging and production.
+- Get the current time from `Pazhamei\Clock::now()`. To fake it for time-based rules, run `wp pz time 2026-11-29 20:01` (stored in the option `pz_fake_now`, lasts across commands; `wp pz time --clear` to stop), or define `PZ_FAKE_NOW` (`Y-m-d H:i:s`) in the local `wp-config.php`, which wins over the option.
+- `wp pz seed`, `wp pz time`, the other local test helpers and any fake time work only when the environment type is `local`; they refuse or are ignored (with a warning) on staging and production.
+- Engine tests run on in-memory stores (`tests/Fakes`) that enforce the same UNIQUE keys as MySQL. Test the real database through the `wp pz` commands (`wp pz schedule <user>`, `wp pz simulate-order`, `wp pz run-lock`).
 - After building a page or flow, open it in the browser and check it as the right test user.
 
 ## Workflow for each phase

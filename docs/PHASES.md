@@ -98,6 +98,63 @@ Decisions (owner, Phase 3 kickoff):
 8. **Open:** failed delivery. A `failed` status plus an admin "Credit meal" action (adds a meal and reflows). No automatic crediting (rule 14).
 9. **Open:** auto-marking delivered. Setting `auto_mark_delivered`, default ON: locked days not marked failed by 23:30 count as delivered. When OFF they stay locked until someone marks them (rule 15).
 10. Renewal during an open-ended pause waits (`queued`, no dates) until the customer resumes (rule 9). Phase 4 checkout warns: "Your plan is paused. Resume it to start your new pack."
+11. (Kickoff additions) The in-memory test stores enforce the same constraints as MySQL and fail the same way; every new table is InnoDB, checked in the CLI walkthrough.
+
+Built (plugin 0.3.0):
+- [x] 17 new tables (dbDelta, all InnoDB; installer converts any that aren't): subscriptions, schedule (`UNIQUE customer+date`), pauses, daily_orders (`UNIQUE schedule_id`), holidays, change_log, customer_profiles, trial_claims, and the 9 meal/menu/allergen tables. `quantity` (default 1) on subscriptions and daily_orders. Documented in `docs/DATA-MODEL.md`
+- [x] Domain rules (plain PHP): `Calendar`, `Cutoff`, `StartDate`, `TrialIdentity`, `Reflow`
+- [x] `reflow()` for one customer across all packs (current first, then queued), inside a transaction with the customer's profile row and schedule rows locked (`SELECT … FOR UPDATE`)
+- [x] Services: activation (idempotent on order_item_id), skip/undo, pause (dated or open-ended)/resume, holiday add/remove, cancel, credit meal, change meal type (admin), delivered/failed, trial eligibility, checkout rules
+- [x] WooCommerce: three variable plan products (Veg/Non-Veg/Mixed), `publish` + catalogue visibility `hidden`; start-date field for block and classic checkout with the plan rules before payment; activate on payment complete/processing/completed; cancel on cancelled/refunded. HPOS-safe
+- [x] Action Scheduler jobs: 20:00 lock (safe to rerun), 23:30 close day (respects `auto_mark_delivered`), 00:10 pack status. First run computed in IST, stored as UTC, daily
+- [x] REST (`/pz/v1`): `me/subscription`, `me/schedule`, `schedule/{date}/skip` (POST/DELETE), `me/pause`, `me/resume`; `admin/holidays`, `admin/subscriptions/{id}/credit|cancel|meal-type`. Capability + `wp_rest` nonce on every route
+- [x] Settings: `trial_enabled`, `trial_price`, `cutoff_time`, `auto_mark_delivered` (`max_pause_days` removed)
+- [x] WP-CLI: `schedule`, `run-lock`, `run-close`, `run-status`, `tables`, `jobs`, `install-products`; local only: `time` (option `pz_fake_now`, `PZ_FAKE_NOW` wins), `simulate-order`, `skip`, `undo-skip`, `pause`, `resume`, `holiday`, `credit`, `cancel`, `meal-type`, `mark-failed`
+- [x] PHPUnit: 206 tests (110 new), all passing. In-memory stores (`tests/Fakes`) enforce the same UNIQUE and NOT NULL constraints with MySQL's error message, and roll back on failure
+- [x] CLI walkthrough on the local database (6-day Veg from Mon 30 Nov → skip Wed → pause Fri–Tue → renewal → open-ended pause + resume → 20:00 lock with fake time, rerun, late skip refused); all 18 `wp_pz_*` tables InnoDB
+- [x] Live checks: REST permissions (no nonce / wrong role → 403, after cutoff → 422), block checkout field registered and rules refuse guest / no date / Sunday / trial while off, replayed payment hook makes no second pack, full refund cancels the pack
+
+Assumptions (low-intervention mode; change any of them by telling me):
+- A dated pause's end date is the **last paused day** (included): "Fri to Tue" pauses Fri, Sat, Mon and Tue; meals restart Wed.
+- A pause covers all of the customer's deliveries (it is recorded against the current pack). So the REST routes are `/me/pause` and `/me/resume`, not per pack; the build plan's Phase 5 table now says so.
+- Resume restarts meals on the first unlocked day; locked days stay as they are. Resuming a pause that hasn't begun withdraws it (`cancelled`). Overlapping pauses are refused. Skipped days inside a later pause stay skipped.
+- A first pack is `active` as soon as it's paid, even if it starts later. A queued pack becomes `active` when the customer has no current pack (00:10 job, or straight away when the current pack is cancelled).
+- A renewal starts on the next free service day after the current pack's last meal, or on its own chosen start date if that is later.
+- If payment arrives after the chosen start date has locked, the pack starts on the first unlocked service day.
+- A failed day still uses its meal (`consumed_meals` = delivered + failed). "Credit meal" adds a meal and reopens a completed pack.
+- Holiday on a day that is already locked: the day becomes `holiday_cancelled`, its daily order `cancelled`, and the meal goes back to the pack. Holidays can be added for today or later, and removed only while the date is unlocked.
+- Cancel removes the pack's scheduled, paused and skipped days on unlocked dates; locked days stay and are delivered. Pauses made for that pack end with it, so a queued renewal can start. Cancelled order → `cancelled`; full refund → `refunded`; partial refunds change nothing.
+- Trial: one per account (any earlier trial pack, even cancelled). Mobile = last 10 digits. Address = pincode + the first word with a digit in address line 1, after removing punctuation and the filler words no, nos, num, number, flat, door, house, h, apt, apartment. Each trial sold is recorded in a new table, `wp_pz_trial_claims`, so changing a phone number later can't unlock a second trial.
+- The lock job locks every `scheduled` day from today up to the last locked date (normally just tomorrow), so a late run catches up. Close day runs through today after 23:30, otherwise through yesterday.
+- Plan products are virtual and sold individually; the delivery address is the billing address unless a shipping address is given.
+- Block checkout start date is a text field (YYYY-MM-DD) for now; Phase 4 adds the date picker. A classic-checkout fallback is included.
+- Statuses are `varchar`, not `ENUM`, so new values need no table rebuild. The change log stores the client IP for web requests.
+- Customer lock = `SELECT … FOR UPDATE` on the customer's profile row (created on first change).
+- `run-lock`, `run-close`, `run-status`, `tables`, `jobs` and `install-products` work on every environment (safe to rerun); the other helpers are local only.
+- Holidays need `pz_manage_settings`; pack actions need `pz_manage_subscriptions`. Staff can call the customer routes with `customer_id` to act for a customer.
+
+Open decisions:
+- [ ] (5) Meals per account per day: one for now; `quantity` column ready.
+- [ ] (8) Failed delivery: `failed` status + admin "Credit meal"; no automatic credit.
+- [ ] (9) `auto_mark_delivered`: default on.
+- [ ] Should a cancelled or refunded trial still count as "had a trial"? (Now: yes.)
+
+[EDIT] before selling (Phase 4 / go-live):
+- [ ] [EDIT] Plan prices (placeholders on the products): 6-day Veg ₹900, Non-Veg ₹1,080, Mixed ₹990; 26-day Veg ₹3,640, Non-Veg ₹4,420, Mixed ₹4,030. Product short descriptions start with "[EDIT] Placeholder prices."
+- [ ] [EDIT] `trial_price` (now 0) and `trial_enabled` (now off) in `pz_settings`.
+
+How to test:
+- `composer test` in `plugins/pazhamei-core` (206 tests).
+- `wp pz tables` (all InnoDB), `wp pz jobs`, `wp pz schedule demo_customer`.
+- Walkthrough: `wp pz time 2026-11-27 16:30`, `wp pz simulate-order <user> 6-day veg 2026-11-30`, `wp pz skip <user> 2026-12-02`, `wp pz pause <user> 2026-12-04 2026-12-08`, `wp pz simulate-order <user> 6-day nonveg 2026-11-30`, `wp pz pause <user> 2026-12-10`, `wp pz resume <user>`, `wp pz time 2026-11-29 20:01`, `wp pz run-lock` (twice), `wp pz time --clear`. In Git Bash, pass date and time as two arguments (the `wp` launcher breaks quoted arguments that contain spaces).
+
+Local test data: `demo_customer` (#5, packs #1 and #2, Monday 30 Nov locked with daily order #1) and `demo_refund` (#6, pack #3 refunded), test orders #130 to #132. Local only.
+
+Later:
+- [ ] Phase 4: start-date picker that only offers valid days; show `CheckoutCheck::paused_notice()` at checkout; browser check of the block checkout with Razorpay test mode
+- [ ] Phase 6: welcome email on `pz_pack_activated`; "paused a while" reminder on `pz_pause_ongoing` (fired daily by the 00:10 job with the days paused so far)
+- [ ] Phase 7–8: `pz_meal` post type, menu snapshot (`menu_id`) on daily orders, kitchen marking via `DeliveryService`
+- [ ] Phase 2 (on hold): real server cron for Action Scheduler on Hostinger
 
 ## Phase 4: Customer portal
 

@@ -1,7 +1,9 @@
 # Woo
 
-WooCommerce hooks.
+WooCommerce hooks. HPOS-safe only (`wc_get_order()`, order getters, `update_meta_data()` + `save()`); HPOS compatibility is declared in `pazhamei-core.php`.
 
-Now (Phase 0): `ShopRedirects` (/my-account -> /sign-in, shop/product -> /plans, cart -> /checkout) and `OrderReceived` ("Go to my dashboard" button after payment). HPOS compatibility is declared in `pazhamei-core.php`.
-
-Later: turning a paid order into a pack, refunds, hiding prices from anonymous visitors (Phases 1, 3 and 4).
+- `ShopRedirects`, `OrderReceived` (Phase 0), `HidePrices` (Phase 1).
+- `PlanProducts` (Phase 3): the three plan products, trial price and trial switch filters. `wp pz install-products`.
+- `CheckoutFields` (Phase 3): start-date field (block and classic checkout) and the plan rules before payment.
+- `OrderHooks` (Phase 3): paid order → pack; cancelled or refunded order → pack cancelled.
+- `OrderAddress` (Phase 3): delivery address snapshot for daily orders.

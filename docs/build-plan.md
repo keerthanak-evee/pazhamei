@@ -441,8 +441,8 @@ Every button calls one REST endpoint, and every endpoint checks role, nonce and 
 | Place order | `/checkout` | Customer | WooCommerce + Razorpay | Start date valid, pincode served | Order paid → pack activated |
 | Skip | Dashboard calendar | Customer | `POST /pz/v1/schedule/{date}/skip` | Day is scheduled, not locked, belongs to user | Row `skipped`, reflow, end date +1 service day |
 | Undo skip | Dashboard calendar | Customer | `DELETE /pz/v1/schedule/{date}/skip` | Not locked | Reflow, end date back |
-| Pause | Dashboard | Customer | `POST /pz/v1/subscriptions/{id}/pause` | Start date unlocked, end date optional (no maximum length) | Pause row, pack `paused` if open-ended, reflow |
-| Resume | Dashboard | Customer | `POST /pz/v1/subscriptions/{id}/resume` | Resume date unlocked | Pause ended, reflow, new end date |
+| Pause | Dashboard | Customer | `POST /pz/v1/me/pause` (a pause covers all of the customer's deliveries) | Start date unlocked, end date optional (no maximum length) | Pause row, pack `paused` if open-ended, reflow |
+| Resume | Dashboard | Customer | `POST /pz/v1/me/resume` | Meals restart on the first unlocked day | Pause ended (or withdrawn if not begun), reflow, new end date |
 | Save profile | `/account/profile` | Customer | `PUT /pz/v1/me/profile` | Valid pincode, allergen list | Profile saved; applies from next unlocked day |
 | Raise ticket | `/account/support` | Customer | `POST /pz/v1/support/tickets` | Required fields | Ticket, admin email |
 | Mark packed / out for delivery / delivered / failed | Kitchen dashboard | Kitchen | `POST /pz/v1/kitchen/orders/{id}/status` | Order is today's | Status updated, logged |

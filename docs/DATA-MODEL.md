@@ -189,6 +189,8 @@ Not stored: the visitor's IP address. The rate limit (5 per 15 minutes) keeps on
 | `pz_version` | Plugin version last installed; the installer upgrades when `PZ_VERSION` is newer |
 | `pz_nav_menus` | Portal → `wp_navigation` post ID for the four header menus |
 | `_transient_pz_rl_enquiry_<hash>` | Enquiry rate limit: recent attempt times for one hashed IP. Expires after 15 minutes (Phase 1) |
+| `pz_fake_now` | Fake IST time (`Y-m-d H:i:s`) set by `wp pz time` for testing. Used only when the environment type is `local` (a `PZ_FAKE_NOW` constant overrides it); ignored with a warning elsewhere (Phase 3) |
+| `pz_jobs_scheduled` | Signature (plugin version and job times) of the daily jobs last scheduled in Action Scheduler; a change reschedules them (Phase 3) |
 
 ## Post meta
 
@@ -196,3 +198,23 @@ Not stored: the visitor's IP address. The rate limit (5 per 15 minutes) keeps on
 |---|---|---|
 | `_pz_portal` | pages | `storefront`, `customer`, `kitchen` or `admin`. Empty means "inherit from parent page". |
 | `_pz_media_key` | attachments | Name of a storefront photo (e.g. `hero-lunch`), set by `wp pz install-pages`. Theme patterns and `pz/plan-cards` find photos by it (Phase 1). |
+| `_pz_starter_hash` | storefront pages | Fingerprint of the starter content `wp pz install-pages` gave the page, so an unedited page can be refreshed (Phase 1). |
+
+## Product meta (plan products, Phase 3)
+
+Plan products are normal WooCommerce products (posts), created by `wp pz install-products`.
+
+| Meta key | On | Holds |
+|---|---|---|
+| `_pz_plan_code` | variable product | `TRIAL`, `D6` or `D26` |
+| `_pz_meals` | variable product | 1, 6 or 26 |
+| `_pz_meal_type` | variation | `VEG`, `NONVEG` or `MIXED` (the variation's "Meal type" attribute is Veg / Non-Veg / Mixed) |
+
+## Order meta (HPOS, Phase 3)
+
+Read and written only through `$order->get_meta()` / `update_meta_data()`.
+
+| Meta key | Holds |
+|---|---|
+| `_wc_other/pazhamei/start-date` | Start date from the block checkout's additional field `pazhamei/start-date` (written by WooCommerce) |
+| `_pz_start_date` | Start date from the classic checkout (and `wp pz simulate-order`). Activation reads this first, then the block field |
