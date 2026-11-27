@@ -21,7 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class SchemaRepository {
 
 	/**
-	 * Every wp_pz_* table with its engine and approximate row count.
+	 * Every wp_pz_* table with its engine and exact row count.
+	 * (information_schema's TABLE_ROWS is a cached estimate, so rows are counted.)
 	 *
 	 * @return array<int, array{table: string, engine: string, rows: int}>
 	 */
@@ -30,7 +31,7 @@ final class SchemaRepository {
 		$like = $db->esc_like( $db->prefix . 'pz_' ) . '%';
 		$rows = Db::results(
 			$db->prepare(
-				'SELECT TABLE_NAME AS name, ENGINE AS engine, TABLE_ROWS AS row_count FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME LIKE %s ORDER BY TABLE_NAME',
+				'SELECT TABLE_NAME AS name, ENGINE AS engine FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME LIKE %s ORDER BY TABLE_NAME',
 				$like
 			)
 		);
@@ -38,7 +39,7 @@ final class SchemaRepository {
 			static fn( array $r ) => array(
 				'table'  => (string) $r['name'],
 				'engine' => (string) $r['engine'],
-				'rows'   => (int) $r['row_count'],
+				'rows'   => (int) Db::value( $db->prepare( 'SELECT COUNT(*) FROM %i', (string) $r['name'] ) ),
 			),
 			$rows
 		);

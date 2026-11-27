@@ -71,15 +71,19 @@ final class DevCommands {
 	 *
 	 * ## OPTIONS
 	 *
-	 * [<datetime>]
-	 * : IST time like "2026-11-29 20:01:00".
+	 * [<date>]
+	 * : IST date, YYYY-MM-DD (or the whole time as "2026-11-29 20:01:00" or 2026-11-29T20:01:00).
+	 *
+	 * [<time>]
+	 * : IST time, HH:MM or HH:MM:SS.
 	 *
 	 * [--clear]
 	 * : Go back to the real time.
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp pz time "2026-11-29 20:01:00"
+	 *     wp pz time 2026-11-29 20:01
+	 *     wp pz time 2026-11-29T20:01:00
 	 *     wp pz time
 	 *     wp pz time --clear
 	 *
@@ -95,7 +99,12 @@ final class DevCommands {
 			return;
 		}
 		if ( isset( $args[0] ) ) {
-			$time = EngineCommands::parse_time( $args[0] );
+			// Accept "date time", "dateTtime", or date and time as two arguments (no quoting needed).
+			$text = str_replace( 'T', ' ', trim( $args[0] . ' ' . ( $args[1] ?? '' ) ) );
+			if ( preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $text ) ) {
+				$text .= ':00';
+			}
+			$time = EngineCommands::parse_time( $text );
 			update_option( Clock::OPTION, $time->format( Clock::FAKE_FORMAT ) );
 		}
 		if ( defined( 'PZ_FAKE_NOW' ) ) {
@@ -170,7 +179,7 @@ final class DevCommands {
 		$order->save();
 		$order->payment_complete( 'SIM-' . $order->get_id() ); // Fires the same hooks as a real payment.
 
-		WP_CLI::log( sprintf( 'Order #%d paid (%s).', $order->get_id(), wp_strip_all_tags( wc_price( (float) $order->get_total() ) ) ) );
+		WP_CLI::log( sprintf( 'Order #%d paid (%s).', $order->get_id(), html_entity_decode( wp_strip_all_tags( wc_price( (float) $order->get_total() ) ), ENT_QUOTES, 'UTF-8' ) ) );
 		foreach ( $engine->stores->subscriptions->for_order( $order->get_id() ) as $pack ) {
 			WP_CLI::success( sprintf( 'Pack #%d %s %s: %s, %s to %s.', $pack->id, $pack->plan_code, $pack->meal_type, $pack->status, null === $pack->start_date ? 'no dates yet' : Dates::display( $pack->start_date ), null === $pack->end_date ? 'no dates yet' : Dates::display( $pack->end_date ) ) );
 		}
