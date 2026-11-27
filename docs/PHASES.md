@@ -267,7 +267,22 @@ Noticed (not changed):
 
 ## Phase 4: Customer portal
 
+Prompt: `docs/prompts/phase-4.md`. Phase 2 is still on hold; everything is local.
+
+Decisions (owner, Phase 4 kickoff):
+- Phase 3 assumptions accepted: a dated pause includes its end date; resume restarts on the first unlocked day; cancelling still delivers an already-locked meal; a cancelled or refunded trial still counts as "already had a trial".
+- Prices are editable by the owner without code: wp-admin → Pazhamei → Plans & Prices. WooCommerce variation prices are the only source of prices.
+- The trial price has one source: the Trial row of the Plans & Prices grid (the Trial variation prices). Only the on/off switch (`trial_enabled`) stays a setting; `trial_price` is removed.
+- Register includes Delivery Pincode, below Phone Number.
+- Sign in with "Email or phone number". Each mobile number belongs to one account, so Register refuses a mobile already in use.
+- The Sign-in / Register restyle matches `design/Images/Login&RegisterPAgeReference.jpg`, with the same rules as the other prototype pages: core blocks, theme styles, no prototype CSS, weak image crops marked [REPLACE].
+- A local-only "Pazhamei Test Pay" gateway is used for buy-flow testing. Razorpay is tested in Phase 2 on UAT.
+
+Steps:
 - [ ] Sign-in / Register restyle: WooCommerce account form with name, email, mobile, password, delivery pincode and "forgot password" (moved from Phase 1)
+
+Later:
+- [ ] Admin action "Allow another trial" for a customer who already had one (owner, Phase 4)
 
 ## Phase 5: Actions and manual flows
 ## Phase 6: Notifications
