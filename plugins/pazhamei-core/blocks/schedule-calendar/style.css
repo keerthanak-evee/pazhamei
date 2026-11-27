@@ -1,0 +1,220 @@
+/*
+ * pz/schedule-calendar: the customer's days.
+ * Phones: one row per day. 782px and wider: a Monday-to-Sunday grid
+ * (each tile goes under its weekday through data-col, 1 = Monday).
+ */
+.pz-calendar [hidden] {
+	display: none !important;
+}
+
+.pz-calendar__title {
+	margin: 0;
+	font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+}
+
+.pz-calendar__help {
+	margin: 4px 0 12px;
+	font-size: 0.92rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-calendar__message {
+	margin: 0 0 12px;
+	padding: 10px 14px;
+	background: #fdf0ee;
+	color: #8a1c1c;
+	border: 1px solid #efc9c3;
+	border-radius: 8px;
+}
+
+.pz-calendar__heads {
+	display: none;
+}
+
+.pz-calendar__days {
+	display: grid;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.pz-day {
+	display: grid;
+	grid-template-columns: 64px 1fr auto;
+	grid-template-areas:
+		"date label button"
+		"date reason reason";
+	align-items: center;
+	gap: 2px 12px;
+	padding: 10px 12px;
+	background: #fff;
+	border: 1px solid #e8dfd0;
+	border-radius: 10px;
+}
+
+.pz-day > p {
+	margin: 0;
+}
+
+.pz-day__date {
+	grid-area: date;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	line-height: 1.1;
+}
+
+.pz-day__weekday,
+.pz-day__month {
+	font-size: 0.72rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-day__num {
+	font-size: 1.35rem;
+	font-weight: 700;
+	line-height: 1.15;
+}
+
+.pz-day__label {
+	grid-area: label;
+	font-weight: 600;
+}
+
+.pz-day__type {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: 400;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-day__reason {
+	grid-area: reason;
+	font-size: 0.78rem;
+	color: #6b5544;
+}
+
+.pz-day__btn {
+	grid-area: button;
+	min-height: 40px;
+	min-width: 64px;
+	padding: 0.35em 1em;
+	border: 1px solid var(--wp--preset--color--hero-maroon, #470d0d);
+	border-radius: 99px;
+	background: transparent;
+	color: var(--wp--preset--color--hero-maroon, #470d0d);
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.pz-day__btn:hover,
+.pz-day__btn:focus-visible {
+	background: var(--wp--preset--color--hero-maroon, #470d0d);
+	color: #fff8e9;
+}
+
+.pz-day__btn--undo {
+	background: var(--wp--preset--color--hero-maroon, #470d0d);
+	color: #fff8e9;
+}
+
+.pz-day__btn[disabled] {
+	opacity: 0.55;
+	cursor: wait;
+}
+
+/* Kinds of day. */
+.pz-day[data-kind="scheduled"],
+.pz-day[data-kind="locked"] {
+	background: var(--wp--preset--color--cream, #fff8e9);
+	border-color: #e2c98f;
+}
+
+.pz-day[data-kind="skipped"] {
+	background: #fff;
+	border-style: dashed;
+}
+
+.pz-day[data-kind="skipped"] .pz-day__label,
+.pz-day[data-kind="paused"] .pz-day__label {
+	color: #8a6a3c;
+}
+
+.pz-day[data-kind="paused"] {
+	background: #fdf3df;
+}
+
+.pz-day[data-kind="delivered"] {
+	background: #eef5e8;
+	border-color: #cfe0c0;
+}
+
+.pz-day[data-kind="off"] {
+	background: #f1eee9;
+	border-color: #e6e1da;
+	color: #8f857b;
+}
+
+.pz-day[data-kind="none"] {
+	background: transparent;
+	border-style: dotted;
+	color: #8f857b;
+}
+
+.pz-day.is-locked {
+	box-shadow: inset 3px 0 0 #b38b4a;
+}
+
+@media (min-width: 782px) {
+	.pz-calendar__heads,
+	.pz-calendar__days {
+		grid-template-columns: repeat(7, minmax(0, 1fr));
+	}
+
+	.pz-calendar__heads {
+		display: grid;
+		gap: 6px;
+		margin-bottom: 6px;
+		text-align: center;
+		font-size: 0.78rem;
+		font-weight: 650;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--wp--preset--color--espresso-light, #4a3b32);
+	}
+
+	.pz-day {
+		grid-template-columns: 1fr;
+		grid-template-areas:
+			"date"
+			"label"
+			"reason"
+			"button";
+		align-content: start;
+		justify-items: center;
+		min-height: 112px;
+		text-align: center;
+	}
+
+	/* Each tile under its weekday; the grid moves to a new row when the week ends. */
+	.pz-day[data-col="1"] { grid-column-start: 1; }
+	.pz-day[data-col="2"] { grid-column-start: 2; }
+	.pz-day[data-col="3"] { grid-column-start: 3; }
+	.pz-day[data-col="4"] { grid-column-start: 4; }
+	.pz-day[data-col="5"] { grid-column-start: 5; }
+	.pz-day[data-col="6"] { grid-column-start: 6; }
+	.pz-day[data-col="7"] { grid-column-start: 7; }
+
+	.pz-day__weekday {
+		display: none;
+	}
+
+	.pz-day__btn {
+		margin-top: 6px;
+	}
+}

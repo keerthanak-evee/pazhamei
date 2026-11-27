@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/schedule-calendar",
+	"version": "0.4.0",
+	"title": "Schedule calendar",
+	"category": "widgets",
+	"icon": "calendar-alt",
+	"description": "The customer's upcoming days: lunches with Skip / Undo skip, Sundays and holidays greyed out, locked days with a lock and the reason.",
+	"keywords": [ "calendar", "schedule", "skip", "dashboard" ],
+	"textdomain": "pazhamei-core",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"interactivity": true,
+		"align": [ "wide" ],
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"viewScriptModule": "pz-dashboard",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

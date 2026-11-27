@@ -42,6 +42,33 @@ final class PauseTest extends TestCase {
 		$this->assertSame( PackStatus::ACTIVE, $this->kit->pack( $this->pack )->status, 'A dated pause never changes the status' );
 	}
 
+	/**
+	 * The dashboard shows the new end date before the customer confirms:
+	 * preview() must give the same answer as pause(), and save nothing.
+	 */
+	public function test_preview_shows_the_new_end_date_without_saving(): void {
+		$preview = $this->kit->engine->pauses()->preview( 7, '2026-12-04', '2026-12-08' );
+
+		$this->assertSame( '2026-12-10', $preview['end_date'] );
+		$this->assertFalse( $preview['open_ended'] );
+		$this->assertSame( '2026-12-05', $this->kit->pack( $this->pack )->end_date, 'Nothing saved' );
+		$this->assertSame( array(), $this->kit->engine->stores->pauses->for_customer( 7 ), 'No pause row' );
+
+		$this->kit->engine->pauses()->pause( 7, '2026-12-04', '2026-12-08', $this->kit->customer( 7 ) );
+		$this->assertSame( $preview['end_date'], $this->kit->pack( $this->pack )->end_date, 'Same as the real pause' );
+	}
+
+	public function test_preview_refuses_like_pause(): void {
+		$this->expectException( RuleViolation::class );
+		$this->kit->engine->pauses()->preview( 7, '2026-11-27', null ); // Today is locked.
+	}
+
+	public function test_open_ended_preview_has_no_end_date(): void {
+		$preview = $this->kit->engine->pauses()->preview( 7, '2026-12-02', null );
+		$this->assertNull( $preview['end_date'] );
+		$this->assertTrue( $preview['open_ended'] );
+	}
+
 	public function test_open_ended_pause_then_resume(): void {
 		$this->kit->engine->pauses()->pause( 7, '2026-12-02', null, $this->kit->customer( 7 ) );
 

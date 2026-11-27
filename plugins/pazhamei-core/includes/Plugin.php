@@ -83,6 +83,9 @@ final class Plugin {
 	 * Register every block that has a block.json inside blocks/.
 	 */
 	public static function register_blocks(): void {
+		// One Interactivity API store shared by the dashboard blocks (pz/subscription-summary, pz/schedule-calendar).
+		wp_register_script_module( 'pz-dashboard', PZ_CORE_URL . 'assets/js/dashboard.js', array( '@wordpress/interactivity' ), PZ_VERSION );
+
 		$block_folders = glob( PZ_CORE_DIR . 'blocks/*', GLOB_ONLYDIR );
 
 		foreach ( (array) $block_folders as $folder ) {

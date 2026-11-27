@@ -52,42 +52,14 @@ final class PauseService {
 	 * @throws RuleViolation When the dates are invalid, locked or overlap another pause.
 	 */
 	public function pause( int $customer_id, string $start, ?string $end, Actor $actor ): Pause {
-		if ( ! Dates::is_valid( $start ) || ( null !== $end && ! Dates::is_valid( $end ) ) ) {
-			throw new RuleViolation( 'bad_date', 'Please choose valid pause dates.' );
-		}
-		if ( null !== $end && $end < $start ) {
-			throw new RuleViolation( 'bad_range', 'The pause must end on or after the day it starts.' );
-		}
+		self::check_dates( $start, $end );
 
 		return $this->engine->customer_tx(
 			$customer_id,
 			function () use ( $customer_id, $start, $end, $actor ) {
-				$stores = $this->engine->stores;
-
-				if ( $this->engine->is_locked( $start ) ) {
-					throw new RuleViolation( 'locked', $this->engine->locked_message( $start ) );
-				}
-
-				$open = Reflow::in_walk_order( $stores->subscriptions->for_customer( $customer_id, PackStatus::OPEN ) );
-				if ( ! $open ) {
-					throw new RuleViolation( 'no_pack', 'You have no plan to pause.' );
-				}
-
-				foreach ( $stores->pauses->for_customer( $customer_id ) as $other ) {
-					if ( $this->overlaps( $other, $start, $end ) ) {
-						throw new RuleViolation( 'overlap', 'This pause overlaps a pause you already have. Resume or change that one first.' );
-					}
-				}
-
-				$pause                  = new Pause();
-				$pause->subscription_id = $open[0]->id;
-				$pause->customer_id     = $customer_id;
-				$pause->start_date      = $start;
-				$pause->end_date        = $end;
-				$pause->status          = Pause::ACTIVE;
-				$pause->created_by      = $actor->id;
-				$pause->created_at      = $this->engine->stamp();
-				$pause->id              = $stores->pauses->insert( $pause );
+				$stores    = $this->engine->stores;
+				$pause     = $this->new_pause( $customer_id, $start, $end, $actor );
+				$pause->id = $stores->pauses->insert( $pause );
 
 				$this->engine->log( 'pause', $pause->id, 'paused', null, $pause->to_array(), $actor, null === $end ? 'Open-ended' : 'Until ' . $end );
 				$this->engine->reflow()->run( $customer_id, $actor, 'Pause from ' . $start );
@@ -95,6 +67,93 @@ final class PauseService {
 				return $pause;
 			}
 		);
+	}
+
+	/**
+	 * What a pause would do, without saving anything: the same checks as
+	 * pause(), then the reflow plan with the new pause added. The dashboard
+	 * shows the new end date before the customer confirms.
+	 *
+	 * @param int         $customer_id Customer.
+	 * @param string      $start       First paused day.
+	 * @param string|null $end         Last paused day, or null for open-ended.
+	 * @return array{end_date: ?string, open_ended: bool, packs: array<int, array{start_date: ?string, end_date: ?string, status: string}>}
+	 * @throws RuleViolation When the pause would be refused.
+	 */
+	public function preview( int $customer_id, string $start, ?string $end ): array {
+		self::check_dates( $start, $end );
+
+		$stores  = $this->engine->stores;
+		$pause   = $this->new_pause( $customer_id, $start, $end, new Actor( $customer_id, 'customer', '' ) );
+		$packs   = $stores->subscriptions->for_customer( $customer_id, PackStatus::OPEN );
+		$pauses  = array_merge( $stores->pauses->for_customer( $customer_id ), array( $pause ) );
+		$plan    = Reflow::plan( $customer_id, $this->engine->first_unlocked(), $this->engine->calendar(), $packs, $stores->schedule->for_customer( $customer_id, true ), $pauses );
+		$last    = null;
+
+		foreach ( $plan->packs as $dates ) {
+			if ( null !== $dates['end_date'] && ( null === $last || $dates['end_date'] > $last ) ) {
+				$last = $dates['end_date'];
+			}
+		}
+		return array(
+			'end_date'   => null === $end ? null : $last,
+			'open_ended' => null === $end,
+			'packs'      => $plan->packs,
+		);
+	}
+
+	/**
+	 * Basic date checks shared by pause() and preview().
+	 *
+	 * @param string      $start First paused day.
+	 * @param string|null $end   Last paused day, or null.
+	 * @throws RuleViolation When the dates are not valid.
+	 */
+	private static function check_dates( string $start, ?string $end ): void {
+		if ( ! Dates::is_valid( $start ) || ( null !== $end && ! Dates::is_valid( $end ) ) ) {
+			throw new RuleViolation( 'bad_date', 'Please choose valid pause dates.' );
+		}
+		if ( null !== $end && $end < $start ) {
+			throw new RuleViolation( 'bad_range', 'The pause must end on or after the day it starts.' );
+		}
+	}
+
+	/**
+	 * Build a pause after the rule checks (not saved).
+	 *
+	 * @param int         $customer_id Customer.
+	 * @param string      $start       First paused day.
+	 * @param string|null $end         Last paused day, or null.
+	 * @param Actor       $actor       Who.
+	 * @throws RuleViolation When the start is locked, there is no plan, or it overlaps another pause.
+	 */
+	private function new_pause( int $customer_id, string $start, ?string $end, Actor $actor ): Pause {
+		$stores = $this->engine->stores;
+
+		if ( $this->engine->is_locked( $start ) ) {
+			throw new RuleViolation( 'locked', $this->engine->locked_message( $start ) );
+		}
+
+		$open = Reflow::in_walk_order( $stores->subscriptions->for_customer( $customer_id, PackStatus::OPEN ) );
+		if ( ! $open ) {
+			throw new RuleViolation( 'no_pack', 'You have no plan to pause.' );
+		}
+
+		foreach ( $stores->pauses->for_customer( $customer_id ) as $other ) {
+			if ( $this->overlaps( $other, $start, $end ) ) {
+				throw new RuleViolation( 'overlap', 'This pause overlaps a pause you already have. Resume or change that one first.' );
+			}
+		}
+
+		$pause                  = new Pause();
+		$pause->subscription_id = $open[0]->id;
+		$pause->customer_id     = $customer_id;
+		$pause->start_date      = $start;
+		$pause->end_date        = $end;
+		$pause->status          = Pause::ACTIVE;
+		$pause->created_by      = $actor->id;
+		$pause->created_at      = $this->engine->stamp();
+		return $pause;
 	}
 
 	/**

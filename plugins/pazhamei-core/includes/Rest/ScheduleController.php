@@ -7,6 +7,8 @@
  *   POST   /wp-json/pz/v1/schedule/{date}/skip       skip a day
  *   DELETE /wp-json/pz/v1/schedule/{date}/skip       undo the skip
  *   POST   /wp-json/pz/v1/me/pause                   { start_date, end_date? }
+ *   POST   /wp-json/pz/v1/me/pause/preview           { start_date, end_date? } → new end date, nothing saved
+ *   GET    /wp-json/pz/v1/me/dashboard               everything the dashboard shows (DashboardView)
  *   POST   /wp-json/pz/v1/me/resume
  *
  * Every route needs the pz_customer capability and an X-WP-Nonce header
@@ -21,7 +23,9 @@ namespace Pazhamei\Rest;
 use Pazhamei\Domain\Dates;
 use Pazhamei\Domain\PackStatus;
 use Pazhamei\Services\CheckoutCheck;
+use Pazhamei\Services\DashboardView;
 use Pazhamei\Services\Engine;
+use Pazhamei\Woo\PendingPayments;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -111,6 +115,29 @@ final class ScheduleController {
 					'start_date' => Guard::date_arg( true ),
 					'end_date'   => Guard::date_arg( false ),
 				),
+			)
+		);
+		register_rest_route(
+			Guard::NAMESPACE,
+			'/me/pause/preview',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( self::class, 'pause_preview' ),
+				'permission_callback' => $permission,
+				'args'                => $customer + array(
+					'start_date' => Guard::date_arg( true ),
+					'end_date'   => Guard::date_arg( false ),
+				),
+			)
+		);
+		register_rest_route(
+			Guard::NAMESPACE,
+			'/me/dashboard',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( self::class, 'dashboard' ),
+				'permission_callback' => $permission,
+				'args'                => $customer,
 			)
 		);
 		register_rest_route(
@@ -216,6 +243,39 @@ final class ScheduleController {
 				);
 			},
 			201
+		);
+	}
+
+	/**
+	 * POST /me/pause/preview: the new end date a pause would give, without saving it.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 */
+	public static function pause_preview( WP_REST_Request $request ): WP_REST_Response {
+		return Guard::reply(
+			static function () use ( $request ) {
+				$end     = (string) $request->get_param( 'end_date' );
+				$preview = Engine::live()->pauses()->preview( Guard::customer_id( $request ), (string) $request->get_param( 'start_date' ), '' === $end ? null : $end );
+				return array(
+					'endDate'    => $preview['end_date'],
+					'endDisplay' => null === $preview['end_date'] ? '' : Dates::weekday_name( $preview['end_date'] ) . ' ' . Dates::display( $preview['end_date'] ),
+					'openEnded'  => $preview['open_ended'],
+				);
+			}
+		);
+	}
+
+	/**
+	 * GET /me/dashboard: everything the dashboard shows (Services\DashboardView).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 */
+	public static function dashboard( WP_REST_Request $request ): WP_REST_Response {
+		return Guard::reply(
+			static function () use ( $request ) {
+				$customer_id = Guard::customer_id( $request );
+				return DashboardView::build( Engine::live(), $customer_id, PendingPayments::confirming( $customer_id ) );
+			}
 		);
 	}
 

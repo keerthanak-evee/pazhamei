@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/subscription-summary",
+	"version": "0.4.0",
+	"title": "Subscription summary",
+	"category": "widgets",
+	"icon": "id",
+	"description": "The customer's current pack (plan, meal type, meals left, start and end, status), queued renewals, the 8 pm countdown, and Pause / Resume.",
+	"keywords": [ "pack", "subscription", "pause", "resume", "dashboard" ],
+	"textdomain": "pazhamei-core",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"interactivity": true,
+		"align": [ "wide" ],
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"viewScriptModule": "pz-dashboard",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}
