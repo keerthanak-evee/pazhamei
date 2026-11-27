@@ -3,7 +3,7 @@
 Reference for every custom table and option. Update this file in the same commit as any table change (see `CLAUDE.md`).
 Source: `docs/build-plan.md`, Phase 3 "Tables". The WordPress prefix is shown as `wp_`.
 
-**Status (plugin 0.3.0, Phase 3):** every table below **exists** except the support tables. The installer creates them with `dbDelta`; it runs on `plugins_loaded` whenever `PZ_VERSION` is newer than the stored `pz_version`. Every table is **InnoDB**: transactions and `SELECT … FOR UPDATE` depend on it. The installer converts any `wp_pz_*` table that isn't InnoDB, and `wp pz tables` shows each table's engine.
+**Status (plugin 0.4.1, Phase 4):** every table below **exists**. The installer creates them with `dbDelta`; it runs on `plugins_loaded` whenever `PZ_VERSION` is newer than the stored `pz_version`. Every table is **InnoDB**: transactions and `SELECT … FOR UPDATE` depend on it. The installer converts any `wp_pz_*` table that isn't InnoDB, and `wp pz tables` shows each table's engine.
 
 Conventions: dates are `date` columns holding IST dates (`Y-m-d`); times are `datetime` in IST from `Clock::now()`. Statuses are `varchar` (not `ENUM`) so new values never need a table rebuild; the allowed values are listed here and in `includes/Domain/*Status.php`. All SQL lives in `includes/Repositories/`.
 
@@ -28,7 +28,7 @@ Conventions: dates are `date` columns holding IST dates (`Y-m-d`); times are `da
 | `wp_pz_menus`, `wp_pz_menu_items` | Menu for a real date × meal type, draft or published | exists (0.3.0), used from Phase 8 | `CatalogSchema` |
 | `wp_pz_substitutions` | Requested meal swaps and their approval | exists (0.3.0), used from Phase 7 | `CatalogSchema` |
 | `wp_pz_enquiries` | Storefront enquiries | exists (0.2.0) | `EnquiryRepository` |
-| `wp_pz_support_tickets`, `wp_pz_support_messages` | Customer support threads | planned (Phase 5) | — |
+| `wp_pz_support_tickets`, `wp_pz_support_messages` | Customer support threads (raised on /account/support; admin replies in Phase 8) | exists (0.4.1) | `SupportRepository` |
 
 ## wp_pz_subscriptions (packs)
 
@@ -218,3 +218,18 @@ Read and written only through `$order->get_meta()` / `update_meta_data()`.
 |---|---|
 | `_wc_other/pazhamei/start-date` | Start date from the block checkout's additional field `pazhamei/start-date` (written by WooCommerce) |
 | `_pz_start_date` | Start date from the classic checkout (and `wp pz simulate-order`). Activation reads this first, then the block field |
+
+## wp_pz_support_tickets and wp_pz_support_messages (0.4.1)
+
+A ticket is a thread: the customer's first message, then replies.
+
+```
+wp_pz_support_tickets  (id, customer_id, topic, about_date DATE NULL, status, created_at, updated_at,
+                        KEY (customer_id, created_at), KEY (status, created_at))
+wp_pz_support_messages (id, ticket_id, author_id, author_role, body TEXT, created_at, KEY (ticket_id))
+```
+
+- `topic`: `delivery`, `meal`, `schedule`, `payment`, `account`, `other` (`Domain\TicketInput::TOPICS`).
+- `status`: `open`, `answered`, `closed`. New tickets are `open`; admin replies (Phase 8) set `answered`.
+- `author_role`: `customer` or `admin`.
+- Each new ticket emails the site admin (`Emails\SupportAdminEmail`). A customer can raise at most 10 tickets in 24 hours.

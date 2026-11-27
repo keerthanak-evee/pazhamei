@@ -1,0 +1,89 @@
+/* pz/support-tickets: phone first. Fields, buttons and panels come from assets/css/portal.css. */
+.pz-support {
+	display: grid;
+	gap: 22px;
+	max-width: 760px;
+}
+
+.pz-support h2 {
+	margin: 0 0 8px;
+	font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+}
+
+.pz-support__empty {
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-ticket {
+	margin: 0 0 12px;
+	padding: 14px 16px;
+	background: #fff;
+	border: 1px solid #e8dfd0;
+	border-radius: 10px;
+}
+
+.pz-ticket__head {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 6px;
+}
+
+.pz-ticket__status {
+	padding: 2px 10px;
+	border-radius: 99px;
+	background: #fde9c8;
+	color: #6b4511;
+	font-size: 0.8rem;
+	font-weight: 650;
+}
+
+.pz-ticket[data-status="answered"] .pz-ticket__status {
+	background: #e3efd8;
+	color: #2f4a22;
+}
+
+.pz-ticket[data-status="closed"] .pz-ticket__status {
+	background: #eee;
+	color: #555;
+}
+
+.pz-ticket__meta {
+	margin: 4px 0 10px;
+	font-size: 0.85rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-ticket__messages {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.pz-ticket__message {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 8px 12px;
+	background: #f6f1e8;
+	border-radius: 8px;
+}
+
+.pz-ticket__message.is-mine {
+	background: var(--wp--preset--color--cream, #fff8e9);
+}
+
+.pz-ticket__who {
+	font-size: 0.78rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-ticket__body {
+	white-space: pre-line;
+}
+
+.pz-field__error:empty {
+	display: none;
+}

@@ -18,6 +18,7 @@ use Pazhamei\Repositories\AllergenRepository;
 use Pazhamei\Repositories\EnquiryRepository;
 use Pazhamei\Repositories\SchemaRepository;
 use Pazhamei\Repositories\Stores;
+use Pazhamei\Repositories\SupportRepository;
 use Pazhamei\Settings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -94,6 +95,7 @@ final class Installer {
 
 		dbDelta( EnquiryRepository::schema() );
 		dbDelta( Stores::schemas() );
+		dbDelta( SupportRepository::schemas() );
 
 		SchemaRepository::convert_to_innodb();
 	}

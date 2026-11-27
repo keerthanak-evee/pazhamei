@@ -74,6 +74,7 @@ final class StorefrontContent {
 		'account/plans'     => array( 'pazhamei/account-plans' ),
 		'account/dashboard' => array( 'pazhamei/account-dashboard' ),
 		'account/profile'   => array( 'pazhamei/account-profile' ),
+		'account/support'   => array( 'pazhamei/account-support' ),
 	);
 
 	/**

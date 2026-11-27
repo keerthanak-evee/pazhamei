@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/support-tickets",
+	"version": "0.4.0",
+	"title": "Support tickets",
+	"category": "widgets",
+	"icon": "sos",
+	"description": "Raise a support ticket (topic, message, optional date) and see replies and status. The admin gets an email for each new ticket.",
+	"keywords": [ "support", "help", "ticket" ],
+	"textdomain": "pazhamei-core",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"interactivity": true,
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"viewScriptModule": "file:./view.js",
+	"style": [ "pz-portal", "file:./style.css" ],
+	"render": "file:./render.php"
+}
