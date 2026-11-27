@@ -12,6 +12,7 @@
 namespace Pazhamei;
 
 use Pazhamei\Domain\EngineConfig;
+use Pazhamei\Domain\Pincodes;
 use Pazhamei\Domain\Plans;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -117,7 +118,8 @@ final class Settings {
 			(string) self::get( 'cutoff_time' ),
 			(bool) self::get( 'auto_mark_delivered' ),
 			(bool) self::get( 'trial_enabled' ),
-			wp_timezone()
+			wp_timezone(),
+			Pincodes::clean( (array) self::get( 'delivery_pincodes' ) )
 		);
 	}
 }

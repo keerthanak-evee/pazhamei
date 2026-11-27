@@ -26,17 +26,22 @@ final class EngineConfig {
 	public bool $trial_enabled;
 	public DateTimeZone $timezone;
 
+	/** @var string[] Pincodes we deliver to; empty = every pincode ([EDIT] until the owner adds them). */
+	public array $delivery_pincodes;
+
 	/**
 	 * @param string       $cutoff_time         'HH:MM' in IST (rule 3).
 	 * @param bool         $auto_mark_delivered Close locked days as delivered at 23:30 (rule 15).
 	 * @param bool         $trial_enabled       Trial switch (rule 10).
 	 * @param DateTimeZone $timezone            Site timezone.
+	 * @param string[]     $delivery_pincodes   Served pincodes (empty = all).
 	 */
-	public function __construct( string $cutoff_time, bool $auto_mark_delivered, bool $trial_enabled, DateTimeZone $timezone ) {
+	public function __construct( string $cutoff_time, bool $auto_mark_delivered, bool $trial_enabled, DateTimeZone $timezone, array $delivery_pincodes = array() ) {
 		$this->cutoff_time         = $cutoff_time;
 		$this->auto_mark_delivered = $auto_mark_delivered;
 		$this->trial_enabled       = $trial_enabled;
 		$this->timezone            = $timezone;
+		$this->delivery_pincodes   = $delivery_pincodes;
 	}
 
 	/**

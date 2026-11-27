@@ -52,6 +52,36 @@ final class StartDateTest extends TestCase {
 		$this->assertNotNull( $this->error( '2026-12-28' ), '31 days' );
 	}
 
+	/**
+	 * The checkout picker greys out Sundays, holidays and locked days, and
+	 * offers exactly the dates error() accepts.
+	 */
+	public function test_picker_options_match_the_rule(): void {
+		$options = StartDate::options( $this->now, $this->calendar, $this->cutoff );
+		$status  = array_column( $options, 'status', 'date' );
+
+		$this->assertSame( '2026-11-27', $options[0]['date'], 'Starts today' );
+		$this->assertSame( '2026-12-27', end( $options )['date'], 'Ends 30 days ahead' );
+		$this->assertSame( 'locked', $status['2026-11-27'] );
+		$this->assertSame( 'ok', $status['2026-11-28'] );
+		$this->assertSame( 'sunday', $status['2026-11-29'] );
+		$this->assertSame( 'ok', $status['2026-11-30'] );
+		$this->assertSame( 'holiday', $status['2026-12-02'] );
+
+		foreach ( $options as $day ) {
+			$this->assertSame( 'ok' === $day['status'], null === $this->error( $day['date'] ), $day['date'] );
+		}
+	}
+
+	public function test_picker_locks_tomorrow_after_the_cutoff(): void {
+		$late   = new DateTimeImmutable( '2026-11-27 20:01:00', new DateTimeZone( 'Asia/Kolkata' ) );
+		$status = array_column( StartDate::options( $late, $this->calendar, $this->cutoff ), 'status', 'date' );
+
+		$this->assertSame( 'locked', $status['2026-11-28'] );
+		$this->assertSame( 'sunday', $status['2026-11-29'] );
+		$this->assertSame( 'ok', $status['2026-11-30'] );
+	}
+
 	public function test_tomorrow_after_cutoff_is_refused_with_the_earliest_date(): void {
 		$late  = new DateTimeImmutable( '2026-11-27 20:01:00', new DateTimeZone( 'Asia/Kolkata' ) );
 		$error = StartDate::error( '2026-11-28', $late, $this->calendar, $this->cutoff );

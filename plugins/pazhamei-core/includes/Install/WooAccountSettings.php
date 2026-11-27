@@ -8,6 +8,7 @@
  * - Usernames are made from the email, so the form doesn't ask for one.
  * - Guest checkout is off: only signed-in customers can buy a plan.
  * - The terms checkbox at checkout links to /terms.
+ * - Checkout addresses are in India (default Tamil Nadu); prices in INR.
  *
  * @package Pazhamei
  */
@@ -23,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class WooAccountSettings {
 
-	/** WooCommerce option => the value we need. */
+	/** WooCommerce option => the value we need. @var array<string, mixed> */
 	public const OPTIONS = array(
 		'woocommerce_enable_myaccount_registration'  => 'yes',
 		'woocommerce_registration_generate_password' => 'no',
@@ -31,6 +32,11 @@ final class WooAccountSettings {
 		'woocommerce_enable_guest_checkout'          => 'no',
 		'woocommerce_enable_checkout_login_reminder' => 'yes',
 		'woocommerce_enable_signup_and_login_from_checkout' => 'no',
+		// We deliver in Chennai only: India, Tamil Nadu.
+		'woocommerce_allowed_countries'              => 'specific',
+		'woocommerce_specific_allowed_countries'     => array( 'IN' ),
+		'woocommerce_default_country'                => 'IN:TN',
+		'woocommerce_currency'                       => 'INR',
 	);
 
 	/**
@@ -46,7 +52,7 @@ final class WooAccountSettings {
 				update_option( $option, $value );
 				$report[] = array(
 					'type' => 'updated',
-					'text' => "WooCommerce setting {$option} = {$value}",
+					'text' => 'WooCommerce setting ' . $option . ' = ' . ( is_scalar( $value ) ? (string) $value : (string) wp_json_encode( $value ) ),
 				);
 			}
 		}

@@ -1,0 +1,94 @@
+/*
+ * Start-date picker at checkout (assets/js/start-date-picker.js) and the
+ * "Your plan is paused" notice. Colours come from the theme presets.
+ */
+.pz-date-picker__hint {
+	margin: 4px 0 0;
+	font-size: 0.85rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-date-picker {
+	max-width: 360px;
+	margin: 8px 0 0;
+	padding: 12px;
+	background: #fff;
+	border: 1px solid #e4d8c3;
+	border-radius: 10px;
+	box-shadow: var(--wp--preset--shadow--heritage, 0 10px 30px rgba(0, 0, 0, 0.12));
+}
+
+.pz-date-picker[hidden] {
+	display: none;
+}
+
+.pz-date-picker__grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 4px;
+}
+
+.pz-date-picker__head {
+	text-align: center;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-date-picker__day {
+	position: relative;
+	min-height: 40px;
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	background: var(--wp--preset--color--parchment, #fbf3e2);
+	color: var(--wp--preset--color--espresso, #211b18);
+	font: inherit;
+	font-size: 0.95rem;
+	cursor: pointer;
+}
+
+.pz-date-picker__day[data-month]::before {
+	content: attr(data-month);
+	position: absolute;
+	top: 1px;
+	left: 4px;
+	font-size: 0.6rem;
+	color: var(--wp--preset--color--oxblood, #5b090b);
+}
+
+.pz-date-picker__day.is-ok:hover,
+.pz-date-picker__day.is-ok:focus-visible {
+	border-color: var(--wp--preset--color--oxblood, #5b090b);
+	outline: none;
+}
+
+.pz-date-picker__day.is-selected {
+	background: var(--wp--preset--color--oxblood, #5b090b);
+	color: #fff8e9;
+}
+
+.pz-date-picker__day:disabled {
+	background: #f1eee9;
+	color: #a79b90;
+	text-decoration: line-through;
+	cursor: not-allowed;
+}
+
+.pz-date-picker__legend {
+	margin: 10px 0 0;
+	font-size: 0.78rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-checkout-notice {
+	margin: 0 0 1.5rem;
+	padding: 0.8em 1em;
+	background: #fff6e0;
+	border: 1px solid #e8cf98;
+	border-radius: 8px;
+}
+
+.pz-checkout-notice p {
+	margin: 0;
+}

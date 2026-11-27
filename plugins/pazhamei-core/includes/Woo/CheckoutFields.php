@@ -12,7 +12,14 @@
  * Classic checkout (fallback, if Razorpay misbehaves with blocks): the same
  * field via woocommerce_checkout_fields, saved as "_pz_start_date".
  *
- * Phase 4 adds the date picker that only offers valid days. HPOS-safe.
+ * Phase 4 additions:
+ * - A date picker on the start-date field (assets/js/start-date-picker.js)
+ *   that greys out Sundays, holidays and locked days, from
+ *   GET /pz/v1/checkout/start-dates. The server still checks the date.
+ * - Two required checkboxes: allergens confirmed, and terms accepted.
+ * - The "Your plan is paused" notice above the checkout.
+ *
+ * HPOS-safe.
  *
  * @package Pazhamei
  */
@@ -45,11 +52,21 @@ final class CheckoutFields {
 	public const CLASSIC_FIELD = 'pz_start_date';
 	public const META          = '_pz_start_date';
 
+	/** Required checkboxes (block checkout field IDs). */
+	public const ALLERGENS_FIELD = 'pazhamei/allergens-ok';
+	public const TERMS_FIELD     = 'pazhamei/terms';
+
+	/** Checkbox labels (plain text: the checkout can't show links here). */
+	public const ALLERGENS_LABEL = 'I have added my food allergies to my profile, or I have none.';
+	public const TERMS_LABEL     = 'I accept the Terms & Conditions and the Refund & Cancellation Policy.';
+
 	/**
 	 * Hook into both checkouts.
 	 */
 	public static function register(): void {
 		add_action( 'woocommerce_init', array( self::class, 'register_block_field' ) );
+		add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue_picker' ) );
+		add_filter( 'render_block_woocommerce/checkout', array( self::class, 'paused_notice' ) );
 		add_action( 'woocommerce_validate_additional_field', array( self::class, 'validate_block_field' ), 10, 3 );
 		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( self::class, 'check_block_order' ), 10, 1 );
 
@@ -80,7 +97,7 @@ final class CheckoutFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'         => self::BLOCK_FIELD,
-				'label'      => __( 'Start date (YYYY-MM-DD)', 'pazhamei-core' ),
+				'label'      => __( 'Start date', 'pazhamei-core' ),
 				'location'   => 'order',
 				'type'       => 'text',
 				'required'   => true,
@@ -91,6 +108,60 @@ final class CheckoutFields {
 				),
 			)
 		);
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => self::ALLERGENS_FIELD,
+				'label'    => self::ALLERGENS_LABEL,
+				'location' => 'order',
+				'type'     => 'checkbox',
+				'required' => true,
+			)
+		);
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => self::TERMS_FIELD,
+				'label'    => self::TERMS_LABEL,
+				'location' => 'order',
+				'type'     => 'checkbox',
+				'required' => true,
+			)
+		);
+	}
+
+	/**
+	 * The start-date picker, on the checkout for signed-in customers.
+	 */
+	public static function enqueue_picker(): void {
+		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() || ! is_user_logged_in() || is_wc_endpoint_url() ) {
+			return;
+		}
+		wp_enqueue_style( 'pz-start-date-picker', PZ_CORE_URL . 'assets/css/start-date-picker.css', array(), PZ_VERSION );
+		wp_enqueue_script( 'pz-start-date-picker', PZ_CORE_URL . 'assets/js/start-date-picker.js', array(), PZ_VERSION, true );
+		wp_localize_script(
+			'pz-start-date-picker',
+			'pzStartDates',
+			array(
+				'url'     => rest_url( 'pz/v1/checkout/start-dates' ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+				'inputId' => 'order-' . str_replace( '/', '-', self::BLOCK_FIELD ),
+			)
+		);
+	}
+
+	/**
+	 * "Your plan is paused" above the block checkout, when it applies (decision 10).
+	 *
+	 * @param string $html Checkout block HTML.
+	 */
+	public static function paused_notice( $html ): string {
+		if ( ! is_user_logged_in() ) {
+			return (string) $html;
+		}
+		$notice = CheckoutCheck::paused_notice( Engine::live(), get_current_user_id() );
+		if ( null === $notice ) {
+			return (string) $html;
+		}
+		return '<div class="pz-checkout-notice" role="status"><p>' . esc_html( $notice ) . ' <a href="' . esc_url( home_url( '/account/dashboard/' ) ) . '">' . esc_html__( 'Go to my dashboard', 'pazhamei-core' ) . '</a></p></div>' . $html;
 	}
 
 	/**
@@ -153,6 +224,13 @@ final class CheckoutFields {
 			'label'    => __( 'Start date', 'pazhamei-core' ),
 			'required' => true,
 			'priority' => 5,
+		);
+		// Classic checkout has its own terms checkbox (the terms page is set), so only allergens here.
+		$fields['order']['pz_allergens_ok'] = array(
+			'type'     => 'checkbox',
+			'label'    => self::ALLERGENS_LABEL,
+			'required' => true,
+			'priority' => 6,
 		);
 		return $fields;
 	}

@@ -56,4 +56,45 @@ final class StartDate {
 
 		return null;
 	}
+
+	/**
+	 * Every date from today to the last allowed start, with whether it can be
+	 * picked and why not. Used by the checkout date picker; the server still
+	 * runs error() when the order is placed.
+	 *
+	 * Status: 'ok', 'locked' (today, or past the cutoff), 'sunday', 'holiday'.
+	 *
+	 * @param DateTimeImmutable $now      Current IST time.
+	 * @param Calendar          $calendar Service days and holidays.
+	 * @param Cutoff            $cutoff   Lock rule.
+	 * @return array<int, array{date: string, status: string, reason: string}>
+	 */
+	public static function options( DateTimeImmutable $now, Calendar $calendar, Cutoff $cutoff ): array {
+		$today = $cutoff->today( $now );
+		$days  = array();
+
+		for ( $i = 0; $i <= self::MAX_DAYS_AHEAD; $i++ ) {
+			$date = Dates::add_days( $today, $i );
+
+			if ( $cutoff->is_locked( $date, $now ) ) {
+				$status = 'locked';
+				$reason = 'Too late: this day is already locked.';
+			} elseif ( $calendar->is_sunday( $date ) ) {
+				$status = 'sunday';
+				$reason = 'No deliveries on Sundays.';
+			} elseif ( $calendar->is_holiday( $date ) ) {
+				$status = 'holiday';
+				$reason = 'Kitchen holiday.';
+			} else {
+				$status = 'ok';
+				$reason = '';
+			}
+			$days[] = array(
+				'date'   => $date,
+				'status' => $status,
+				'reason' => $reason,
+			);
+		}
+		return $days;
+	}
 }

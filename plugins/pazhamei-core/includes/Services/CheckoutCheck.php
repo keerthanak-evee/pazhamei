@@ -5,6 +5,7 @@
  *  - Only signed-in customers can buy (guest checkout is off).
  *  - One plan per order.
  *  - A valid start date (rule 4).
+ *  - A delivery pincode we serve (the delivery_pincodes setting; all while empty).
  *  - Trial: switch on and the customer is eligible (rule 10).
  *
  * Plain PHP on top of the Engine, so it is unit-tested; Woo\CheckoutFields
@@ -16,6 +17,7 @@
 namespace Pazhamei\Services;
 
 use Pazhamei\Domain\PackStatus;
+use Pazhamei\Domain\Pincodes;
 use Pazhamei\Domain\StartDate;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -58,6 +60,11 @@ final class CheckoutCheck {
 		$start_error = StartDate::error( $start_date, $engine->now(), $engine->calendar(), $engine->cutoff() );
 		if ( null !== $start_error ) {
 			$errors[] = $start_error;
+		}
+
+		$pincode_error = Pincodes::refusal( $pincode, $engine->config->delivery_pincodes );
+		if ( null !== $pincode_error ) {
+			$errors[] = $pincode_error;
 		}
 
 		if ( in_array( 'TRIAL', $plan_codes, true ) ) {
