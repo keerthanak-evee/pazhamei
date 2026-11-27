@@ -1,53 +1,8 @@
 /*
  * pz/subscription-summary: the pack card on the customer dashboard.
  * Phone first; colours and fonts from the theme presets.
- * The .pz-btn buttons are shared by the customer portal blocks.
+ * Buttons (.pz-btn) are in assets/css/portal.css.
  */
-.pz-btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 44px;
-	padding: 0.55em 1.3em;
-	border: 1px solid var(--wp--preset--color--hero-maroon, #470d0d);
-	border-radius: 99px;
-	background: var(--wp--preset--color--hero-maroon, #470d0d);
-	color: #fff8e9;
-	font: inherit;
-	font-weight: 600;
-	text-decoration: none;
-	cursor: pointer;
-}
-
-.pz-btn:hover,
-.pz-btn:focus-visible {
-	background: var(--wp--preset--color--oxblood, #5b090b);
-	color: #fff8e9;
-}
-
-.pz-btn--outline {
-	background: transparent;
-	color: var(--wp--preset--color--hero-maroon, #470d0d);
-}
-
-.pz-btn--text {
-	border-color: transparent;
-	background: transparent;
-	color: var(--wp--preset--color--hero-maroon, #470d0d);
-	text-decoration: underline;
-}
-
-.pz-btn--text:hover,
-.pz-btn--text:focus-visible {
-	background: transparent;
-	color: var(--wp--preset--color--oxblood, #5b090b);
-}
-
-.pz-btn[disabled] {
-	opacity: 0.55;
-	cursor: not-allowed;
-}
-
 .pz-summary [hidden] {
 	display: none !important;
 }

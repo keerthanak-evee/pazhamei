@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pz/customer-welcome",
+	"version": "0.4.0",
+	"title": "Customer welcome",
+	"category": "widgets",
+	"icon": "smiley",
+	"description": "The /account landing page: a greeting, the current pack in one line, tomorrow's lunch and whether it is locked, and shortcuts. New customers see Start with a trial or Choose a plan.",
+	"keywords": [ "account", "welcome", "customer" ],
+	"textdomain": "pazhamei-core",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"align": [ "wide" ],
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./editor.js",
+	"style": [ "pz-portal", "file:./style.css" ],
+	"render": "file:./render.php"
+}

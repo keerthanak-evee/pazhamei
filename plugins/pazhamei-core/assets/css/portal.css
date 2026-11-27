@@ -1,0 +1,128 @@
+/*
+ * Shared styles for the customer portal blocks (style handle "pz-portal",
+ * loaded by every pz/* portal block): buttons, notices and form fields.
+ * Colours and fonts come from the theme presets.
+ */
+.pz-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0.55em 1.3em;
+	border: 1px solid var(--wp--preset--color--hero-maroon, #470d0d);
+	border-radius: 99px;
+	background: var(--wp--preset--color--hero-maroon, #470d0d);
+	color: #fff8e9;
+	font: inherit;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.pz-btn:hover,
+.pz-btn:focus-visible {
+	background: var(--wp--preset--color--oxblood, #5b090b);
+	color: #fff8e9;
+}
+
+.pz-btn--outline {
+	background: transparent;
+	color: var(--wp--preset--color--hero-maroon, #470d0d);
+}
+
+.pz-btn--text {
+	border-color: transparent;
+	background: transparent;
+	color: var(--wp--preset--color--hero-maroon, #470d0d);
+	text-decoration: underline;
+}
+
+.pz-btn--text:hover,
+.pz-btn--text:focus-visible {
+	background: transparent;
+	color: var(--wp--preset--color--oxblood, #5b090b);
+}
+
+.pz-btn[disabled] {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+
+/* Messages from the server (errors) and confirmations. */
+.pz-alert {
+	margin: 0 0 12px;
+	padding: 10px 14px;
+	background: #fdf0ee;
+	color: #8a1c1c;
+	border: 1px solid #efc9c3;
+	border-radius: 8px;
+}
+
+.pz-alert--ok {
+	background: #f3f7ee;
+	color: #2f4a22;
+	border-color: #d3e2c5;
+}
+
+/* Portal form fields. */
+.pz-field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin: 0 0 14px;
+}
+
+.pz-field > label,
+.pz-field > .pz-field__label {
+	font-weight: 600;
+}
+
+.pz-field :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+	width: 100%;
+	max-width: 520px;
+	min-height: 44px;
+	box-sizing: border-box;
+	padding: 0.5em 0.8em;
+	border: 1px solid #d9cdb8;
+	border-radius: 8px;
+	background: #fff;
+	color: inherit;
+	font: inherit;
+}
+
+.pz-field textarea {
+	min-height: 110px;
+}
+
+.pz-field :is(input, select, textarea):focus-visible {
+	outline: 2px solid var(--wp--preset--color--turmeric, #ab815f);
+	outline-offset: 1px;
+}
+
+.pz-field__hint {
+	font-size: 0.85rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-field__error {
+	font-size: 0.88rem;
+	color: #8a1c1c;
+}
+
+/* Cream panel used by portal pages. */
+.pz-panel {
+	padding: 18px;
+	background: var(--wp--preset--color--cream, #fff8e9);
+	border: 1px solid var(--wp--preset--color--turmeric-light, #e9d9c8);
+	border-radius: 12px;
+	box-shadow: var(--wp--preset--shadow--card);
+}
+
+.pz-panel > :first-child {
+	margin-top: 0;
+}
+
+.pz-portal-block [hidden] {
+	display: none !important;
+}

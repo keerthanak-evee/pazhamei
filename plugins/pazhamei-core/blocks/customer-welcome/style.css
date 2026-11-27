@@ -1,0 +1,121 @@
+/* pz/customer-welcome: greeting card and shortcut tiles on /account. Phone first. */
+.pz-welcome__card {
+	position: relative;
+	display: flex;
+	gap: 16px;
+	align-items: flex-end;
+	padding: 20px;
+	color: #fbeed3;
+	background: var(--wp--preset--color--hero-maroon, #470d0d);
+	border-radius: 12px;
+	outline: 1px solid #a07547;
+	outline-offset: -8px;
+	overflow: hidden;
+}
+
+.pz-welcome__text {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.pz-welcome__text > p {
+	margin: 0 0 10px;
+}
+
+.pz-welcome__hello {
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(1.8rem, 5vw, 2.6rem);
+	font-weight: 600;
+	line-height: 1.1;
+	color: #fff4dd;
+}
+
+.pz-welcome__pack {
+	font-weight: 600;
+	color: #f3d89a;
+}
+
+.pz-welcome__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 16px !important;
+}
+
+/* Buttons on the dark card: cream. */
+.pz-welcome__card .pz-btn {
+	background: #eed098;
+	border-color: #eed098;
+	color: #471914;
+}
+
+.pz-welcome__card .pz-btn:hover,
+.pz-welcome__card .pz-btn:focus-visible {
+	background: #f6dfae;
+	color: #471914;
+}
+
+.pz-welcome__card .pz-btn--outline {
+	background: transparent;
+	color: #f6dfae;
+}
+
+.pz-welcome__image {
+	display: none;
+	flex: none;
+	width: 96px;
+	height: auto;
+	border-radius: 8px;
+}
+
+@media (min-width: 600px) {
+	.pz-welcome__card {
+		padding: 28px 32px;
+	}
+
+	.pz-welcome__image {
+		display: block;
+	}
+}
+
+.pz-welcome__shortcuts {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	margin-top: 18px;
+}
+
+@media (min-width: 782px) {
+	.pz-welcome__shortcuts {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.pz-welcome__shortcut {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-height: 72px;
+	padding: 14px 16px;
+	color: var(--wp--preset--color--espresso, #211b18);
+	background: var(--wp--preset--color--cream, #fff8e9);
+	border: 1px solid var(--wp--preset--color--turmeric-light, #e9d9c8);
+	border-radius: 10px;
+	text-decoration: none;
+}
+
+.pz-welcome__shortcut strong {
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: 1.35rem;
+	color: var(--wp--preset--color--oxblood, #5b090b);
+}
+
+.pz-welcome__shortcut span {
+	font-size: 0.85rem;
+	color: var(--wp--preset--color--espresso-light, #4a3b32);
+}
+
+.pz-welcome__shortcut:hover,
+.pz-welcome__shortcut:focus-visible {
+	border-color: var(--wp--preset--color--oxblood, #5b090b);
+}

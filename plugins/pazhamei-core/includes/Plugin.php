@@ -85,6 +85,8 @@ final class Plugin {
 	public static function register_blocks(): void {
 		// One Interactivity API store shared by the dashboard blocks (pz/subscription-summary, pz/schedule-calendar).
 		wp_register_script_module( 'pz-dashboard', PZ_CORE_URL . 'assets/js/dashboard.js', array( '@wordpress/interactivity' ), PZ_VERSION );
+		// Buttons, alerts and fields shared by the customer portal blocks (each lists "pz-portal" in its block.json).
+		wp_register_style( 'pz-portal', PZ_CORE_URL . 'assets/css/portal.css', array(), PZ_VERSION );
 
 		$block_folders = glob( PZ_CORE_DIR . 'blocks/*', GLOB_ONLYDIR );
 
