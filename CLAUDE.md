@@ -19,6 +19,7 @@ Pazhamei is a cloud kitchen. This repo is the WordPress web app: a storefront, a
 
 - Local site: LocalWP, site name `pazhamei`. Start Claude Code from LocalWP's **Open site shell** so `wp`, `php` and `mysql` work.
 - Claude Code's shell is Git Bash. Prefix `wp` commands that take `/...` arguments with `MSYS_NO_PATHCONV=1`, or Git Bash rewrites them into Windows paths.
+- Claude Code already runs in wp-content. Never prefix commands with cd to the project path; use paths relative to wp-content. Prefer separate simple commands over long && chains.
 - This repo's root is the site's `wp-content` folder. Only our own code is tracked (see `.gitignore`).
 - WordPress 6.9+, WooCommerce, Razorpay for WooCommerce, FluentSMTP, Create Block Theme.
 - Timezone: Asia/Kolkata (IST). Currency: INR. All date logic uses `wp_timezone()`, never server time or UTC.
