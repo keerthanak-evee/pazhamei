@@ -11,9 +11,10 @@
  * they never appear in the shop or in search. Sold individually and
  * virtual (the delivery address comes from the billing address).
  *
- * Prices are placeholders marked [EDIT]. The Trial price always comes from
- * the trial_price setting, and the Trial can't be bought while
- * trial_enabled is off (rule 10).
+ * Prices live only on the variations (regular price) and are edited in
+ * wp-admin → Pazhamei → Plans & Prices (Admin\PlansPricesPage), including
+ * the Trial row. The Trial can't be bought while trial_enabled is off
+ * (rule 10).
  *
  * `wp pz install-products` creates missing products and never changes
  * existing ones.
@@ -49,9 +50,9 @@ final class PlanProducts {
 		'MIXED'  => 'Mixed',
 	);
 
-	/** [EDIT] Placeholder prices in rupees per pack. Replace before Phase 4 / go-live. */
+	/** [EDIT] Starting prices in rupees per pack, used only when the products are created. Edit them in Plans & Prices. */
 	public const PLACEHOLDER_PRICES = array(
-		'TRIAL' => array( 'VEG' => 0, 'NONVEG' => 0, 'MIXED' => 0 ), // Ignored: trial_price setting applies.
+		'TRIAL' => array( 'VEG' => 0, 'NONVEG' => 0, 'MIXED' => 0 ),
 		'D6'    => array( 'VEG' => 900, 'NONVEG' => 1080, 'MIXED' => 990 ),
 		'D26'   => array( 'VEG' => 3640, 'NONVEG' => 4420, 'MIXED' => 4030 ),
 	);
@@ -60,14 +61,9 @@ final class PlanProducts {
 	private static array $codes = array();
 
 	/**
-	 * Price and purchasable filters.
+	 * The trial switch.
 	 */
 	public static function register(): void {
-		add_filter( 'woocommerce_product_variation_get_price', array( self::class, 'trial_price' ), 10, 2 );
-		add_filter( 'woocommerce_product_variation_get_regular_price', array( self::class, 'trial_price' ), 10, 2 );
-		add_filter( 'woocommerce_variation_prices_price', array( self::class, 'trial_price' ), 10, 2 );
-		add_filter( 'woocommerce_variation_prices_regular_price', array( self::class, 'trial_price' ), 10, 2 );
-		add_filter( 'woocommerce_get_variation_prices_hash', array( self::class, 'prices_hash' ) );
 		add_filter( 'woocommerce_variation_is_purchasable', array( self::class, 'purchasable' ), 10, 2 );
 		add_filter( 'woocommerce_is_purchasable', array( self::class, 'purchasable' ), 10, 2 );
 	}
@@ -99,31 +95,6 @@ final class PlanProducts {
 		$option = (string) $product->get_attribute( sanitize_title( self::ATTRIBUTE ) );
 		$found  = array_search( $option, self::OPTIONS, true );
 		return false === $found ? '' : (string) $found;
-	}
-
-	/**
-	 * Trial variations always cost the trial_price setting.
-	 *
-	 * @param mixed      $price   Price WooCommerce found.
-	 * @param WC_Product $product Variation.
-	 * @return mixed
-	 */
-	public static function trial_price( $price, $product ) {
-		if ( $product instanceof WC_Product && 'TRIAL' === self::plan_code( $product ) ) {
-			return (string) (float) Settings::get( 'trial_price' );
-		}
-		return $price;
-	}
-
-	/**
-	 * Recalculate cached variation prices when the trial price changes.
-	 *
-	 * @param array<int, mixed> $hash Cache key parts.
-	 * @return array<int, mixed>
-	 */
-	public static function prices_hash( $hash ) {
-		$hash[] = 'pz_trial_' . (string) Settings::get( 'trial_price' );
-		return $hash;
 	}
 
 	/**

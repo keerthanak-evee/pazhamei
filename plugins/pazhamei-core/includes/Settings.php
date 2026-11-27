@@ -12,6 +12,7 @@
 namespace Pazhamei;
 
 use Pazhamei\Domain\EngineConfig;
+use Pazhamei\Domain\Plans;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -28,6 +29,7 @@ final class Settings {
 	/** Keys that older versions stored and are no longer used. */
 	private const RETIRED = array(
 		'max_pause_days', // Owner decision (Phase 3): pauses have no time limit.
+		'trial_price',    // Owner decision (Phase 4): the Trial variation prices are the only trial price.
 	);
 
 	/**
@@ -39,10 +41,10 @@ final class Settings {
 		return array(
 			'cutoff_time'         => '20:00', // IST, on the calendar day before the meal (business rule 3).
 			'trial_enabled'       => false,   // Trial pack is sold only when this is on (rule 10).
-			'trial_price'         => 0,       // Rupees; can be 0.
 			'auto_mark_delivered' => true,    // At 23:30, locked days not marked failed count as delivered (rule 15).
 			'service_days'        => array( 'mon', 'tue', 'wed', 'thu', 'fri', 'sat' ), // Sunday is always off (rule 1).
-			'delivery_pincodes'   => array(), // Empty until the admin adds areas.
+			'delivery_pincodes'   => array(), // [EDIT] Pincodes we deliver to. Empty = accept any pincode.
+			'plan_includes'       => array(), // Plan code => "what's included" lines, edited in Plans & Prices. Empty = the text in Domain\Plans.
 		);
 	}
 
@@ -78,6 +80,36 @@ final class Settings {
 	}
 
 	/**
+	 * The "what's included" lines for a plan: the owner's text from Plans & Prices,
+	 * or the starting text in Domain\Plans.
+	 *
+	 * @param string $slug Plan URL value, e.g. '6-day'.
+	 * @return string[]
+	 */
+	public static function plan_includes( string $slug ): array {
+		$plan  = Plans::all()[ $slug ] ?? null;
+		$saved = (array) self::get( 'plan_includes' );
+		if ( null === $plan ) {
+			return array();
+		}
+		$lines = $saved[ $plan['code'] ] ?? null;
+		return is_array( $lines ) && $lines ? array_map( 'strval', $lines ) : $plan['includes'];
+	}
+
+	/**
+	 * Save one setting (used by the wp-admin screens).
+	 *
+	 * @param string $key   Setting name.
+	 * @param mixed  $value New value.
+	 */
+	public static function set( string $key, $value ): void {
+		$saved         = get_option( self::OPTION, array() );
+		$saved         = is_array( $saved ) ? $saved : array();
+		$saved[ $key ] = $value;
+		update_option( self::OPTION, $saved );
+	}
+
+	/**
 	 * The settings the subscription engine needs.
 	 */
 	public static function engine_config(): EngineConfig {
@@ -85,7 +117,6 @@ final class Settings {
 			(string) self::get( 'cutoff_time' ),
 			(bool) self::get( 'auto_mark_delivered' ),
 			(bool) self::get( 'trial_enabled' ),
-			(float) self::get( 'trial_price' ),
 			wp_timezone()
 		);
 	}

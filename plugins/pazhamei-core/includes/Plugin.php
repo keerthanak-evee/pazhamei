@@ -12,6 +12,7 @@ namespace Pazhamei;
 
 use Pazhamei\Access\AdminLockdown;
 use Pazhamei\Admin\EnquiriesPage;
+use Pazhamei\Admin\PlansPricesPage;
 use Pazhamei\Access\LoginRedirect;
 use Pazhamei\Access\MovedPages;
 use Pazhamei\Access\PortalGuard;
@@ -53,9 +54,10 @@ final class Plugin {
 		HidePrices::register();    // No prices for visitors who are not signed in.
 		EnquiryController::register(); // REST routes for the storefront enquiry form.
 		EnquiriesPage::register();     // wp-admin: Pazhamei > Enquiries (administrators only).
+		PlansPricesPage::register();   // wp-admin: Pazhamei > Plans and Prices (administrators only).
 
 		// Subscription engine (Phase 3).
-		PlanProducts::register();       // Trial price and trial switch on the plan products.
+		PlanProducts::register();       // The trial switch on the plan products.
 		CheckoutFields::register();     // Start date field and plan rules at checkout.
 		OrderHooks::register();         // Paid order → pack; cancelled/refunded order → pack cancelled.
 		TestPay::register();            // Local only: "Pazhamei Test Pay" marks orders paid, for testing.

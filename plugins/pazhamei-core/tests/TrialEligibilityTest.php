@@ -21,7 +21,6 @@ final class TrialEligibilityTest extends TestCase {
 	protected function setUp(): void {
 		$config                = EngineConfig::defaults();
 		$config->trial_enabled = true;
-		$config->trial_price   = 0.0;
 		$this->kit             = new TestKit( '2026-11-27 10:00:00', $config );
 
 		// Customer 7 had a trial at Flat 4-B, 600001, mobile +91 98765 43210.
