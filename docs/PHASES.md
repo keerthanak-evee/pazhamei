@@ -278,11 +278,65 @@ Decisions (owner, Phase 4 kickoff):
 - The Sign-in / Register restyle matches `design/Images/Login&RegisterPAgeReference.jpg`, with the same rules as the other prototype pages: core blocks, theme styles, no prototype CSS, weak image crops marked [REPLACE].
 - A local-only "Pazhamei Test Pay" gateway is used for buy-flow testing. Razorpay is tested in Phase 2 on UAT.
 
-Steps:
-- [ ] Sign-in / Register restyle: WooCommerce account form with name, email, mobile, password, delivery pincode and "forgot password" (moved from Phase 1)
+Built (plugin 0.4.1, theme 0.5.9):
+- [x] **WooCommerce settings** (installer): registration on My Account, customers choose their own password, guest checkout off, terms page = /terms, addresses India only (default Tamil Nadu), INR, site date format "26 Nov 2026".
+- [x] **Pazhamei Test Pay** (local only): marks orders paid; classic and block checkout. Never registered unless the environment type is `local`.
+- [x] **Checkout first:** block checkout checked in headless Chrome with Test Pay: the start date is validated (a Sunday is refused) and a paid order activates a pack.
+- [x] **Plans & Prices** (wp-admin → Pazhamei → Plans & Prices, administrators only): 3×3 price grid in ₹, the trial switch, each plan's "what's included" lines. Saving checks the whole grid and writes the WooCommerce variation prices. The `trial_price` setting and its price filters are gone; the Trial row is the trial price.
+- [x] **Sign in / Register** at /sign-in, matching `Login&RegisterPAgeReference.jpg`:
+  - Theme pattern `page-sign-in` (core blocks): wine welcome panel and white form card for Sign in, the mirror for Register, a card for Forgot password, and WooCommerce's order pages for signed-in customers. One view shows at a time (body class `pz-auth-view--…`).
+  - Block `pz/account-form` posts to WooCommerce's own handlers (WooCommerce still signs in, registers, emails, resets passwords).
+  - Register: full name, email, phone (10 digits, unique), delivery pincode, password, confirm password. Sign in with email or phone.
+  - New block styles: Wine welcome panel, White form card.
+- [x] **Plan cards price mode** (/account/plans and /plans for signed-in customers): Veg / Non-Veg / Mixed choice, price from Plans & Prices, Buy next to Enquire. Buy empties the cart, adds the plan and goes to checkout (`Woo\BuyLink`, nonce-checked). The Trial card shows only when the trial is on and the customer is eligible. Visitors still see no prices.
+- [x] **Checkout:** start-date picker greying out Sundays, holidays and locked days (`GET /pz/v1/checkout/start-dates`; the server re-checks), delivery pincode check, required allergen and terms checkboxes, paused-plan notice. Theme templates `page-checkout` and `order-confirmation` use our header and footer.
+- [x] **/account** (`pz/customer-welcome`): greeting, pack in one line, tomorrow's lunch and whether it is locked, shortcuts; "Start with a trial" / "Choose a plan" for new customers.
+- [x] **/account/dashboard** (`pz/subscription-summary` + `pz/schedule-calendar`, one Interactivity store): pack summary with queued renewals, calendar with Skip / Undo skip, Sundays and holidays greyed out, locked days with a lock and the reason, Pause "until a date" (label "Last day without meals", new end date shown first via `POST /me/pause/preview`) or "until I resume", Resume, live countdown, "Confirming your payment…" with a refresh every 5 seconds. Every change refetches `GET /me/dashboard`.
+- [x] **/account/meals** (`pz/menu-week`): Monday-to-Saturday tabs; Veg / Non-Veg / Mixed side by side with photo, calories, protein, allergens; own type highlighted; "Menu coming soon" when nothing is published. New `pz_meal` post type (administrators only). `wp pz seed` adds local sample menus (`--only=menus` leaves the test users alone).
+- [x] **/account/profile** (`pz/profile-form`): name, mobile, delivery address, dietary preference, allergens with severity, special instructions, password change. `GET/PUT /me/profile`, `POST /me/password`. 10 starter allergens seeded.
+- [x] **/account/support** (`pz/support-tickets`): tables `wp_pz_support_tickets` / `wp_pz_support_messages` (0.4.1), `GET/POST /support/tickets`, admin email per ticket.
+- [x] **/account/history** (`pz/order-history`): packs with delivered / not-delivered days, payments linking to the WooCommerce order pages.
+- [x] Every REST route checks `pz_customer` and the `wp_rest` nonce. No business rule in JavaScript: the server decides and the page shows its answer.
+- [x] PHPUnit: 290 tests (Plans & Prices with the price-consistency test, registration and phone sign-in, pincode, start date incl. the picker, paused notice, Test Pay guard, dashboard, welcome, pause preview, profile, tickets, history, menus, money format).
+- [x] Browser checks (headless Chrome, 1440 and 375 px, a new customer each): register → sign in with phone → buy 6-day Veg with Test Pay → dashboard → skip and undo → pause until a date (preview = result) → resume → renewal (queued) → profile → ticket → history. 17/17 at both widths. Also: skip after the cutoff (`wp pz time`) shows "Changes for 30 Nov 2026 closed at 20:00 on 29 Nov 2026."; a Sunday is greyed out in the picker and refused by the server; password reset email in the FluentSMTP log / Mailpit, reset link works; "Confirming your payment…" clears itself; trial ₹0 flow; every page opens in the editor with 0 invalid blocks; nothing scrolls sideways at 375 px. Screenshots in `design/compare/phase-4/`.
+
+Assumptions (low-intervention mode; change any by telling me):
+- **Sign-in views** switch with a normal link (`/sign-in/?view=register`), not JavaScript, so they also work without scripts and after a failed submit.
+- **Name** is split at the first space into first and last name.
+- **Mobile** is unique across accounts through `wp_pz_customer_profiles.mobile`; older accounts without a profile mobile can't be found by phone until they save their profile.
+- **Delivery address** is the WooCommerce billing address on the account (plans are virtual). The 20:00 lock job now copies the account's address (falling back to the order's), so profile changes apply from the next unlocked day.
+- **Buy** goes through a nonce link that empties the cart first: one plan per order, and a second Buy replaces the first.
+- **Prices** in WooCommerce screens show two decimals and Western grouping (₹1,080.00); our pages show ₹1,080 with Indian grouping.
+- **"Confirming your payment…"** shows for plan orders with no pack yet: pending (last 20 minutes), on-hold or paid (last 3 hours).
+- **Dashboard calendar** shows today to a little after the last lunch (at least two weeks, at most 70 days).
+- **Meals** shows Monday to Saturday of the current week (the coming week on Sundays). `pz_meal` exists now (administrators only) so menus can be tested; real meals and menus come in Phase 8. Sample meals and numbers are marked [Sample].
+- **Support:** at most 10 tickets a day per customer; admin answers by email until /manage replies exist (Phase 8).
+- **Checkout preview locally:** WooCommerce's "Coming soon" mode stays on. Its private preview link (`woocommerce_private_link`) was switched on locally so the browser checks could open /checkout; it changes nothing for visitors.
+- **Welcome greeting** is "Vanakkam, <first name>!".
+
+[EDIT] before selling:
+- [ ] [EDIT] Prices in Plans & Prices (still the Phase 3 placeholders: 6-day ₹900 / ₹1,080 / ₹990, 26-day ₹3,640 / ₹4,420 / ₹4,030; Trial ₹0) and the trial switch (off).
+- [ ] [EDIT] `delivery_pincodes` (empty = every valid pincode accepted).
+- [ ] [EDIT] Sign-in panel texts from the reference: "Freshly cooked in our Guindy kitchen", "Macro-calibrated lunches", "8:00 PM flexible cutoff". Confirm the claims.
+- [ ] [EDIT] Checkbox wording at checkout ("I have added my food allergies…", "I accept the Terms & Conditions and the Refund & Cancellation Policy").
+
+[REPLACE] (weak image crops):
+- [ ] [REPLACE] `design/Images/signin-thali.jpg` (Media Library `signin-thali`): 250×216, cropped from the reference, shown up to ~290 px wide on the sign-in panels.
+- `member-brass-tiffin.jpg` (173×379) is now used on /account at 96 px wide: fine, but a sharper copy would help on retina.
+
+Try by hand:
+- Pazhamei → Plans & Prices in wp-admin: change a price and the "what's included" lines; check /account/plans and the checkout.
+- Pazhamei → Meals in wp-admin (sample meals) if you want to see the meal editor.
+- Razorpay test keys: if you add them in WooCommerce → Payments, buy once with Razorpay test mode too (Phase 2 covers it on UAT).
+- The site editor: the new `page-checkout` and `order-confirmation` templates.
+
+Local test data (local only): customers `checkout_check`, `meena.r`, `ravi.k`, `anjali.s`, `karthik.v`, `priya.n`, `lakshmi.r`, `trial_tester` (all `@example.test`), orders #151–#190, tickets #1–#3, sample meals and menus.
 
 Later:
 - [ ] Admin action "Allow another trial" for a customer who already had one (owner, Phase 4)
+- [ ] Phase 8: admin replies to support tickets; menu and meal screens (replace the sample meals); the real weekly menu on /plans
+- [ ] Phase 6: welcome email on `pz_pack_activated`; a "ticket answered" email
+- [ ] Phase 2: Razorpay on UAT; turn off `woocommerce_private_link` if it was copied there
 
 ## Phase 5: Actions and manual flows
 ## Phase 6: Notifications
